@@ -148,5 +148,36 @@ class ProveedorProductoTest extends TestCase
             ->assertSee('Manifiestos de Carga Emitidos')
             ->assertSee('Generar Manifiesto DEX');
     }
+
+    /** Proveedor puede cargar imagen física y visualizarla en catálogo */
+    public function test_provider_can_upload_product_with_image_file(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $provider = User::where('role', 'provider')->first();
+        $category = Category::first();
+
+        Sanctum::actingAs($provider);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('reloj_deportivo.png', 400, 400);
+
+        $response = $this->post('/api/v1/products', [
+            'name'                => 'Reloj Smartwatch Pro Con Imagen',
+            'sku'                 => 'WATCH-IMG-001',
+            'category_id'         => $category->id,
+            'cost_price_bob'      => 90.00,
+            'suggested_price_bob' => 160.00,
+            'min_price_bob'       => 110.00,
+            'is_cod_available'    => true,
+            'image'               => $file,
+        ], ['Accept' => 'application/json']);
+
+        $response->assertStatus(201);
+
+        $product = Product::where('sku', 'WATCH-IMG-001')->first();
+        $this->assertNotNull($product);
+        $this->assertNotEmpty($product->images);
+        $this->assertStringContainsString('/storage/products/', $product->images[0]);
+    }
 }
 

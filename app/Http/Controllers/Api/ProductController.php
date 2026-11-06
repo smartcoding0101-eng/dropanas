@@ -86,10 +86,25 @@ class ProductController extends Controller
             'min_price_bob' => 'required|numeric|gte:cost_price_bob',
             'weight_kg' => 'nullable|numeric|min:0.01',
             'images' => 'nullable|array',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+            'image_url' => 'nullable|string|max:500',
             'is_cod_available' => 'boolean',
             'initial_warehouse_id' => 'nullable|exists:warehouses,id',
             'initial_stock' => 'nullable|integer|min:0',
         ]);
+
+        $images = $validated['images'] ?? [];
+
+        // Procesar subida de imagen física si se adjuntó
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $images[] = '/storage/' . $path;
+        } elseif ($request->filled('image_url')) {
+            $images[] = $request->input('image_url');
+        }
+
+        $validated['images'] = !empty($images) ? $images : null;
+        unset($validated['image'], $validated['image_url']);
 
         $initialWarehouseId = $validated['initial_warehouse_id'] ?? null;
         $initialStock = (int) ($validated['initial_stock'] ?? 0);

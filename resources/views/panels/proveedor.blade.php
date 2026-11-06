@@ -181,8 +181,19 @@
                     @forelse($products as $product)
                     <tr class="hover:bg-slate-50/80 transition">
                         <td class="py-3.5 px-5">
-                            <div class="font-bold text-slate-900">{{ $product->name }}</div>
-                            <div class="text-[11px] text-[#E88A38] font-mono font-semibold">SKU: {{ $product->sku }}</div>
+                            <div class="flex items-center gap-3">
+                                @if(!empty($product->images) && count($product->images) > 0)
+                                    <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-11 h-11 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0">
+                                @else
+                                    <div class="w-11 h-11 rounded-xl bg-red-50/60 border border-red-100 text-[#960016] flex items-center justify-center shrink-0 text-base">
+                                        <i class="fa-solid fa-box-open"></i>
+                                    </div>
+                                @endif
+                                <div>
+                                    <div class="font-bold text-slate-900">{{ $product->name }}</div>
+                                    <div class="text-[11px] text-[#E88A38] font-mono font-semibold">SKU: {{ $product->sku }}</div>
+                                </div>
+                            </div>
                         </td>
                         <td class="py-3.5 px-5 text-slate-500">
                             {{ $product->category->name ?? 'General' }}
@@ -247,6 +258,49 @@
                     <label class="block font-bold text-slate-700 mb-1">Nombre del Producto:</label>
                     <input type="text" x-model="form.name" required placeholder="Ej: Mini Proyector LED Portátil Full HD"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                </div>
+
+                <!-- Carga de Imagen del Producto -->
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Foto / Imagen del Producto:</label>
+                    <div class="flex flex-col sm:flex-row gap-3 items-start p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <!-- Preview Box -->
+                        <div class="w-20 h-20 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 relative group">
+                            <template x-if="imagePreview">
+                                <div class="w-full h-full relative">
+                                    <img :src="imagePreview" class="w-full h-full object-cover">
+                                    <button type="button" @click="removeImage()"
+                                        class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow hover:bg-red-700">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </template>
+                            <template x-if="!imagePreview">
+                                <div class="text-center p-1 text-slate-400">
+                                    <i class="fa-solid fa-image text-lg mb-0.5 text-[#E88A38]"></i>
+                                    <div class="text-[8px] font-bold">Sin foto</div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Selector / Drag Drop & URL -->
+                        <div class="flex-1 space-y-2 w-full">
+                            <div class="flex items-center gap-2">
+                                <button type="button" @click="$refs.fileInput.click()"
+                                    class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition">
+                                    <i class="fa-solid fa-upload text-[#E88A38]"></i> Subir Foto
+                                </button>
+                                <span class="text-[10px] text-slate-500 truncate" x-text="imageFile ? imageFile.name : 'PNG, JPG, WEBP (Máx 5MB)'"></span>
+                                <input type="file" x-ref="fileInput" @change="handleFileChange($event)" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden">
+                            </div>
+
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] text-slate-400 font-bold uppercase shrink-0">O URL:</span>
+                                <input type="url" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg"
+                                    class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-800 text-[11px] focus:outline-none focus:border-[#E88A38]">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -337,6 +391,8 @@ function proveedorDashboard() {
         productModalOpen: false,
         submitting: false,
         toast: { show: false, message: '', type: 'success' },
+        imageFile: null,
+        imagePreview: null,
         form: {
             name: '',
             sku: '',
@@ -346,7 +402,39 @@ function proveedorDashboard() {
             min_price_bob: 140,
             initial_warehouse_id: '{{ $warehouses->first()?->id ?? "" }}',
             initial_stock: 50,
-            is_cod_available: true
+            is_cod_available: true,
+            image_url: ''
+        },
+
+        handleFileChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                this.showToast('La imagen no debe superar los 5MB.', 'error');
+                return;
+            }
+            this.imageFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.imagePreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+
+        handleUrlChange() {
+            if (this.form.image_url && (this.form.image_url.startsWith('http://') || this.form.image_url.startsWith('https://') || this.form.image_url.startsWith('/'))) {
+                this.imagePreview = this.form.image_url;
+                this.imageFile = null;
+            }
+        },
+
+        removeImage() {
+            this.imageFile = null;
+            this.imagePreview = null;
+            this.form.image_url = '';
+            if (this.$refs.fileInput) {
+                this.$refs.fileInput.value = '';
+            }
         },
 
         showToast(message, type = 'success') {
@@ -368,14 +456,24 @@ function proveedorDashboard() {
                 const authData = await authRes.json();
                 const token = authData.data?.token;
 
+                // Crear FormData para soportar carga de imagen física
+                const formData = new FormData();
+                for (const key in this.form) {
+                    if (this.form[key] !== null && this.form[key] !== undefined && this.form[key] !== '') {
+                        formData.append(key, this.form[key]);
+                    }
+                }
+                if (this.imageFile) {
+                    formData.append('image', this.imageFile);
+                }
+
                 const response = await fetch('/api/v1/products', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify(this.form)
+                    body: formData
                 });
 
                 const result = await response.json();

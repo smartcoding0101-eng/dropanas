@@ -53,22 +53,26 @@
             <div class="interactive-card bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:border-amber-400 group">
                 
                 <!-- Showcase Visual del Producto -->
-                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-6 border-b border-slate-200">
-                    <div class="w-24 h-24 rounded-2xl bg-red-50 border border-red-200 text-[#960016] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
-                        @if(str_contains($product->slug, 'audifono'))
-                            <i class="fa-solid fa-headphones"></i>
-                        @elseif(str_contains($product->slug, 'smartwatch'))
-                            <i class="fa-solid fa-stopwatch"></i>
-                        @elseif(str_contains($product->slug, 'depiladora') || str_contains($product->slug, 'cepillo'))
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        @elseif(str_contains($product->slug, 'licuadora'))
-                            <i class="fa-solid fa-blender"></i>
-                        @elseif(str_contains($product->slug, 'camara') || str_contains($product->slug, 'foco'))
-                            <i class="fa-solid fa-video"></i>
-                        @else
-                            <i class="fa-solid fa-box-open"></i>
-                        @endif
-                    </div>
+                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden">
+                    @if(!empty($product->images) && count($product->images) > 0)
+                        <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
+                    @else
+                        <div class="w-24 h-24 rounded-2xl bg-red-50 border border-red-200 text-[#960016] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
+                            @if(str_contains($product->slug, 'audifono'))
+                                <i class="fa-solid fa-headphones"></i>
+                            @elseif(str_contains($product->slug, 'smartwatch'))
+                                <i class="fa-solid fa-stopwatch"></i>
+                            @elseif(str_contains($product->slug, 'depiladora') || str_contains($product->slug, 'cepillo'))
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            @elseif(str_contains($product->slug, 'licuadora'))
+                                <i class="fa-solid fa-blender"></i>
+                            @elseif(str_contains($product->slug, 'camara') || str_contains($product->slug, 'foco'))
+                                <i class="fa-solid fa-video"></i>
+                            @else
+                                <i class="fa-solid fa-box-open"></i>
+                            @endif
+                        </div>
+                    @endif
                     
                     <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         <i class="fa-solid fa-truck-fast mr-1"></i> Contra Entrega
