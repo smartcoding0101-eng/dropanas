@@ -56,7 +56,7 @@ class KardexService
         float $unitCost,
         string $poNumber,
         ?string $poId = null,
-        ?int $userId = null,
+        string|int|null $userId = null,
         ?string $notes = null
     ): InventoryKardex {
         if ($quantity <= 0) {
@@ -111,7 +111,7 @@ class KardexService
         int $quantity,
         string $orderNumber,
         string $orderId,
-        ?int $userId = null
+        string|int|null $userId = null
     ): InventoryKardex {
         $unitCost = (float) $product->cost_price_bob;
 
@@ -152,7 +152,7 @@ class KardexService
         int $quantity,
         string $orderNumber,
         string $orderId,
-        ?int $userId = null,
+        string|int|null $userId = null,
         ?string $reason = null
     ): InventoryKardex {
         $unitCost = (float) $product->cost_price_bob;
@@ -194,7 +194,7 @@ class KardexService
         int $quantity,
         string $orderNumber,
         string $orderId,
-        ?int $userId = null,
+        string|int|null $userId = null,
         ?string $reason = null
     ): InventoryKardex {
         $unitCost = (float) $product->cost_price_bob;
@@ -236,7 +236,7 @@ class KardexService
         int $quantity,
         string $orderNumber,
         string $orderId,
-        ?int $userId = null
+        string|int|null $userId = null
     ): InventoryKardex {
         $unitCost = (float) $product->cost_price_bob;
 
@@ -280,7 +280,7 @@ class KardexService
         string $orderNumber,
         string $orderId,
         string $condition = 'optimal',
-        ?int $userId = null,
+        string|int|null $userId = null,
         ?string $reason = null
     ): InventoryKardex {
         $unitCost = (float) $product->cost_price_bob;
@@ -349,7 +349,7 @@ class KardexService
         Product $product,
         int $quantity,
         string $transferId,
-        ?int $userId = null,
+        string|int|null $userId = null,
         ?string $notes = null
     ): array {
         $unitCost = (float) $product->cost_price_bob;

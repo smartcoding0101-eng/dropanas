@@ -64,43 +64,100 @@ class PanelController extends Controller
      */
     public function proveedor(Request $request)
     {
-        $provider = User::where('role', 'provider')->first();
+        $provider = auth()->user() && auth()->user()->role === 'provider' 
+            ? auth()->user() 
+            : User::where('role', 'provider')->first();
 
         $stats = [
             'total_products'   => 0,
             'active_products'  => 0,
             'total_warehouses' => 0,
             'total_revenue'    => 0.00,
+            'total_sales'      => 0,
+            'pending_orders'   => 0,
+            'delivered_orders' => 0,
+            'total_stock'      => 0,
         ];
 
-        $products  = collect();
+        $products   = collect();
         $warehouses = collect();
-        $wallet    = null;
+        $wallet     = null;
+        $salesOrders = collect();
+        $recentKardex = collect();
+        $stockTransfers = collect();
+        $inventoryAlerts = collect();
 
         if ($provider) {
             $stats['total_products']   = Product::where('provider_id', $provider->id)->count();
             $stats['active_products']  = Product::where('provider_id', $provider->id)->where('status', 'published')->count();
             $stats['total_warehouses'] = Warehouse::where('provider_id', $provider->id)->count();
+            
+            // Total recaudado / ingresos liquidados por costo mayorista
             $stats['total_revenue'] = (float) OrderItem::where('provider_id', $provider->id)
                 ->whereHas('order', fn ($q) => $q->where('status', 'settled'))
                 ->selectRaw('SUM(unit_cost_bob * quantity) as total')
                 ->value('total') ?? 0;
+
+            // Cantidad de unidades y pedidos asociados
+            $providerOrderIds = OrderItem::where('provider_id', $provider->id)->pluck('order_id')->unique();
+            $stats['total_sales'] = $providerOrderIds->count();
+            $stats['pending_orders'] = Order::whereIn('id', $providerOrderIds)
+                ->whereIn('status', ['pending_confirmation', 'confirmed', 'dispatched', 'in_transit'])
+                ->count();
+            $stats['delivered_orders'] = Order::whereIn('id', $providerOrderIds)
+                ->whereIn('status', ['delivered', 'settled'])
+                ->count();
 
             $products = Product::with(['category', 'warehouseInventories.warehouse'])
                 ->where('provider_id', $provider->id)
                 ->latest()
                 ->get();
 
+            $stats['total_stock'] = (int) \App\Models\WarehouseInventory::whereIn('product_id', $products->pluck('id'))
+                ->sum('stock_available');
+
             $warehouses = Warehouse::with(['inventories.product'])
                 ->where('provider_id', $provider->id)
                 ->get();
 
             $wallet = Wallet::where('user_id', $provider->id)->first();
+
+            // Pedidos y ventas del proveedor con detalle de items, cliente, courier y destino
+            $salesOrders = Order::with(['items' => fn($q) => $q->where('provider_id', $provider->id)->with('product'), 'carrier', 'warehouse', 'dropshipper'])
+                ->whereIn('id', $providerOrderIds)
+                ->latest()
+                ->limit(20)
+                ->get();
+
+            // Historial de Trazabilidad Kardex de sus productos en bodegas
+            $recentKardex = \App\Models\InventoryKardex::withoutGlobalScopes()
+                ->whereIn('product_id', $products->pluck('id'))
+                ->with(['warehouse', 'product', 'user'])
+                ->latest('created_at')
+                ->limit(25)
+                ->get();
+
+            // Transferencias entre bodegas de sus productos
+            $stockTransfers = \App\Models\StockTransfer::whereIn('product_id', $products->pluck('id'))
+                ->with(['product', 'fromWarehouse', 'toWarehouse', 'requester'])
+                ->latest()
+                ->limit(10)
+                ->get();
+
+            // Alertas de stock crítico
+            $inventoryAlerts = \App\Models\InventoryAlert::whereIn('product_id', $products->pluck('id'))
+                ->with(['product', 'warehouse'])
+                ->where('is_active', true)
+                ->get();
         }
 
-        $categories = \App\Models\Category::all();
+        $allWarehouses = Warehouse::all();
+        $categories    = \App\Models\Category::all();
 
-        return view('panels.proveedor', compact('provider', 'stats', 'products', 'warehouses', 'wallet', 'categories'));
+        return view('panels.proveedor', compact(
+            'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
+            'wallet', 'categories', 'salesOrders', 'recentKardex', 'stockTransfers', 'inventoryAlerts'
+        ));
     }
 
     /**
