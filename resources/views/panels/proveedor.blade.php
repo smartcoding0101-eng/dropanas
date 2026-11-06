@@ -169,34 +169,87 @@
         </div>
         @endif
 
-        <!-- Alertas de Stock Bajo -->
-        @if($inventoryAlerts->isNotEmpty())
-        <div id="alertas" class="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 shadow-xs space-y-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-amber-900 font-bold text-sm">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                    <span>Alertas de Reabastecimiento Crítico (Stock Mínimo)</span>
+        <!-- Sección de Alertas y Reabastecimiento de Inventario (#alertas) -->
+        <div id="alertas" class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-[#E88A38] flex items-center justify-center font-bold text-base">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-[#960016] text-sm font-heading">Alertas de Stock & Reabastecimiento de Inventario</h3>
+                        <p class="text-xs text-slate-500">Configura umbrales mínimos por bodega para evitar quiebres de stock en tus ventas COD</p>
+                    </div>
                 </div>
-                <span class="text-xs font-bold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded-full">
-                    {{ $inventoryAlerts->count() }} producto(s) en umbral
-                </span>
+                <div class="flex items-center gap-2">
+                    <button @click="alertModalOpen = true" class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-plus text-amber-200"></i> Nueva Regla de Alerta
+                    </button>
+                </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                @foreach($inventoryAlerts as $alert)
-                <div class="p-3 bg-white border border-amber-200 rounded-xl shadow-xs text-xs space-y-1">
-                    <div class="font-bold text-slate-900 truncate">{{ $alert->product->name ?? 'Producto' }}</div>
-                    <div class="text-slate-500 text-[11px] flex justify-between">
-                        <span>Bodega: {{ $alert->warehouse->name ?? 'Bodega' }}</span>
-                        <span class="text-red-600 font-bold font-mono">Mínimo: {{ $alert->min_stock_threshold }}</span>
+
+            <!-- Listado de Alertas Configuradas -->
+            <div class="p-5 space-y-4">
+                @if($inventoryAlerts->isNotEmpty())
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    @foreach($inventoryAlerts as $alert)
+                    @php
+                        $currentStock = \App\Models\WarehouseInventory::where('warehouse_id', $alert->warehouse_id)
+                            ->where('product_id', $alert->product_id)
+                            ->value('stock_available') ?? 0;
+                        $isLow = $currentStock <= $alert->min_stock_threshold;
+                    @endphp
+                    <div class="p-4 rounded-2xl border transition {{ $isLow ? 'bg-red-50/40 border-red-200' : 'bg-slate-50/60 border-slate-200' }} space-y-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="truncate">
+                                <h4 class="font-bold text-slate-900 text-xs truncate">{{ $alert->product->name ?? 'Producto' }}</h4>
+                                <span class="text-[10px] text-slate-400 font-mono">SKU: {{ $alert->product->sku ?? '' }}</span>
+                            </div>
+                            @if($isLow)
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-[#ED2100] border border-red-200 shrink-0">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo
+                            </span>
+                            @else
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                                <i class="fa-solid fa-check"></i> Stock Óptimo
+                            </span>
+                            @endif
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/60 text-center font-mono">
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-200/80">
+                                <span class="text-[9px] text-slate-400 block font-sans">Disponible</span>
+                                <span class="font-bold text-xs {{ $isLow ? 'text-red-600' : 'text-slate-800' }}">{{ $currentStock }} uds</span>
+                            </div>
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-200/80">
+                                <span class="text-[9px] text-slate-400 block font-sans">Umbral Mín.</span>
+                                <span class="font-bold text-xs text-amber-600">{{ $alert->min_stock_threshold }}</span>
+                            </div>
+                            <div class="p-1.5 bg-white rounded-lg border border-slate-200/80">
+                                <span class="text-[9px] text-slate-400 block font-sans">Lote Sugerido</span>
+                                <span class="font-bold text-xs text-emerald-700">+{{ $alert->reorder_quantity }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                            <span class="flex items-center gap-1">
+                                <i class="fa-solid fa-warehouse text-[#E88A38]"></i> {{ $alert->warehouse->name ?? 'Bodega' }}
+                            </span>
+                            <span class="text-[10px] text-slate-400">
+                                Activa
+                            </span>
+                        </div>
                     </div>
-                    <div class="text-[10px] text-amber-700 bg-amber-50 p-1.5 rounded-lg border border-amber-100">
-                        Sugerencia reabastecer: <strong>+{{ $alert->reorder_quantity }} unidades</strong>
-                    </div>
+                    @endforeach
                 </div>
-                @endforeach
+                @else
+                <div class="py-8 text-center text-slate-400 space-y-2">
+                    <i class="fa-solid fa-bell-slash text-2xl text-slate-300"></i>
+                    <p class="text-xs">No tienes alertas de stock configuradas aún. Pulsa en "Nueva Regla de Alerta" para definir umbrales.</p>
+                </div>
+                @endif
             </div>
         </div>
-        @endif
 
         <!-- Historial y Trazabilidad Kardex de Movimientos de Inventario del Proveedor -->
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -461,6 +514,90 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- MODAL INTERACTIVO: CONFIGURAR ALERTA DE STOCK MÍNIMO -->
+    <div x-show="alertModalOpen" x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 my-auto"
+            @click.away="alertModalOpen = false">
+            
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#E88A38] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-[#960016] font-heading text-lg leading-tight">Nueva Regla de Alerta</h3>
+                        <p class="text-xs text-slate-500">Notifica cuando el stock caiga por debajo del umbral</p>
+                    </div>
+                </div>
+                <button @click="alertModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="submitAlert()" class="text-xs space-y-4">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Producto:</label>
+                    <select x-model="alertForm.product_id" required
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        <option value="">Selecciona un producto...</option>
+                        @foreach($products as $p)
+                            <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Bodega / Almacén:</label>
+                    <select x-model="alertForm.warehouse_id" required
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        <option value="">Seleccionar bodega...</option>
+                        @foreach($allWarehouses as $wh)
+                            <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Stock Mínimo (Umbral):</label>
+                        <input type="number" x-model.number="alertForm.min_stock_threshold" min="1" required placeholder="Ej: 15"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
+                        <span class="text-[10px] text-slate-400 mt-0.5 block">Dispara alerta</span>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Lote de Reabastecimiento:</label>
+                        <input type="number" x-model.number="alertForm.reorder_quantity" min="1" required placeholder="Ej: 50"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
+                        <span class="text-[10px] text-slate-400 mt-0.5 block">Unidades sugeridas</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" @click="alertModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">
+                        Cancelar
+                    </button>
+                    <button type="submit" :disabled="alertSubmitting"
+                        class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm">
+                        <span x-show="!alertSubmitting" class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-save text-amber-200"></i> Guardar Alerta
+                        </span>
+                        <span x-show="alertSubmitting" class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-spinner animate-spin"></i> Guardando...
+                        </span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -750,8 +887,10 @@ function proveedorDashboard() {
     return {
         productModalOpen: false,
         transferModalOpen: false,
+        alertModalOpen: false,
         submitting: false,
         transferring: false,
+        alertSubmitting: false,
         toast: { show: false, message: '', type: 'success' },
         imageFile: null,
         imagePreview: null,
@@ -774,6 +913,12 @@ function proveedorDashboard() {
             quantity: 10,
             notes: 'Transferencia operativa entre bodegas'
         },
+        alertForm: {
+            product_id: '{{ $products->first()?->id ?? "" }}',
+            warehouse_id: '{{ $allWarehouses->first()?->id ?? "" }}',
+            min_stock_threshold: 20,
+            reorder_quantity: 50
+        },
 
         async getAuthToken() {
             const authRes = await fetch('/api/v1/auth/login', {
@@ -783,6 +928,34 @@ function proveedorDashboard() {
             });
             const authData = await authRes.json();
             return authData.data?.token;
+        },
+
+        async submitAlert() {
+            this.alertSubmitting = true;
+            try {
+                const token = await this.getAuthToken();
+                const response = await fetch('/api/v1/inventory/alerts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(this.alertForm)
+                });
+                const result = await response.json();
+                if (response.ok && result.status === 'success') {
+                    this.showToast(result.message || 'Alerta de inventario configurada correctamente.', 'success');
+                    this.alertModalOpen = false;
+                    setTimeout(() => { window.location.reload(); }, 1200);
+                } else {
+                    this.showToast(result.message || 'Error al configurar la alerta.', 'error');
+                }
+            } catch (err) {
+                this.showToast('Error de comunicación con el servidor.', 'error');
+            } finally {
+                this.alertSubmitting = false;
+            }
         },
 
         async submitTransfer() {
