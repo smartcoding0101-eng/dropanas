@@ -109,3 +109,12 @@ Route::get('/contactenos', function () {
     return view('contactenos');
 })->name('contactenos');
 
+// Servir imágenes públicas de productos (Garantiza visualización en cPanel sin depender de symlink)
+Route::get('/storage/products/{filename}', function (string $filename) {
+    $path = storage_path('app/public/products/' . $filename);
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path);
+})->where('filename', '.*');
+
