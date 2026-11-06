@@ -231,148 +231,180 @@
         </div>
     </div>
 
-    <!-- MODAL INTERACTIVO: CREAR Y PUBLICAR NUEVO PRODUCTO MAYORISTA -->
+    <!-- MODAL INTERACTIVO HORIZONTAL (SIN SCROLL VERTICAL): CREAR Y PUBLICAR NUEVO PRODUCTO MAYORISTA -->
     <div x-show="productModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6"
+        <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 my-auto"
             @click.away="productModalOpen = false">
             
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <!-- Encabezado del Modal -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#ED2100] border border-red-200 flex items-center justify-center font-bold text-lg">
+                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#ED2100] border border-red-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-boxes-packing"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] font-heading text-lg">Publicar Producto Mayorista</h3>
+                        <h3 class="font-bold text-[#960016] font-heading text-lg leading-tight">Publicar Producto Mayorista</h3>
                         <p class="text-xs text-slate-500">Disponible para miles de dropshippers en Bolivia</p>
                     </div>
                 </div>
-                <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600">
+                <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <form @submit.prevent="submitProduct()" class="space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nombre del Producto:</label>
-                    <input type="text" x-model="form.name" required placeholder="Ej: Mini Proyector LED Portátil Full HD"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
-                </div>
-
-                <!-- Carga de Imagen del Producto -->
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Foto / Imagen del Producto:</label>
-                    <div class="flex flex-col sm:flex-row gap-3 items-start p-3 bg-slate-50 border border-slate-200 rounded-2xl">
-                        <!-- Preview Box -->
-                        <div class="w-20 h-20 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 relative group">
-                            <template x-if="imagePreview">
-                                <div class="w-full h-full relative">
-                                    <img :src="imagePreview" class="w-full h-full object-cover">
-                                    <button type="button" @click="removeImage()"
-                                        class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow hover:bg-red-700">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </template>
-                            <template x-if="!imagePreview">
-                                <div class="text-center p-1 text-slate-400">
-                                    <i class="fa-solid fa-image text-lg mb-0.5 text-[#E88A38]"></i>
-                                    <div class="text-[8px] font-bold">Sin foto</div>
-                                </div>
-                            </template>
+            <form @submit.prevent="submitProduct()" class="text-xs space-y-4">
+                
+                <!-- Cuadrícula Horizontal de 2 Columnas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                    
+                    <!-- COLUMNA IZQUIERDA: Datos Básicos y Fotografía -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Nombre del Producto:</label>
+                            <input type="text" x-model="form.name" required placeholder="Ej: Mini Proyector LED Portátil Full HD"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
                         </div>
 
-                        <!-- Selector / Drag Drop & URL -->
-                        <div class="flex-1 space-y-2 w-full">
-                            <div class="flex items-center gap-2">
-                                <button type="button" @click="$refs.fileInput.click()"
-                                    class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition">
-                                    <i class="fa-solid fa-upload text-[#E88A38]"></i> Subir Foto
-                                </button>
-                                <span class="text-[10px] text-slate-500 truncate" x-text="imageFile ? imageFile.name : 'PNG, JPG, WEBP (Máx 5MB)'"></span>
-                                <input type="file" x-ref="fileInput" @change="handleFileChange($event)" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">SKU / Código Único:</label>
+                                <input type="text" x-model="form.sku" required placeholder="PROJ-MINI-01"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
                             </div>
-
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[9px] text-slate-400 font-bold uppercase shrink-0">O URL:</span>
-                                <input type="url" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg"
-                                    class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-800 text-[11px] focus:outline-none focus:border-[#E88A38]">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Categoría:</label>
+                                <select x-model="form.category_id" required
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                    <option value="">Seleccionar categoría...</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">SKU / Código Único:</label>
-                        <input type="text" x-model="form.sku" required placeholder="PROJ-MINI-01"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38]">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Categoría:</label>
-                        <select x-model="form.category_id" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#E88A38]">
-                            <option value="">Seleccionar categoría...</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                        <!-- Carga de Imagen del Producto Compacta -->
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                            <label class="block font-bold text-slate-700 text-[11px]">Foto / Imagen del Producto:</label>
+                            <div class="flex items-center gap-3">
+                                <!-- Preview Box -->
+                                <div class="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 bg-white flex items-center justify-center overflow-hidden shrink-0 relative group shadow-inner">
+                                    <template x-if="imagePreview">
+                                        <div class="w-full h-full relative">
+                                            <img :src="imagePreview" class="w-full h-full object-cover">
+                                            <button type="button" @click="removeImage()"
+                                                class="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow hover:bg-red-700">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </template>
+                                    <template x-if="!imagePreview">
+                                        <div class="text-center p-1 text-slate-400">
+                                            <i class="fa-solid fa-image text-lg text-[#E88A38]"></i>
+                                            <div class="text-[8px] font-bold">Sin foto</div>
+                                        </div>
+                                    </template>
+                                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Costo Proveedor (BOB):</label>
-                        <input type="number" step="0.5" x-model.number="form.cost_price_bob" required placeholder="120.00"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
-                        <span class="text-[10px] text-slate-400">Lo que cobras neto</span>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Precio Mínimo (BOB):</label>
-                        <input type="number" step="0.5" x-model.number="form.min_price_bob" required placeholder="150.00"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38]">
-                        <span class="text-[10px] text-slate-400">Piso de venta</span>
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Precio Sugerido (BOB):</label>
-                        <input type="number" step="0.5" x-model.number="form.suggested_price_bob" required placeholder="199.00"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-[#E88A38] text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
-                        <span class="text-[10px] text-[#E88A38]">Margen Dropshipper</span>
-                    </div>
-                </div>
+                                <!-- Acciones de Imagen -->
+                                <div class="flex-1 space-y-1.5">
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" @click="$refs.fileInput.click()"
+                                            class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] inline-flex items-center gap-1.5 shadow-sm transition">
+                                            <i class="fa-solid fa-upload text-[#E88A38]"></i> Subir Foto
+                                        </button>
+                                        <span class="text-[10px] text-slate-500 truncate max-w-[140px]" x-text="imageFile ? imageFile.name : 'PNG, JPG (Máx 5MB)'"></span>
+                                        <input type="file" x-ref="fileInput" @change="handleFileChange($event)" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden">
+                                    </div>
 
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                    <div class="font-bold text-[#960016] flex items-center gap-2">
-                        <i class="fa-solid fa-warehouse text-[#E88A38]"></i>
-                        <span>Asignación Inicial de Inventario Físico</span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block font-medium text-slate-600 mb-1">Bodega de Ingreso:</label>
-                            <select x-model="form.initial_warehouse_id"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
-                                <option value="">Sin inventario inicial</option>
-                                @foreach($warehouses as $wh)
-                                    <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-600 mb-1">Cantidad Inicial (Uds):</label>
-                            <input type="number" x-model.number="form.initial_stock" placeholder="50" min="0"
-                                class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38]">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[9px] text-slate-400 font-bold uppercase shrink-0">O URL:</span>
+                                        <input type="url" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg"
+                                            class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-800 text-[10px] focus:outline-none focus:border-[#E88A38]">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- COLUMNA DERECHA: Precios y Bodega -->
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1 text-[11px]">Costo (BOB):</label>
+                                <input type="number" step="0.5" x-model.number="form.cost_price_bob" required placeholder="120.00"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                <span class="text-[9px] text-slate-400 block mt-0.5">Cobro neto</span>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1 text-[11px]">Piso Mín. (BOB):</label>
+                                <input type="number" step="0.5" x-model.number="form.min_price_bob" required placeholder="150.00"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                <span class="text-[9px] text-slate-400 block mt-0.5">Piso venta</span>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1 text-[11px]">Sugerido (BOB):</label>
+                                <input type="number" step="0.5" x-model.number="form.suggested_price_bob" required placeholder="199.00"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-[#E88A38] text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                <span class="text-[9px] text-[#E88A38] block mt-0.5">Venta público</span>
+                            </div>
+                        </div>
+
+                        <!-- Asignación Inicial de Inventario Físico -->
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                            <div class="font-bold text-[#960016] flex items-center justify-between">
+                                <span class="flex items-center gap-1.5 text-[11px]">
+                                    <i class="fa-solid fa-warehouse text-[#E88A38]"></i>
+                                    Asignación Inicial de Inventario Físico
+                                </span>
+                                <span class="text-[9px] bg-red-100 text-[#960016] font-bold px-2 py-0.5 rounded-full">Kardex Auto</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block font-medium text-slate-600 mb-1 text-[10px]">Bodega de Ingreso:</label>
+                                    <select x-model="form.initial_warehouse_id"
+                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                                        <option value="">Sin inventario inicial</option>
+                                        @foreach($warehouses as $wh)
+                                            <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-medium text-slate-600 mb-1 text-[10px]">Cantidad Inicial (Uds):</label>
+                                    <input type="number" x-model.number="form.initial_stock" placeholder="50" min="0"
+                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38]">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indicador COD -->
+                        <div class="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-[11px]">
+                            <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                            <span class="font-semibold">Habilitado para Cobro Contra Entrega (COD Bolivia)</span>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button type="button" @click="productModalOpen = false" class="px-4 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">
+                <!-- Botones Inferiores -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" @click="productModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition">
                         Cancelar
                     </button>
                     <button type="submit" :disabled="submitting"
-                        class="btn-scarlet px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm">
-                        <span x-show="!submitting">Publicar en Catálogo</span>
+                        class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition">
+                        <span x-show="!submitting" class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up text-amber-200"></i> Publicar en Catálogo
+                        </span>
                         <span x-show="submitting" class="flex items-center gap-1.5">
                             <i class="fa-solid fa-spinner animate-spin"></i> Guardando...
                         </span>
