@@ -176,7 +176,8 @@
                 </div>
             </a>
 
-            <!-- SB Admin Pro Global Search Input -->
+            @if(Auth::check() && !request()->is('/'))
+            <!-- SB Admin Pro Global Search Input (Solo en Paneles Internos) -->
             <form action="{{ url('/tracking') }}" method="GET" class="hidden md:flex items-center relative ml-2">
                 <input type="text" name="guide" placeholder="Buscar guía, pedido o SKU..."
                     class="bg-[#eef2f8] border border-transparent text-[#212832] placeholder-[#69707a] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#0061f2] focus:ring-2 focus:ring-[#0061f2]/15 transition w-64">
@@ -184,34 +185,24 @@
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </button>
             </form>
+            @endif
         </div>
 
-        <!-- Center/Right: Public Navigation Links (Guests or Landing Page) -->
-        @if(!Auth::check() || request()->is('/'))
-        <div class="hidden lg:flex items-center gap-6 text-xs font-semibold text-[#69707a]">
-            <a href="{{ url('/') }}" class="hover:text-[#0061f2] transition {{ request()->is('/') ? 'text-[#0061f2] font-bold' : '' }}">Inicio</a>
-            <a href="{{ url('/catalogo') }}" class="hover:text-[#0061f2] transition {{ request()->is('catalogo*') ? 'text-[#0061f2] font-bold' : '' }}">Megabodega</a>
-            <a href="{{ url('/checkout-demo') }}" class="hover:text-[#0061f2] transition {{ request()->is('checkout-demo*') ? 'text-[#0061f2] font-bold' : '' }}">Simulador COD</a>
-            <a href="{{ url('/tracking') }}" class="hover:text-[#0061f2] transition {{ request()->is('tracking*') ? 'text-[#0061f2] font-bold' : '' }}">Rastrear Guía</a>
-            <a href="{{ url('/soporte') }}" class="hover:text-[#0061f2] transition {{ request()->is('soporte*') ? 'text-[#0061f2] font-bold' : '' }}">Soporte</a>
-        </div>
-        @endif
-
-        <!-- Right: BCB Rate, DEX Status & User Dropdown -->
+        <!-- Right: BCB Rate, DEX Status & User Dropdown / Auth Buttons -->
         <div class="flex items-center gap-3">
-            <!-- BCB Official Rate Pill -->
-            <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#eef2f8] text-[#212832] text-xs font-medium">
-                <span class="w-2 h-2 rounded-full bg-[#00ac69]"></span>
-                <span class="text-[#69707a] hidden xl:inline">BCB:</span>
-                <strong class="font-mono text-[#0061f2] font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
-            </div>
-
-            <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#00ac69] border border-emerald-200/70 text-xs font-bold">
-                <i class="fa-solid fa-truck-fast"></i>
-                <span>DEX 9/9</span>
-            </div>
-
             @if(Auth::check() && !request()->is('/'))
+                <!-- BCB Official Rate Pill -->
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#eef2f8] text-[#212832] text-xs font-medium">
+                    <span class="w-2 h-2 rounded-full bg-[#00ac69]"></span>
+                    <span class="text-[#69707a] hidden xl:inline">BCB:</span>
+                    <strong class="font-mono text-[#0061f2] font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#00ac69] border border-emerald-200/70 text-xs font-bold">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span>DEX 9/9</span>
+                </div>
+
                 <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0061f2] to-[#6900c7] text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -229,8 +220,8 @@
                     </form>
                 </div>
             @else
-                <div class="flex items-center gap-2 text-xs">
-                    <a href="{{ route('login') }}" class="font-bold text-[#212832] hover:text-[#0061f2] px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+                <div class="flex items-center gap-2.5 text-xs">
+                    <a href="{{ route('login') }}" class="font-bold text-[#212832] hover:text-[#0061f2] px-4 py-2 rounded-lg border border-slate-200 hover:border-[#0061f2] hover:bg-blue-50/40 transition">
                         Ingresar
                     </a>
                     <a href="{{ route('register') }}" class="btn-scarlet px-4 py-2 rounded-lg font-bold shadow-xs">
