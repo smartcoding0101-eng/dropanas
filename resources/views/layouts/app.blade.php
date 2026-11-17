@@ -211,23 +211,7 @@
                 <span>DEX 9/9</span>
             </div>
 
-            @auth
-                @if(request()->is('/'))
-                    @php
-                        $dashboardUrl = match(Auth::user()->role) {
-                            'tenant_admin' => url('/panel/admin'),
-                            'provider' => url('/panel/proveedor'),
-                            'dropshipper' => url('/panel/dropshipper'),
-                            'carrier' => url('/panel/carrier'),
-                            'fulfillment_client' => url('/panel/fulfillment'),
-                            default => url('/panel/dropshipper'),
-                        };
-                    @endphp
-                    <a href="{{ $dashboardUrl }}" class="btn-scarlet px-3.5 py-2 rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5">
-                        <i class="fa-solid fa-gauge-high text-[11px]"></i>
-                        <span>Mi Panel</span>
-                    </a>
-                @endif
+            @if(Auth::check() && !request()->is('/'))
                 <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0061f2] to-[#6900c7] text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -253,7 +237,7 @@
                         Registrarse →
                     </a>
                 </div>
-            @endauth
+            @endif
         </div>
     </nav>
 
