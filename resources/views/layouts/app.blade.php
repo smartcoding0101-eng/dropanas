@@ -156,13 +156,13 @@
         
         <!-- Left: Sidenav Toggle + Brand + Search -->
         <div class="flex items-center gap-3 sm:gap-5">
-            @auth
+            @if(Auth::check() && !request()->is('/'))
             <button @click="sidenavOpen = !sidenavOpen; mobileMenuOpen = !mobileMenuOpen"
                 class="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500 hover:text-[#212832] flex items-center justify-center transition focus:outline-none"
                 title="Alternar Menú Lateral">
                 <i class="fa-solid fa-bars text-sm"></i>
             </button>
-            @endauth
+            @endif
 
             <!-- Brand Logo with Nano Banana -->
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
@@ -186,8 +186,8 @@
             </form>
         </div>
 
-        <!-- Center/Right: Public Navigation Links for Guests -->
-        @guest
+        <!-- Center/Right: Public Navigation Links (Guests or Landing Page) -->
+        @if(!Auth::check() || request()->is('/'))
         <div class="hidden lg:flex items-center gap-6 text-xs font-semibold text-[#69707a]">
             <a href="{{ url('/') }}" class="hover:text-[#0061f2] transition {{ request()->is('/') ? 'text-[#0061f2] font-bold' : '' }}">Inicio</a>
             <a href="{{ url('/catalogo') }}" class="hover:text-[#0061f2] transition {{ request()->is('catalogo*') ? 'text-[#0061f2] font-bold' : '' }}">Megabodega</a>
@@ -195,7 +195,7 @@
             <a href="{{ url('/tracking') }}" class="hover:text-[#0061f2] transition {{ request()->is('tracking*') ? 'text-[#0061f2] font-bold' : '' }}">Rastrear Guía</a>
             <a href="{{ url('/soporte') }}" class="hover:text-[#0061f2] transition {{ request()->is('soporte*') ? 'text-[#0061f2] font-bold' : '' }}">Soporte</a>
         </div>
-        @endguest
+        @endif
 
         <!-- Right: BCB Rate, DEX Status & User Dropdown -->
         <div class="flex items-center gap-3">
@@ -212,6 +212,22 @@
             </div>
 
             @auth
+                @if(request()->is('/'))
+                    @php
+                        $dashboardUrl = match(Auth::user()->role) {
+                            'tenant_admin' => url('/panel/admin'),
+                            'provider' => url('/panel/proveedor'),
+                            'dropshipper' => url('/panel/dropshipper'),
+                            'carrier' => url('/panel/carrier'),
+                            'fulfillment_client' => url('/panel/fulfillment'),
+                            default => url('/panel/dropshipper'),
+                        };
+                    @endphp
+                    <a href="{{ $dashboardUrl }}" class="btn-scarlet px-3.5 py-2 rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-gauge-high text-[11px]"></i>
+                        <span>Mi Panel</span>
+                    </a>
+                @endif
                 <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0061f2] to-[#6900c7] text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -246,10 +262,9 @@
     <!-- ===================================================================== -->
     <div id="layoutSidenav" class="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
 
-        @auth
-        <!-- SIDENAV LIGHT (SB Admin Pro Left Navigation) -->
-        <aside x-show="sidenavOpen"
-            :class="mobileMenuOpen ? 'block' : 'hidden md:flex'"
+        @if(Auth::check() && !request()->is('/'))
+        <!-- SIDENAV LIGHT (SB Admin Pro Left Navigation - Hidden on Public Landing) -->
+        <aside :class="sidenavOpen ? (mobileMenuOpen ? 'flex' : 'hidden md:flex') : 'hidden'"
             class="sidenav-light w-full md:w-64 md:sticky md:top-16 md:h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto">
             
             <div class="py-2">
@@ -443,7 +458,7 @@
             </div>
 
         </aside>
-        @endauth
+        @endif
 
         <!-- ===================================================================== -->
         <!-- MAIN CONTENT AREA (#f2f6fc SB Admin Pro Canvas)                       -->
