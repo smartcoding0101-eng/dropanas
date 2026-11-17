@@ -426,8 +426,8 @@
             </nav>
         </div>
 
-        <!-- Sidebar Footer / Tarjeta de Mascota Nano Banana -->
-        <div class="p-4 border-t border-white/10 hidden md:block">
+        <!-- Sidebar Footer / SB Admin Pro Sidenav Footer + Nano Banana Bot -->
+        <div class="p-4 border-t border-white/10 hidden md:block space-y-3">
             <div class="bg-white/5 rounded-2xl p-3.5 border border-white/10 space-y-2">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-[#00A884] animate-pulse"></span>
@@ -439,6 +439,10 @@
                 <div class="text-[10px] text-slate-400 font-mono">
                     Red Nacional 9/9 Deptos
                 </div>
+            </div>
+            <div class="px-2 pt-1 text-[11px] text-slate-400">
+                <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Conectado como:</div>
+                <div class="font-semibold text-slate-200 truncate">{{ Auth::user()->name }}</div>
             </div>
         </div>
 
@@ -464,8 +468,18 @@
             </a>
             @endguest
             
-            <!-- Tasa Oficial del BCB -->
+            <!-- Tasa Oficial del BCB & Buscador Rápido SB Admin Pro -->
             <div class="flex items-center space-x-3 text-xs">
+                @auth
+                <form action="{{ url('/tracking') }}" method="GET" class="hidden lg:flex items-center relative">
+                    <input type="text" name="guide" placeholder="Rastrear guía DEX..."
+                        class="bg-white/10 border border-slate-700 text-white placeholder-slate-400 rounded-xl pl-3.5 pr-9 py-1.5 text-xs focus:outline-none focus:border-emerald-400 focus:bg-white/15 transition w-52">
+                    <button type="submit" class="absolute right-2.5 text-slate-400 hover:text-emerald-400 transition">
+                        <i class="fa-solid fa-magnifying-glass text-[11px]"></i>
+                    </button>
+                </form>
+                @endauth
+
                 <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
                     <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
                     <span>Tasa BCB Oficial:</span>

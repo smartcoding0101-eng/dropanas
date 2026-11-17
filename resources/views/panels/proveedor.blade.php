@@ -3,45 +3,24 @@
 @section('title', 'Panel Proveedor | Megabodega Bolidrop Bolivia')
 
 @section('content')
-<div class="space-y-8 " x-data="proveedorDashboard()">
+<div class="space-y-8" x-data="proveedorDashboard()">
 
-    <!-- Header del panel -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-            <div class="flex items-center gap-3 mb-1">
-                <div class="w-10 h-10 rounded-xl bg-[#00A884] text-white flex items-center justify-center text-lg font-extrabold font-heading shadow-sm">
-                    {{ strtoupper(substr($provider?->name ?? 'P', 0, 1)) }}
-                </div>
-                <div>
-                    <div class="text-xs text-[#00A884] font-bold uppercase tracking-wider">Panel del Proveedor / Mayorista</div>
-                    <div class="text-2xl font-extrabold text-slate-900 font-heading leading-tight">
-                        {{ $provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega' }}
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 mt-2 text-xs text-slate-500">
-                <span class="flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-location-dot text-[#00A884]"></i>
-                    {{ $provider?->city ?? 'Santa Cruz de la Sierra' }}, {{ $provider?->department ?? 'Santa Cruz' }}
-                </span>
-                <span>•</span>
-                <span class="flex items-center gap-1">
-                    <i class="fa-solid fa-id-card text-[#00A884]"></i>
-                    NIT: {{ $provider?->document_id ?? '1029384019' }}
-                </span>
-            </div>
-        </div>
-        <div class="flex items-center gap-3 self-start md:self-auto">
+    <x-page-header
+        :title="$provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega'"
+        :subtitle="($provider?->city ?? 'Santa Cruz de la Sierra') . ', ' . ($provider?->department ?? 'Santa Cruz') . ' • NIT: ' . ($provider?->document_id ?? '1029384019')"
+        icon="fa-solid fa-warehouse"
+        badge="Panel del Proveedor / Mayorista">
+        <x-slot:actions>
             <button @click="productModalOpen = true"
-                class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm">
-                <i class="fa-solid fa-plus text-amber-200"></i> Publicar Nuevo Producto
+                class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md">
+                <i class="fa-solid fa-plus"></i> Publicar Nuevo Producto
             </button>
             <a href="{{ url('/catalogo') }}"
-                class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs inline-flex items-center gap-2 shadow-sm transition">
-                <i class="fa-solid fa-boxes-stacked text-[#00A884]"></i> Catálogo
+                class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs inline-flex items-center gap-2 backdrop-blur-sm transition">
+                <i class="fa-solid fa-boxes-stacked text-emerald-300"></i> Catálogo
             </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Notificación Toast -->
     <div x-show="toast.show" x-cloak
@@ -57,8 +36,8 @@
         </button>
     </div>
 
-    <!-- Tarjetas de estadísticas (Fondo #FFFFFF con bordes definidos) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Tarjetas de estadísticas (SB Admin Pro Overlap) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-14 relative z-10">
         
         <!-- Ingresos por liquidaciones (#10B981 Naranja Fuego) -->
         <div class="bg-gradient-to-br from-[#00A884] to-[#0A1128] rounded-2xl p-5 text-white shadow-sm space-y-2">

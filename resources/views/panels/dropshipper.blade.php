@@ -3,38 +3,26 @@
 @section('title', 'Panel Dropshipper | Bolidrop Bolivia')
 
 @section('content')
-<div class="space-y-8 " x-data="dropshipperDashboard()">
+<div class="space-y-8" x-data="dropshipperDashboard()">
 
-    <!-- Header del panel -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
-        <div>
-            <div class="flex items-center gap-2 mb-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-950 border border-emerald-200/80 uppercase tracking-wider">
-                    <i class="fa-solid fa-store mr-1.5 text-[#00A884]"></i> Vendedor Dropshipper
-                </span>
-                <span class="text-xs text-slate-400 font-mono">ID: {{ substr($dropshipper->id ?? 'DEMO', 0, 8) }}</span>
-            </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 font-heading">
-                Panel del Dropshipper
-            </h1>
-            <p class="text-slate-500 text-sm mt-1">
-                Monitorea tus pedidos contra entrega en Bolivia, ganancias líquidas y estado de recaudación de DEX.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-3">
+    <x-page-header
+        title="Panel del Dropshipper"
+        subtitle="Monitorea tus pedidos contra entrega en Bolivia, ganancias líquidas y estado de recaudación de DEX."
+        icon="fa-solid fa-store"
+        :badge="'Vendedor Dropshipper • ID: ' . substr($dropshipper->id ?? 'DEMO', 0, 8)">
+        <x-slot:actions>
             <button @click="withdrawModalOpen = true"
-                class="px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-2 transition">
-                <i class="fa-solid fa-hand-holding-dollar"></i> Retirar Fondos
+                class="px-4 py-2.5 rounded-xl font-bold text-xs bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm flex items-center gap-2 transition">
+                <i class="fa-solid fa-hand-holding-dollar text-emerald-300"></i> Retirar Fondos
             </button>
-            <a href="{{ url('/checkout-demo') }}" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm flex items-center gap-2">
-                <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Pedido COD
+            <a href="{{ url('/checkout-demo') }}" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Nuevo Pedido COD
             </a>
-            <a href="{{ url('/catalogo') }}" class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition flex items-center gap-2 shadow-sm">
-                <i class="fa-solid fa-boxes-stacked text-[#00A884]"></i> Catálogo
+            <a href="{{ url('/catalogo') }}" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs transition flex items-center gap-2 backdrop-blur-sm">
+                <i class="fa-solid fa-boxes-stacked text-emerald-300"></i> Catálogo
             </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Mensaje de Notificación Toast -->
     <div x-show="toast.show" x-cloak
@@ -50,8 +38,8 @@
         </button>
     </div>
 
-    <!-- Tarjetas de Métricas & Rendimiento (#FFFFFF) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- Tarjetas de Métricas & Rendimiento (SB Admin Pro Overlap) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 -mt-14 relative z-10">
         
         <!-- Total Pedidos -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-emerald-400 hover:shadow-md transition">

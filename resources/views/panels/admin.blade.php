@@ -3,32 +3,19 @@
 @section('title', 'Dashboard Principal | Bolidrop Bolivia')
 
 @section('content')
-<div class="space-y-8 " x-data="adminDashboard()">
+<div class="space-y-8" x-data="adminDashboard()">
 
-    <!-- Header con Bienvenida y Selector de Período -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-900 bg-red-50 border border-red-200/80 px-2.5 py-0.5 rounded-full">
-                    Tenant Admin • Panel de Control de la Plataforma
-                </span>
-                <span class="text-xs text-slate-500 font-medium">Actualizado en vivo</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
-                Bienvenido de nuevo, Alejandro!
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
-                Monitoreo en vivo de recaudación contra entrega, despachos con DEX y comisiones.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-500 hidden sm:inline font-medium">Período:</span>
-            <span class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm">
-                <i class="fa-regular fa-calendar mr-1.5 text-[#00A884]"></i> Hoy: {{ date('d M, Y') }}
+    <x-page-header
+        title="Bienvenido de nuevo, Alejandro!"
+        subtitle="Monitoreo en vivo de recaudación contra entrega, despachos con DEX y comisiones."
+        icon="fa-solid fa-chart-pie"
+        badge="Tenant Admin • Panel de Control de la Plataforma">
+        <x-slot:actions>
+            <span class="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-xs font-semibold text-white backdrop-blur-sm">
+                <i class="fa-regular fa-calendar mr-1.5 text-emerald-300"></i> Hoy: {{ date('d M, Y') }}
             </span>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Mensaje de Notificación Reactiva -->
     <div x-show="toast.show" x-cloak
@@ -49,8 +36,8 @@
         </button>
     </div>
 
-    <!-- TARJETAS DE MÉTRICAS (Fondo #FFFFFF con acentos Ámbar #10B981 y Carmín #064E3B) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- TARJETAS DE MÉTRICAS (SB Admin Pro Overlap) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 -mt-14 relative z-10">
         
         <!-- Total Recaudación BOB -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#00A884] hover:shadow-md transition">
