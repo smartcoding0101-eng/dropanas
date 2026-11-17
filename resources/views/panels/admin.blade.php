@@ -9,12 +9,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
             <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200/80 px-2.5 py-0.5 rounded-full">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-900 bg-red-50 border border-red-200/80 px-2.5 py-0.5 rounded-full">
                     Tenant Admin • Panel de Control de la Plataforma
                 </span>
                 <span class="text-xs text-slate-500 font-medium">Actualizado en vivo</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading">
                 Bienvenido de nuevo, Alejandro!
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -25,7 +25,7 @@
         <div class="flex items-center gap-2">
             <span class="text-xs text-slate-500 hidden sm:inline font-medium">Período:</span>
             <span class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm">
-                <i class="fa-regular fa-calendar mr-1.5 text-[#10B981]"></i> Hoy: {{ date('d M, Y') }}
+                <i class="fa-regular fa-calendar mr-1.5 text-teal-600"></i> Hoy: {{ date('d M, Y') }}
             </span>
         </div>
     </div>
@@ -55,13 +55,13 @@
         <!-- Total Recaudación BOB -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-amber-400 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-[#10B981] uppercase tracking-wider">Volumen Total (BOB)</span>
-                <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center text-xs">
+                <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Volumen Total (BOB)</span>
+                <div class="w-8 h-8 rounded-xl bg-amber-50 text-teal-600 border border-amber-200 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-chart-line"></i>
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#064E3B] font-heading">
+                <div class="text-3xl font-extrabold text-slate-900 font-heading">
                     Bs {{ number_format($stats['total_volume_bob'] ?? 32450.00, 2) }}
                 </div>
                 <div class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -71,25 +71,25 @@
             </div>
             <!-- Gráfica simulada en ámbar -->
             <div class="h-9 w-full bg-slate-50 rounded-lg flex items-end px-1 gap-1 border border-slate-100">
-                <div class="w-1/6 bg-[#10B981]/40 rounded-t h-4"></div>
-                <div class="w-1/6 bg-[#10B981]/60 rounded-t h-6"></div>
-                <div class="w-1/6 bg-[#10B981]/50 rounded-t h-5"></div>
-                <div class="w-1/6 bg-[#10B981]/80 rounded-t h-7"></div>
-                <div class="w-1/6 bg-[#10B981] rounded-t h-8"></div>
-                <div class="w-1/6 bg-[#059669] rounded-t h-9"></div>
+                <div class="w-1/6 bg-teal-600/40 rounded-t h-4"></div>
+                <div class="w-1/6 bg-teal-600/60 rounded-t h-6"></div>
+                <div class="w-1/6 bg-teal-600/50 rounded-t h-5"></div>
+                <div class="w-1/6 bg-teal-600/80 rounded-t h-7"></div>
+                <div class="w-1/6 bg-teal-600 rounded-t h-8"></div>
+                <div class="w-1/6 bg-teal-600 rounded-t h-9"></div>
             </div>
         </div>
 
         <!-- Pedidos Nuevos COD -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-red-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-teal-400 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-[#064E3B] uppercase tracking-wider">Total Pedidos</span>
-                <div class="w-8 h-8 rounded-xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center text-xs">
+                <span class="text-xs font-bold text-slate-900 uppercase tracking-wider">Total Pedidos</span>
+                <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 border border-teal-200/80 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#064E3B] font-heading">
+                <div class="text-3xl font-extrabold text-slate-900 font-heading">
                     {{ $stats['total_orders'] ?? 157 }}
                 </div>
                 <div class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
@@ -106,13 +106,13 @@
         <!-- Pagos Pendientes por Conciliar -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-amber-400 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-[#10B981] uppercase tracking-wider">Recaudación Pendiente</span>
-                <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center text-xs">
+                <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Recaudación Pendiente</span>
+                <div class="w-8 h-8 rounded-xl bg-amber-50 text-teal-600 border border-amber-200 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#10B981] font-heading font-mono">
+                <div class="text-3xl font-extrabold text-teal-600 font-heading font-mono">
                     Bs 18,310.00
                 </div>
                 <div class="text-[11px] text-slate-500">
@@ -121,7 +121,7 @@
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center">
                 <span>Próxima liquidación:</span>
-                <strong class="text-[#064E3B]">Hoy a las 18:00</strong>
+                <strong class="text-slate-900">Hoy a las 18:00</strong>
             </div>
         </div>
 
@@ -142,13 +142,13 @@
                 </div>
                 <!-- Anillo simulado en ámbar -->
                 <div class="relative w-14 h-14 rounded-full border-4 border-amber-100 flex items-center justify-center">
-                    <div class="absolute inset-0 rounded-full border-4 border-[#10B981] border-t-transparent -rotate-45"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-teal-500 border-t-transparent -rotate-45"></div>
                     <span class="text-[11px] font-bold text-slate-800">94%</span>
                 </div>
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px]">
                 <span class="text-emerald-700 font-medium">147 Entregados</span>
-                <span class="text-[#10B981] font-bold">8 Pendientes</span>
+                <span class="text-teal-600 font-bold">8 Pendientes</span>
             </div>
         </div>
 
@@ -159,7 +159,7 @@
         
         <div class="p-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
             <div>
-                <h2 class="text-lg font-bold text-[#064E3B] font-heading">
+                <h2 class="text-lg font-bold text-slate-900 font-heading">
                     Pedidos Recientes Contra Entrega (COD)
                 </h2>
                 <p class="text-xs text-slate-500">Selecciona pedidos para emitir el manifiesto de despacho DEX Bolivia</p>
@@ -168,7 +168,7 @@
                 <!-- Botón Generar Manifiesto DEX por Lotes -->
                 <button @click="generateManifestBatch()" :disabled="generatingManifest || selectedOrders.length === 0"
                     class="px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm transition"
-                    :class="selectedOrders.length > 0 ? 'bg-[#10B981] text-white hover:bg-amber-600' : 'bg-slate-100 text-slate-400 cursor-not-allowed'">
+                    :class="selectedOrders.length > 0 ? 'bg-teal-600 text-white hover:bg-amber-600' : 'bg-slate-100 text-slate-400 cursor-not-allowed'">
                     <i class="fa-solid fa-file-csv"></i>
                     <span x-show="!generatingManifest" x-text="'Generar Manifiesto DEX (' + selectedOrders.length + ')'"></span>
                     <span x-show="generatingManifest" class="flex items-center gap-1">
@@ -187,7 +187,7 @@
                 <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4 w-10 text-center">
-                            <input type="checkbox" @change="toggleSelectAll($event)" class="rounded border-slate-300 text-[#059669] focus:ring-[#059669]">
+                            <input type="checkbox" @change="toggleSelectAll($event)" class="rounded border-slate-300 text-teal-600 focus:ring-[#059669]">
                         </th>
                         <th class="py-3.5 px-5">ID Pedido</th>
                         <th class="py-3.5 px-5">Cliente</th>
@@ -202,9 +202,9 @@
                         <tr class="hover:bg-slate-50/80 transition" id="order-row-{{ $order->id }}">
                             <td class="py-4 px-4 text-center">
                                 <input type="checkbox" value="{{ $order->id }}" x-model="selectedOrders"
-                                    class="rounded border-slate-300 text-[#059669] focus:ring-[#059669]">
+                                    class="rounded border-slate-300 text-teal-600 focus:ring-[#059669]">
                             </td>
-                            <td class="py-4 px-5 font-mono font-bold text-[#064E3B]">
+                            <td class="py-4 px-5 font-mono font-bold text-slate-900">
                                 #{{ $order->order_number }}
                             </td>
                             <td class="py-4 px-5">
@@ -226,7 +226,7 @@
                                         </span>
                                     @elseif($order->status === 'dispatched')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                            <i class="fa-solid fa-truck-fast mr-1.5 text-[#10B981]"></i> En Tránsito DEX
+                                            <i class="fa-solid fa-truck-fast mr-1.5 text-teal-600"></i> En Tránsito DEX
                                         </span>
                                     @elseif($order->status === 'confirmed')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
@@ -239,14 +239,14 @@
                                     @endif
                                 </span>
                             </td>
-                            <td class="py-4 px-5 font-mono font-extrabold text-[#064E3B] text-sm">
+                            <td class="py-4 px-5 font-mono font-extrabold text-slate-900 text-sm">
                                 Bs {{ number_format($order->total_amount_bob, 2) }}
                             </td>
                             <td class="py-4 px-5 text-right space-x-1.5">
                                 <a href="{{ route('orders.label', $order->id) }}" target="_blank"
                                     class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
                                     title="Imprimir Rótulo Térmico">
-                                    <i class="fa-solid fa-barcode text-[#10B981]"></i>
+                                    <i class="fa-solid fa-barcode text-teal-600"></i>
                                     <span class="hidden sm:inline">Rótulo</span>
                                 </a>
 
@@ -277,15 +277,15 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center font-bold text-sm">
+                <div class="w-8 h-8 rounded-lg bg-amber-50 text-teal-600 border border-amber-200 flex items-center justify-center font-bold text-sm">
                     <i class="fa-solid fa-truck-ramp-box"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-[#064E3B] font-heading text-base">Manifiestos de Carga Emitidos</h3>
+                    <h3 class="font-bold text-slate-900 font-heading text-base">Manifiestos de Carga Emitidos</h3>
                     <p class="text-xs text-slate-500">Archivos CSV formateados para DEX Bolivia y couriers nacionales</p>
                 </div>
             </div>
-            <span class="text-xs font-mono font-bold px-3 py-1 bg-white border border-slate-200 rounded-full text-[#064E3B]">
+            <span class="text-xs font-mono font-bold px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-900">
                 {{ $manifests->count() }} Manifiestos
             </span>
         </div>
@@ -305,7 +305,7 @@
                 <tbody class="divide-y divide-slate-100 text-xs">
                     @forelse($manifests as $manifest)
                     <tr class="hover:bg-slate-50 transition">
-                        <td class="py-3.5 px-6 font-mono font-bold text-[#064E3B]">
+                        <td class="py-3.5 px-6 font-mono font-bold text-slate-900">
                             {{ $manifest->manifest_number }}
                         </td>
                         <td class="py-3.5 px-6 font-semibold text-slate-800">
@@ -314,7 +314,7 @@
                         <td class="py-3.5 px-6 font-mono text-slate-700">
                             {{ $manifest->total_orders }} paquetes
                         </td>
-                        <td class="py-3.5 px-6 font-mono font-extrabold text-[#10B981]">
+                        <td class="py-3.5 px-6 font-mono font-extrabold text-teal-600">
                             Bs {{ number_format($manifest->total_cod_amount_bob, 2) }}
                         </td>
                         <td class="py-3.5 px-6 text-slate-500">
@@ -322,7 +322,7 @@
                         </td>
                         <td class="py-3.5 px-6 text-right">
                             <button @click="downloadManifest('{{ $manifest->id }}', '{{ $manifest->manifest_number }}')"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-[#10B981] border border-amber-200 inline-flex items-center gap-1.5 transition">
+                                class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-teal-600 border border-amber-200 inline-flex items-center gap-1.5 transition">
                                 <i class="fa-solid fa-file-arrow-down"></i> CSV DEX
                             </button>
                         </td>
@@ -348,7 +348,7 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-red-50 text-[#059669] flex items-center justify-center font-bold text-sm">
+                    <div class="w-8 h-8 rounded-xl bg-red-50 text-teal-600 flex items-center justify-center font-bold text-sm">
                         <i class="fa-solid fa-truck-ramp-box"></i>
                     </div>
                     <div>
@@ -364,7 +364,7 @@
             <div class="space-y-4 text-xs">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1.5">Nuevo Estado del Pedido:</label>
-                    <select x-model="selectedStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#10B981]">
+                    <select x-model="selectedStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-teal-500">
                         <option value="confirmed">Confirmado (Listo para Empaque)</option>
                         <option value="dispatched">Despachado con Transportadora DEX</option>
                         <option value="delivered">Entregado al Cliente (Auto-Liquidación COD)</option>
@@ -376,7 +376,7 @@
                 <div x-show="selectedStatus === 'dispatched'">
                     <label class="block font-bold text-slate-700 mb-1.5">Número de Guía DEX Bolivia:</label>
                     <input type="text" x-model="trackingNumber" placeholder="DEX-BO-20261028-XXXX"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-teal-500">
                 </div>
 
                 <!-- Alerta cuando se selecciona Delivered -->
@@ -392,7 +392,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1.5">Notas Operativas (opcional):</label>
                     <textarea x-model="notes" rows="2" placeholder="Observaciones de entrega o guía de transporte..."
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]"></textarea>
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 text-xs focus:outline-none focus:border-teal-500"></textarea>
                 </div>
             </div>
 
@@ -420,11 +420,11 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 border border-teal-200/80 flex items-center justify-center text-xs">
                         <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-bold text-[#064E3B] uppercase tracking-wide">Inventario & Bodegas</h2>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Inventario & Bodegas</h2>
                         <p class="text-[11px] text-slate-500">Traslados interdepartamentales</p>
                     </div>
                 </div>
@@ -434,7 +434,7 @@
             <form @submit.prevent="submitStockTransfer()" class="space-y-3 text-xs bg-slate-50/70 p-3.5 rounded-xl border border-slate-200">
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Producto:</label>
-                    <select x-model="transferForm.product_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                    <select x-model="transferForm.product_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
                         <option value="">Selecciona producto...</option>
                         @foreach($products as $prod)
                             <option value="{{ $prod->id }}">{{ $prod->name }} ({{ $prod->sku }})</option>
@@ -445,7 +445,7 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Origen:</label>
-                        <select x-model="transferForm.from_warehouse_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                        <select x-model="transferForm.from_warehouse_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
                             <option value="">Origen...</option>
                             @foreach($warehouses as $wh)
                                 <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->department }})</option>
@@ -454,7 +454,7 @@
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Destino:</label>
-                        <select x-model="transferForm.to_warehouse_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                        <select x-model="transferForm.to_warehouse_id" required class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
                             <option value="">Destino...</option>
                             @foreach($warehouses as $wh)
                                 <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->department }})</option>
@@ -467,7 +467,7 @@
                     <div class="w-1/2">
                         <label class="block font-bold text-slate-700 mb-1">Cantidad:</label>
                         <input type="number" min="1" x-model="transferForm.quantity" required placeholder="Ej: 20"
-                            class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-white border border-slate-200 rounded-lg p-2 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                     <div class="w-1/2 pt-4">
                         <button type="submit" :disabled="transferring"
@@ -488,11 +488,11 @@
                         <div>
                             <div class="font-bold text-slate-800">{{ $st->product?->name ?? 'Producto' }}</div>
                             <div class="text-[10px] text-slate-500">
-                                {{ $st->fromWarehouse?->department ?? 'Origen' }} <i class="fa-solid fa-arrow-right text-[#10B981] text-[9px]"></i> {{ $st->toWarehouse?->department ?? 'Destino' }}
+                                {{ $st->fromWarehouse?->department ?? 'Origen' }} <i class="fa-solid fa-arrow-right text-teal-600 text-[9px]"></i> {{ $st->toWarehouse?->department ?? 'Destino' }}
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="font-black text-[#064E3B]">+{{ $st->quantity }} u.</span>
+                            <span class="font-black text-slate-900">+{{ $st->quantity }} u.</span>
                             <div class="text-[9px] text-emerald-600 font-bold uppercase">{{ $st->status }}</div>
                         </div>
                     </div>
@@ -506,11 +506,11 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-teal-600 border border-amber-200 flex items-center justify-center text-xs">
                         <i class="fa-solid fa-users"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-bold text-[#064E3B] uppercase tracking-wide">CRM Clientes COD</h2>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">CRM Clientes COD</h2>
                         <p class="text-[11px] text-slate-500">Historial y segmentación</p>
                     </div>
                 </div>
@@ -540,7 +540,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="font-black text-[#064E3B]">Bs {{ number_format($cust->total_spent_bob, 2) }}</div>
+                            <div class="font-black text-slate-900">Bs {{ number_format($cust->total_spent_bob, 2) }}</div>
                             <div class="text-[10px] text-slate-500">{{ $cust->completed_orders }} pedidos</div>
                         </div>
                     </div>
@@ -554,11 +554,11 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-red-50 text-[#064E3B] border border-red-200 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-900 border border-teal-200/80 flex items-center justify-center text-xs">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <h2 class="text-sm font-bold text-[#064E3B] uppercase tracking-wide">Notificaciones</h2>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Notificaciones</h2>
                         <p class="text-[11px] text-slate-500">Eventos de pedidos y WhatsApp</p>
                     </div>
                 </div>
@@ -592,11 +592,11 @@
     <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#064E3B] border border-red-200 flex items-center justify-center text-sm">
+                <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-900 border border-teal-200/80 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-user-gear"></i>
                 </div>
                 <div>
-                    <h2 class="text-base font-bold text-[#064E3B] font-heading">Gestión de Usuarios & Cuentas</h2>
+                    <h2 class="text-base font-bold text-slate-900 font-heading">Gestión de Usuarios & Cuentas</h2>
                     <p class="text-xs text-slate-500">Control de acceso, roles mayoristas y dropshippers en Bolivia</p>
                 </div>
             </div>
@@ -633,9 +633,9 @@
                             </td>
                             <td class="p-3">
                                 @if($u->role === 'tenant_admin')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-[#064E3B]">Administrador</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-900">Administrador</span>
                                 @elseif($u->role === 'provider')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-[#10B981]">Proveedor Mayorista</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-teal-600">Proveedor Mayorista</span>
                                 @elseif($u->role === 'dropshipper')
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Dropshipper</span>
                                 @elseif($u->role === 'carrier_agent')
@@ -695,10 +695,10 @@
 
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 border border-teal-200/80 flex items-center justify-center text-xs">
                         <i class="fa-solid fa-user-plus"></i>
                     </div>
-                    <h3 class="text-base font-bold text-[#064E3B] font-heading">Crear Nuevo Usuario</h3>
+                    <h3 class="text-base font-bold text-slate-900 font-heading">Crear Nuevo Usuario</h3>
                 </div>
                 <button @click="userModalOpen = false" class="text-slate-400 hover:text-slate-600">
                     <i class="fa-solid fa-xmark"></i>
@@ -709,19 +709,19 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Nombre Completo o Empresa:</label>
                     <input type="text" x-model="newUserForm.name" required placeholder="Ej: Comercial Santa Cruz SRL"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Correo Electrónico:</label>
                         <input type="email" x-model="newUserForm.email" required placeholder="correo@ejemplo.bo"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Contraseña Inicial:</label>
                         <input type="password" x-model="newUserForm.password" required placeholder="Mínimo 8 caracteres"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                 </div>
 
@@ -729,7 +729,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Rol en la Plataforma:</label>
                         <select x-model="newUserForm.role" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                             <option value="dropshipper">Dropshipper (Vendedor COD)</option>
                             <option value="provider">Proveedor Mayorista (Megabodega)</option>
                             <option value="carrier_agent">Agente Logístico (DEX Bolivia)</option>
@@ -739,7 +739,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">C.I. / NIT Bolivia:</label>
                         <input type="text" x-model="newUserForm.document_id" required placeholder="Ej: 5432101 SC"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                 </div>
 
@@ -747,12 +747,12 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp (+591):</label>
                         <input type="text" x-model="newUserForm.phone" required placeholder="Ej: +591 71234567"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Nombre Tienda / Marca (opcional):</label>
                         <input type="text" x-model="newUserForm.company_or_store_name" placeholder="Ej: Tienda Digital Oriente"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                 </div>
 
@@ -760,7 +760,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Departamento:</label>
                         <select x-model="newUserForm.department" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                             <option value="Santa Cruz">Santa Cruz</option>
                             <option value="La Paz">La Paz</option>
                             <option value="Cochabamba">Cochabamba</option>
@@ -775,7 +775,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Ciudad / Municipio:</label>
                         <input type="text" x-model="newUserForm.city" required placeholder="Ej: Santa Cruz de la Sierra"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-teal-500">
                     </div>
                 </div>
 
