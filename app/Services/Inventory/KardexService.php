@@ -473,3 +473,4 @@ class KardexService
     }
 }
 
+

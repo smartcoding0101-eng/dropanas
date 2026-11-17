@@ -120,7 +120,7 @@ class BinanceCryptoBridgeTest extends TestCase
             'data'      => json_encode([
                 'merchantTradeNo' => 'ORD-BINANCE-PAY-001',
                 'productType'     => 'B2C',
-                'productName'     => 'Pedido Dropana #ORD-BINANCE-PAY-001',
+                'productName'     => 'Pedido Bolidrop #ORD-BINANCE-PAY-001',
                 'totalFee'        => 30.00,
                 'currency'        => 'USDT',
                 'transactionId'   => 'BINANCE-TX-9988776655',
@@ -181,4 +181,5 @@ class BinanceCryptoBridgeTest extends TestCase
         $this->assertEquals('849302194', $tx->metadata['details']['binance_pay_id']);
     }
 }
+
 

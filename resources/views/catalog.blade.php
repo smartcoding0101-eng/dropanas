@@ -9,14 +9,14 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
         <div>
             <div class="flex items-center gap-2 mb-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-[#960016] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
                     Megabodega Central
                 </span>
                 <span class="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-location-dot text-[#ED2100]"></i> Stock físico en Santa Cruz & El Alto
+                    <i class="fa-solid fa-location-dot text-[#059669]"></i> Stock físico en Santa Cruz & El Alto
                 </span>
             </div>
-            <h1 class="text-3xl font-extrabold text-[#960016] font-heading">
+            <h1 class="text-3xl font-extrabold text-[#064E3B] font-heading">
                 Catálogo Mayorista de Productos COD
             </h1>
             <p class="text-slate-500 text-sm mt-1 max-w-2xl">
@@ -36,12 +36,12 @@
         <div class="relative w-full sm:w-96">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input type="text" placeholder="Buscar por producto, SKU o categoría..."
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#E88A38] focus:ring-1 focus:ring-[#E88A38] transition">
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition">
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto text-xs text-slate-500">
             <span class="hidden sm:inline font-medium">Filtrar por Bodega:</span>
-            <span class="px-3 py-1.5 rounded-lg bg-[#960016] text-white border border-[#960016] cursor-pointer font-bold shadow-sm">Todas</span>
+            <span class="px-3 py-1.5 rounded-lg bg-[#064E3B] text-white border border-[#064E3B] cursor-pointer font-bold shadow-sm">Todas</span>
             <span class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer transition font-medium">Santa Cruz</span>
             <span class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer transition font-medium">El Alto</span>
         </div>
@@ -57,7 +57,7 @@
                     @if(!empty($product->images) && count($product->images) > 0)
                         <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
                     @else
-                        <div class="w-24 h-24 rounded-2xl bg-red-50 border border-red-200 text-[#960016] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
+                        <div class="w-24 h-24 rounded-2xl bg-red-50 border border-red-200 text-[#064E3B] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
                             @if(str_contains($product->slug, 'audifono'))
                                 <i class="fa-solid fa-headphones"></i>
                             @elseif(str_contains($product->slug, 'smartwatch'))
@@ -77,7 +77,7 @@
                     <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         <i class="fa-solid fa-truck-fast mr-1"></i> Contra Entrega
                     </span>
-                    <span class="absolute top-3.5 right-3.5 bg-white border border-slate-200 text-[#960016] font-mono font-bold text-[11px] px-2 py-0.5 rounded shadow-sm">
+                    <span class="absolute top-3.5 right-3.5 bg-white border border-slate-200 text-[#064E3B] font-mono font-bold text-[11px] px-2 py-0.5 rounded shadow-sm">
                         SKU: {{ $product->sku }}
                     </span>
                 </div>
@@ -85,10 +85,10 @@
                 <!-- Detalles del Producto -->
                 <div class="p-6 flex-grow space-y-4">
                     <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#E88A38] font-heading">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#10B981] font-heading">
                             {{ $product->category->name ?? 'Tecnología' }}
                         </span>
-                        <h3 class="text-lg font-bold text-slate-900 font-heading mt-1 group-hover:text-[#960016] transition line-clamp-1">
+                        <h3 class="text-lg font-bold text-slate-900 font-heading mt-1 group-hover:text-[#064E3B] transition line-clamp-1">
                             {{ $product->name }}
                         </h3>
                     </div>
@@ -107,9 +107,9 @@
                             <span>Precio Mínimo de Venta:</span>
                             <span class="font-bold text-slate-700 font-mono">{{ number_format($product->min_price_bob, 2) }} BOB</span>
                         </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-[#E88A38] font-bold">
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-[#10B981] font-bold">
                             <span>Precio Sugerido Tienda:</span>
-                            <span class="text-base font-extrabold font-mono text-[#960016]">{{ number_format($product->suggested_price_bob, 2) }} BOB</span>
+                            <span class="text-base font-extrabold font-mono text-[#064E3B]">{{ number_format($product->suggested_price_bob, 2) }} BOB</span>
                         </div>
                     </div>
 
@@ -124,13 +124,13 @@
                                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                     <span class="text-xs font-medium">{{ $inventory->warehouse->city }} ({{ $inventory->warehouse->department }})</span>
                                 </span>
-                                <span class="font-bold font-mono text-[#960016] text-xs">{{ $inventory->stock_available }} uds</span>
+                                <span class="font-bold font-mono text-[#064E3B] text-xs">{{ $inventory->stock_available }} uds</span>
                             </div>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- Footer de Acción con botón Scarlet #ED2100 -->
+                <!-- Footer de Acción con botón Scarlet #059669 -->
                 <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
                     <div>
                         <div class="text-[10px] text-slate-400 uppercase font-bold">Ganancia Estimada</div>
@@ -155,3 +155,6 @@
 
 </div>
 @endsection
+
+
+

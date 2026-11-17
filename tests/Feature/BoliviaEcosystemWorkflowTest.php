@@ -125,3 +125,4 @@ class BoliviaEcosystemWorkflowTest extends TestCase
         $this->assertEquals(38.00, (float) $providerWallet->balance_available);
     }
 }
+

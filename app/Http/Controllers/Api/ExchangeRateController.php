@@ -46,3 +46,4 @@ class ExchangeRateController extends Controller
         ]);
     }
 }
+

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contáctenos – Dropana Bolivia | Únete al Ecosistema')
+@section('title', 'Contáctenos – Bolidrop Bolivia | Únete al Ecosistema')
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12"
@@ -55,13 +55,13 @@
 
     <!-- Header -->
     <div class="text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#960016]">
-            <span class="flex h-2 w-2 rounded-full bg-[#ED2100] animate-pulse"></span>
-            <span>Únete al Ecosistema Dropana Bolivia</span>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#064E3B]">
+            <span class="flex h-2 w-2 rounded-full bg-[#059669] animate-pulse"></span>
+            <span>Únete al Ecosistema Bolidrop Bolivia</span>
         </div>
-        <h1 class="text-4xl font-black text-[#960016] font-heading">Contáctenos</h1>
+        <h1 class="text-4xl font-black text-[#064E3B] font-heading">Contáctenos</h1>
         <p class="text-slate-500 text-base max-w-lg mx-auto">
-            Cuéntanos cómo quieres usar Dropana y un asesor te contactará en menos de <strong>2 horas hábiles</strong>.
+            Cuéntanos cómo quieres usar Bolidrop y un asesor te contactará en menos de <strong>2 horas hábiles</strong>.
         </p>
     </div>
 
@@ -75,7 +75,7 @@
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <h3 class="font-black text-slate-800 text-xl font-heading">¡Solicitud Recibida!</h3>
-                <p class="text-slate-500 text-sm">Un asesor de Dropana Bolivia se pondrá en contacto contigo por WhatsApp en menos de 2 horas hábiles.</p>
+                <p class="text-slate-500 text-sm">Un asesor de Bolidrop Bolivia se pondrá en contacto contigo por WhatsApp en menos de 2 horas hábiles.</p>
                 <button @click="sent = false" class="btn-scarlet px-6 py-2.5 rounded-xl text-white text-sm font-bold">
                     Enviar otra solicitud
                 </button>
@@ -85,7 +85,7 @@
             <form x-show="!sent" @submit.prevent="submit"
                   class="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm space-y-5">
                 <h2 class="font-bold text-slate-800 text-lg font-heading flex items-center gap-2">
-                    <i class="fa-solid fa-file-pen text-[#E88A38]"></i>
+                    <i class="fa-solid fa-file-pen text-[#10B981]"></i>
                     Formulario de Registro de Interés
                 </h2>
 
@@ -93,23 +93,23 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Nombre Completo *</label>
                         <input type="text" x-model="form.full_name" required placeholder="Juan Pérez"
-                               class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                               class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">WhatsApp (Bolivia) *</label>
                         <input type="tel" x-model="form.phone" required placeholder="+591 7X-XXX-XXXX"
-                               class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                               class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Correo Electrónico</label>
                     <input type="email" x-model="form.email" placeholder="correo@ejemplo.com"
-                           class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                           class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">¿Cómo quieres usar Dropana? *</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">¿Cómo quieres usar Bolidrop? *</label>
                     <div class="grid grid-cols-2 gap-2">
                         @foreach([
                             ['value'=>'dropshipper','icon'=>'fa-store','label'=>'Dropshipper','sub'=>'Venta sin stock'],
@@ -120,9 +120,9 @@
                         <label class="cursor-pointer">
                             <input type="radio" x-model="form.interest_role" value="{{ $role['value'] }}" class="sr-only">
                             <div class="border rounded-xl p-3 flex items-center gap-3 transition"
-                                 :class="form.interest_role === '{{ $role['value'] }}' ? 'border-[#ED2100] bg-red-50' : 'border-slate-200 hover:border-slate-300'">
+                                 :class="form.interest_role === '{{ $role['value'] }}' ? 'border-[#059669] bg-red-50' : 'border-slate-200 hover:border-slate-300'">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
-                                     :class="form.interest_role === '{{ $role['value'] }}' ? 'bg-[#960016] text-white' : 'bg-slate-100 text-slate-500'">
+                                     :class="form.interest_role === '{{ $role['value'] }}' ? 'bg-[#064E3B] text-white' : 'bg-slate-100 text-slate-500'">
                                     <i class="fa-solid {{ $role['icon'] }}"></i>
                                 </div>
                                 <div>
@@ -139,7 +139,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Volumen Estimado</label>
                         <select x-model="form.estimated_monthly_volume"
-                                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] transition">
+                                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] transition">
                             <option value="1-50 envíos mes">1–50 envíos/mes (Empezando)</option>
                             <option value="50-200 envíos mes">50–200 envíos/mes (Creciendo)</option>
                             <option value="+200 envios mes">+200 envíos/mes (Escalado)</option>
@@ -148,7 +148,7 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Departamento</label>
                         <select x-model="form.department"
-                                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] transition">
+                                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] transition">
                             @foreach(['Santa Cruz','La Paz','El Alto','Cochabamba','Oruro','Potosí','Chuquisaca','Tarija','Beni','Pando'] as $dept)
                             <option value="{{ $dept }}">{{ $dept }}</option>
                             @endforeach
@@ -159,7 +159,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Mensaje (opcional)</label>
                     <textarea x-model="form.message" rows="3" placeholder="Cuéntanos más sobre tu negocio o tus preguntas..."
-                              class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] focus:bg-white transition resize-none"></textarea>
+                              class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] focus:bg-white transition resize-none"></textarea>
                 </div>
 
                 <button type="submit" :disabled="submitting"
@@ -170,7 +170,7 @@
                 </button>
 
                 <p class="text-[10px] text-slate-400 text-center">
-                    Al enviar, aceptas que Dropana Bolivia te contacte por WhatsApp. Sin spam, prometido.
+                    Al enviar, aceptas que Bolidrop Bolivia te contacte por WhatsApp. Sin spam, prometido.
                 </p>
             </form>
         </div>
@@ -180,7 +180,7 @@
 
             <!-- Por qué unirte -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                <h3 class="font-bold text-slate-800 font-heading">¿Por qué unirte a Dropana?</h3>
+                <h3 class="font-bold text-slate-800 font-heading">¿Por qué unirte a Bolidrop?</h3>
                 @foreach([
                     ['icon'=>'fa-ban','color'=>'red','text'=>'Sin inversión inicial ni membresías'],
                     ['icon'=>'fa-infinity','color'=>'blue','text'=>'Inventario infinito en la Megabodega'],
@@ -201,19 +201,19 @@
             <!-- Oficinas y ubicación -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
                 <h3 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-                    <i class="fa-solid fa-location-dot text-[#960016]"></i>
-                    Almacenes Dropana Bolivia
+                    <i class="fa-solid fa-location-dot text-[#064E3B]"></i>
+                    Almacenes Bolidrop Bolivia
                 </h3>
                 <div class="space-y-3 text-sm">
                     <div class="flex gap-3 items-start">
-                        <div class="w-2 h-2 rounded-full bg-[#ED2100] mt-1.5 shrink-0"></div>
+                        <div class="w-2 h-2 rounded-full bg-[#059669] mt-1.5 shrink-0"></div>
                         <div>
                             <div class="font-semibold text-slate-800">Almacén Santa Cruz</div>
                             <div class="text-slate-500 text-xs">Parque Industrial Latinoamericano, Santa Cruz de la Sierra</div>
                         </div>
                     </div>
                     <div class="flex gap-3 items-start">
-                        <div class="w-2 h-2 rounded-full bg-[#E88A38] mt-1.5 shrink-0"></div>
+                        <div class="w-2 h-2 rounded-full bg-[#10B981] mt-1.5 shrink-0"></div>
                         <div>
                             <div class="font-semibold text-slate-800">Almacén El Alto</div>
                             <div class="text-slate-500 text-xs">Ciudad Satélite, El Alto – La Paz</div>
@@ -227,8 +227,8 @@
             </div>
 
             <!-- Métricas clave -->
-            <div class="bg-[#960016] rounded-2xl p-5 text-white space-y-3">
-                <div class="text-xs font-bold uppercase tracking-widest text-white/60">Red Activa Dropana</div>
+            <div class="bg-[#064E3B] rounded-2xl p-5 text-white space-y-3">
+                <div class="text-xs font-bold uppercase tracking-widest text-white/60">Red Activa Bolidrop</div>
                 <div class="grid grid-cols-3 gap-3 text-center">
                     <div>
                         <div class="text-2xl font-black">9/9</div>
@@ -249,3 +249,6 @@
     </div>
 </div>
 @endsection
+
+
+

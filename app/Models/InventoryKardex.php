@@ -69,3 +69,4 @@ class InventoryKardex extends Model
         return $this->belongsTo(Tenant::class);
     }
 }
+

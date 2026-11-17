@@ -273,3 +273,4 @@ class AdvancedModulesTest extends TestCase
             ->assertJsonCount(1, 'data.data');
     }
 }
+

@@ -82,3 +82,4 @@ class ReportAnalyticsTest extends TestCase
             ]);
     }
 }
+

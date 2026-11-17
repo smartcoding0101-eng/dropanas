@@ -46,3 +46,4 @@ class Carrier extends Model
         return $this->hasMany(ShippingManifest::class);
     }
 }
+

@@ -169,7 +169,7 @@ class AuditReconcileLedgersCommand extends Command
         $totalIssues = $walletErrors + $orderErrors + $negativeInventories;
 
         if ($totalIssues > 0) {
-            Log::alert("Dropana QA Auditor: Se detectaron {$totalIssues} anomalías contables o de inventario.");
+            Log::alert("Bolidrop QA Auditor: Se detectaron {$totalIssues} anomalías contables o de inventario.");
             return Command::FAILURE;
         }
 
@@ -177,3 +177,4 @@ class AuditReconcileLedgersCommand extends Command
         return Command::SUCCESS;
     }
 }
+

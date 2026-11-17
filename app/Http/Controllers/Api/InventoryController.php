@@ -165,3 +165,4 @@ class InventoryController extends Controller
         ], 200);
     }
 }
+

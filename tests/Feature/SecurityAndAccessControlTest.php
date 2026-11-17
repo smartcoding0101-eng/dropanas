@@ -49,7 +49,7 @@ class SecurityAndAccessControlTest extends TestCase
         $this->dropshipperB = User::create([
             'tenant_id'             => $this->tenant->id,
             'name'                  => 'Dropshipper Competidor B',
-            'email'                 => 'dropshipper.b@dropana.bo',
+            'email'                 => 'dropshipper.b@bolidrop.bo',
             'password'              => bcrypt('password123'),
             'role'                  => 'dropshipper',
             'company_or_store_name' => 'Tienda Rival B',
@@ -221,4 +221,5 @@ class SecurityAndAccessControlTest extends TestCase
         $this->assertEquals('settled', $order->fresh()->status);
     }
 }
+
 

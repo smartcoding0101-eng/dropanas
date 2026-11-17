@@ -78,3 +78,4 @@ class BarcodeGeneratorService
         return $svg;
     }
 }
+

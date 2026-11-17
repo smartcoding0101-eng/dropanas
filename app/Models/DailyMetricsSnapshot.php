@@ -8,3 +8,4 @@ class DailyMetricsSnapshot extends Model
 {
     //
 }
+

@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota de Entrega #{{ $order->order_number }} - Dropana Bolivia</title>
+    <title>Nota de Entrega #{{ $order->order_number }} - Bolidrop Bolivia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid #960016;
+            border-bottom: 2px solid #064E3B;
             padding-bottom: 20px;
             margin-bottom: 24px;
         }
@@ -49,13 +49,13 @@
         .brand {
             font-size: 26px;
             font-weight: 800;
-            color: #960016;
+            color: #064E3B;
             letter-spacing: -0.5px;
         }
         .badge-country {
             display: inline-block;
             background: #fef2f2;
-            color: #960016;
+            color: #064E3B;
             border: 1px solid #fecaca;
             font-size: 11px;
             font-weight: 700;
@@ -76,7 +76,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 15px;
             font-weight: 700;
-            color: #ED2100;
+            color: #059669;
             margin-top: 4px;
         }
         .doc-date {
@@ -171,11 +171,11 @@
             border-top: 2px solid #cbd5e1;
             font-size: 16px;
             font-weight: 800;
-            color: #960016;
+            color: #064E3B;
         }
         .totals-row.final .amount {
             font-family: 'JetBrains Mono', monospace;
-            color: #ED2100;
+            color: #059669;
         }
         .signatures {
             display: grid;
@@ -222,7 +222,7 @@
             align-items: center;
         }
         .btn-print {
-            background: #ED2100;
+            background: #059669;
             color: white;
             font-weight: 700;
             padding: 10px 20px;
@@ -285,7 +285,7 @@
         <div class="header">
             <div>
                 <div class="logo-title">
-                    <span class="brand">DROPANA</span>
+                    <span class="brand">Bolidrop</span>
                     <span class="badge-country">Bolivia COD</span>
                 </div>
                 <p style="color: #64748b; font-size: 11px; margin-top: 4px;">
@@ -338,10 +338,10 @@
                 </div>
                 <div class="card-content">
                     <strong>{{ $order->carrier->name ?? 'DEX Bolivia Express' }}</strong>
-                    <p><strong>Guía / Tracking:</strong> <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #960016;">{{ $order->tracking_number ?? 'S/T' }}</span></p>
+                    <p><strong>Guía / Tracking:</strong> <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #064E3B;">{{ $order->tracking_number ?? 'S/T' }}</span></p>
                     <p><strong>Método de Cobro:</strong> Pago Contra Entrega (Efectivo / QR Simple)</p>
                     <p><strong>Tienda / Dropshipper:</strong> {{ $order->dropshipper->name ?? 'Comercio Asociado' }}</p>
-                    <p><strong>Estado Operativo:</strong> <span style="text-transform: uppercase; font-weight: 700; color: #ED2100;">{{ $order->status }}</span></p>
+                    <p><strong>Estado Operativo:</strong> <span style="text-transform: uppercase; font-weight: 700; color: #059669;">{{ $order->status }}</span></p>
                 </div>
             </div>
         </div>
@@ -414,9 +414,12 @@
         <!-- Nota al pie -->
         <div class="footer-note">
             Este documento certifica la recepción física y comprobación de mercancía bajo modalidad Contra Entrega (COD) en el Estado Plurinacional de Bolivia.<br>
-            Dropana Bolivia • Soporte: soporte@dropana.bo • www.dropana.bo
+            Bolidrop Bolivia • Soporte: soporte@bolidrop.bo • www.bolidrop.bo
         </div>
     </div>
 
 </body>
 </html>
+
+
+

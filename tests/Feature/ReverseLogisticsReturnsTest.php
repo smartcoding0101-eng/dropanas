@@ -199,3 +199,4 @@ class ReverseLogisticsReturnsTest extends TestCase
         $this->assertEquals('returned', $this->order->status);
     }
 }
+

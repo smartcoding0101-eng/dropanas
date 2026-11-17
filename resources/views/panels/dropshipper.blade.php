@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel Dropshipper | Dropana Bolivia')
+@section('title', 'Panel Dropshipper | Bolidrop Bolivia')
 
 @section('content')
 <div class="space-y-8 bg-[#FFFFFF]" x-data="dropshipperDashboard()">
@@ -9,12 +9,12 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
         <div>
             <div class="flex items-center gap-2 mb-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-[#960016] border border-red-200 uppercase tracking-wider">
-                    <i class="fa-solid fa-store mr-1.5 text-[#ED2100]"></i> Vendedor Dropshipper
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-[#064E3B] border border-red-200 uppercase tracking-wider">
+                    <i class="fa-solid fa-store mr-1.5 text-[#059669]"></i> Vendedor Dropshipper
                 </span>
                 <span class="text-xs text-slate-400 font-mono">ID: {{ substr($dropshipper->id ?? 'DEMO', 0, 8) }}</span>
             </div>
-            <h1 class="text-3xl font-extrabold text-[#960016] font-heading">
+            <h1 class="text-3xl font-extrabold text-[#064E3B] font-heading">
                 Panel del Dropshipper
             </h1>
             <p class="text-slate-500 text-sm mt-1">
@@ -31,7 +31,7 @@
                 <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Pedido COD
             </a>
             <a href="{{ url('/catalogo') }}" class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition flex items-center gap-2 shadow-sm">
-                <i class="fa-solid fa-boxes-stacked text-[#E88A38]"></i> Catálogo
+                <i class="fa-solid fa-boxes-stacked text-[#10B981]"></i> Catálogo
             </a>
         </div>
     </div>
@@ -56,12 +56,12 @@
         <!-- Total Pedidos -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-red-400 hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#960016] font-bold uppercase tracking-wider">Total Pedidos</span>
-                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#ED2100] border border-red-200 flex items-center justify-center">
+                <span class="text-[#064E3B] font-bold uppercase tracking-wider">Total Pedidos</span>
+                <div class="w-9 h-9 rounded-xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-[#960016] font-heading">
+            <div class="text-3xl font-extrabold text-[#064E3B] font-heading">
                 {{ $stats['total_orders'] }}
             </div>
             <div class="text-[11px] text-slate-500">Histórico de órdenes registradas</div>
@@ -70,12 +70,12 @@
         <!-- Pedidos En Camino -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-amber-400 hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#E88A38] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#E88A38] border border-amber-200 flex items-center justify-center">
+                <span class="text-[#10B981] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-[#E88A38] font-heading font-mono">
+            <div class="text-3xl font-extrabold text-[#10B981] font-heading font-mono">
                 {{ $stats['pending_orders'] }}
             </div>
             <div class="text-[11px] text-amber-600 font-medium">Por recaudar en destino COD</div>
@@ -98,12 +98,12 @@
         <!-- Ganancia Acumulada -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-amber-400 hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#E88A38] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#E88A38] border border-amber-200 flex items-center justify-center">
+                <span class="text-[#10B981] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center">
                     <i class="fa-solid fa-coins"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-[#960016] font-heading font-mono">
+            <div class="text-3xl font-extrabold text-[#064E3B] font-heading font-mono">
                 Bs {{ number_format($stats['total_profit'], 2) }}
             </div>
             <div class="text-[11px] text-slate-500">Tu beneficio líquido en BOB</div>
@@ -116,10 +116,10 @@
     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
             <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-[#960016] bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
-                    Billetera Virtual Dropana
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
+                    Billetera Virtual Bolidrop
                 </span>
-                <h3 class="text-xl font-bold text-[#960016] font-heading mt-2">
+                <h3 class="text-xl font-bold text-[#064E3B] font-heading mt-2">
                     Saldo y Fondos Disponibles
                 </h3>
                 <p class="text-xs text-slate-500">
@@ -132,7 +132,7 @@
                     class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-2">
                     <i class="fa-solid fa-arrow-up-from-bracket"></i> Solicitar Retiro
                 </button>
-                <span class="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 font-mono font-bold text-[#960016] text-xs">
+                <span class="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 font-mono font-bold text-[#064E3B] text-xs">
                     BOB (Bolivianos)
                 </span>
             </div>
@@ -149,7 +149,7 @@
 
             <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-1">
                 <div class="text-xs text-slate-500 font-medium">Saldo Retenido (En Camino COD)</div>
-                <div class="text-3xl font-extrabold text-[#E88A38] font-mono">
+                <div class="text-3xl font-extrabold text-[#10B981] font-mono">
                     Bs {{ number_format($wallet->balance_pending, 2) }}
                 </div>
                 <div class="text-[11px] text-slate-400">Se libera cuando el courier confirme entrega</div>
@@ -170,12 +170,12 @@
     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/60">
             <div>
-                <h3 class="text-lg font-bold text-[#960016] font-heading">
+                <h3 class="text-lg font-bold text-[#064E3B] font-heading">
                     Tus Pedidos Recientes
                 </h3>
                 <p class="text-xs text-slate-500">Flujo completo con número de guía y estado en tiempo real</p>
             </div>
-            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-white border border-slate-200 text-[#960016] font-mono">
+            <span class="text-xs font-semibold px-3 py-1 rounded-full bg-white border border-slate-200 text-[#064E3B] font-mono">
                 {{ $recentOrders->count() }} órdenes registradas
             </span>
         </div>
@@ -197,7 +197,7 @@
                 <tbody class="divide-y divide-slate-100 text-xs">
                     @forelse($recentOrders as $order)
                         <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-4 px-5 font-mono text-xs font-bold text-[#960016]">
+                            <td class="py-4 px-5 font-mono text-xs font-bold text-[#064E3B]">
                                 #{{ $order->order_number }}
                                 <div class="text-[10px] text-slate-400 font-normal">{{ $order->created_at->format('d/m/Y H:i') }}</div>
                             </td>
@@ -210,7 +210,7 @@
                                 <div class="text-[11px] text-slate-400">{{ $order->shipping_department }}</div>
                             </td>
                             <td class="py-4 px-5">
-                                <div class="text-xs font-bold text-[#E88A38]">{{ $order->carrier->name ?? 'DEX Bolivia' }}</div>
+                                <div class="text-xs font-bold text-[#10B981]">{{ $order->carrier->name ?? 'DEX Bolivia' }}</div>
                                 <div class="text-[10px] font-mono text-slate-400">{{ $order->tracking_number ?? 'Por generar' }}</div>
                             </td>
                             <td class="py-4 px-5 font-mono font-bold text-slate-900 text-xs">
@@ -230,11 +230,11 @@
                                     </span>
                                 @elseif($order->status === 'dispatched')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-800">
-                                        <i class="fa-solid fa-truck-fast mr-1.5 text-[#E88A38]"></i> Despachado
+                                        <i class="fa-solid fa-truck-fast mr-1.5 text-[#10B981]"></i> Despachado
                                     </span>
                                 @elseif($order->status === 'confirmed')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 border border-red-200 text-[#960016]">
-                                        <i class="fa-solid fa-check mr-1.5 text-[#ED2100]"></i> Confirmado
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 border border-red-200 text-[#064E3B]">
+                                        <i class="fa-solid fa-check mr-1.5 text-[#059669]"></i> Confirmado
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
@@ -246,7 +246,7 @@
                                 <a href="{{ route('orders.label', $order->id) }}" target="_blank"
                                     class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
                                     title="Imprimir Rótulo Térmico">
-                                    <i class="fa-solid fa-print text-[#ED2100]"></i>
+                                    <i class="fa-solid fa-print text-[#059669]"></i>
                                     <span>Imprimir</span>
                                 </a>
                             </td>
@@ -270,10 +270,10 @@
             <div>
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <h2 class="text-lg font-bold text-[#960016]">Integración de Tiendas Online (Sincronización Automática)</h2>
+                    <h2 class="text-lg font-bold text-[#064E3B]">Integración de Tiendas Online (Sincronización Automática)</h2>
                 </div>
                 <p class="text-xs text-slate-500 mt-0.5">
-                    Conecta tu tienda Shopify o WooCommerce. Los pedidos que ingresen en tu web se importarán a Dropana Bolivia listos para despacho COD.
+                    Conecta tu tienda Shopify o WooCommerce. Los pedidos que ingresen en tu web se importarán a Bolidrop Bolivia listos para despacho COD.
                 </p>
             </div>
             <button @click="integrationModalOpen = true"
@@ -285,7 +285,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @forelse($storeIntegrations as $store)
-                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#E88A38] transition space-y-3">
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#10B981] transition space-y-3">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm {{ $store->platform === 'shopify' ? 'bg-[#95BF47]' : 'bg-[#96588A]' }}">
@@ -341,7 +341,7 @@
                         <i class="fa-solid fa-building-columns"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] font-heading text-base">Retirar Fondos de Billetera</h3>
+                        <h3 class="font-bold text-[#064E3B] font-heading text-base">Retirar Fondos de Billetera</h3>
                         <p class="text-xs text-slate-500">Saldo disponible: <strong class="text-emerald-600 font-mono">Bs {{ number_format($wallet?->balance_available ?? 0, 2) }}</strong></p>
                     </div>
                 </div>
@@ -356,14 +356,14 @@
                     <div class="relative">
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold font-mono">Bs</span>
                         <input type="number" x-model.number="form.amount" min="10" max="{{ $wallet?->balance_available ?? 0 }}" step="1"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-[#10B981]">
                     </div>
                     <div class="text-[11px] text-slate-400 mt-1">Mínimo de retiro: 10 BOB</div>
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 mb-1.5">Método de Transferencia:</label>
-                    <select x-model="form.payout_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#E88A38]">
+                    <select x-model="form.payout_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#10B981]">
                         <option value="qr_simple">Transferencia QR Simple (Cualquier Banco Boliviano)</option>
                         <option value="bank_transfer">Cuenta Bancaria Tradicional (BNB, BCP, Unión, Mercantil)</option>
                         <option value="binance_pay">Binance Pay (Cripto USDT)</option>
@@ -374,12 +374,12 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Nombre del Titular:</label>
                         <input type="text" x-model="form.account_details.beneficiary_name" placeholder="Ej: Juan Carlos Pérez"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Carnet de Identidad (CI):</label>
                         <input type="text" x-model="form.account_details.document_id" placeholder="Ej: 7891234 SCZ"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                     </div>
                 </div>
 
@@ -387,19 +387,19 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Banco Destino:</label>
                         <input type="text" x-model="form.account_details.bank_name" placeholder="Banco Nacional de Bolivia (BNB)"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Número de Cuenta / Teléfono QR:</label>
                         <input type="text" x-model="form.account_details.account_number" placeholder="150-1234567 o 71234567"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                     </div>
                 </div>
 
                 <div x-show="form.payout_method === 'binance_pay'">
                     <label class="block font-bold text-slate-700 mb-1">Binance Pay ID (o correo de cuenta Binance):</label>
                     <input type="text" x-model="form.account_details.binance_pay_id" placeholder="Ej: 123456789 o correo@ejemplo.com"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                 </div>
             </div>
 
@@ -427,11 +427,11 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#960016] flex items-center justify-center font-bold text-lg">
+                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#064E3B] flex items-center justify-center font-bold text-lg">
                         <i class="fa-solid fa-plug-circle-plus"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-[#960016]">Conectar Tienda Online</h3>
+                        <h3 class="text-lg font-bold text-[#064E3B]">Conectar Tienda Online</h3>
                         <p class="text-xs text-slate-500">Shopify o WooCommerce</p>
                     </div>
                 </div>
@@ -445,13 +445,13 @@
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Plataforma</label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="p-3 rounded-xl border-2 cursor-pointer transition text-center"
-                            :class="integrationForm.platform === 'shopify' ? 'border-[#960016] bg-red-50/40 text-[#960016] font-bold' : 'border-slate-200 text-slate-600'">
+                            :class="integrationForm.platform === 'shopify' ? 'border-[#064E3B] bg-red-50/40 text-[#064E3B] font-bold' : 'border-slate-200 text-slate-600'">
                             <input type="radio" value="shopify" x-model="integrationForm.platform" class="sr-only">
                             <i class="fa-brands fa-shopify text-lg block mb-1"></i>
                             <span class="text-xs">Shopify</span>
                         </label>
                         <label class="p-3 rounded-xl border-2 cursor-pointer transition text-center"
-                            :class="integrationForm.platform === 'woocommerce' ? 'border-[#960016] bg-red-50/40 text-[#960016] font-bold' : 'border-slate-200 text-slate-600'">
+                            :class="integrationForm.platform === 'woocommerce' ? 'border-[#064E3B] bg-red-50/40 text-[#064E3B] font-bold' : 'border-slate-200 text-slate-600'">
                             <input type="radio" value="woocommerce" x-model="integrationForm.platform" class="sr-only">
                             <i class="fa-brands fa-wordpress text-lg block mb-1"></i>
                             <span class="text-xs">WooCommerce</span>
@@ -462,18 +462,18 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nombre Identificativo de tu Tienda</label>
                     <input type="text" x-model="integrationForm.store_name" required placeholder="Ej: Bolivia Trends Shop"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#E88A38]">
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#10B981]">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">URL de tu Tienda</label>
                     <input type="url" x-model="integrationForm.store_url" required placeholder="https://tutienda.myshopify.com"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#E88A38]">
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#10B981]">
                 </div>
 
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="auto_dispatch" x-model="integrationForm.auto_dispatch"
-                        class="rounded border-slate-300 text-[#960016] focus:ring-[#960016]">
+                        class="rounded border-slate-300 text-[#064E3B] focus:ring-[#064E3B]">
                     <label for="auto_dispatch" class="text-xs text-slate-700 cursor-pointer">
                         Despachar automáticamente con DEX Bolivia Express
                     </label>
@@ -537,7 +537,7 @@ function dropshipperDashboard() {
                 const authRes = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@dropana.bo', password: 'password123' })
+                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' })
                 });
                 const authData = await authRes.json();
                 const token = authData.data?.token;
@@ -576,7 +576,7 @@ function dropshipperDashboard() {
                 const authRes = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@dropana.bo', password: 'password123' })
+                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' })
                 });
                 const authData = await authRes.json();
                 const token = authData.data?.token;
@@ -610,3 +610,6 @@ function dropshipperDashboard() {
 }
 </script>
 @endsection
+
+
+

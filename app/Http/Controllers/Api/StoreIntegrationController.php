@@ -161,3 +161,4 @@ class StoreIntegrationController extends Controller
         ]);
     }
 }
+

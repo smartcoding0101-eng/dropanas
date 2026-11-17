@@ -47,14 +47,14 @@ class WebAuthAndCarrierTest extends TestCase
         $tenant = Tenant::first();
         $user = User::factory()->create([
             'tenant_id' => $tenant->id,
-            'email'     => 'test_dropshipper@dropana.bo',
+            'email'     => 'test_dropshipper@bolidrop.bo',
             'password'  => Hash::make('password123'),
             'role'      => 'dropshipper',
             'is_active' => true,
         ]);
 
         $response = $this->post(route('login'), [
-            'email'    => 'test_dropshipper@dropana.bo',
+            'email'    => 'test_dropshipper@bolidrop.bo',
             'password' => 'password123',
         ]);
 
@@ -66,7 +66,7 @@ class WebAuthAndCarrierTest extends TestCase
     {
         $response = $this->post(route('register'), [
             'name'                   => 'Nuevo Dropshipper Bolivia',
-            'email'                  => 'nuevo.dropshipper@dropana.bo',
+            'email'                  => 'nuevo.dropshipper@bolidrop.bo',
             'password'               => 'bolivia2026',
             'password_confirmation'  => 'bolivia2026',
             'role'                   => 'dropshipper',
@@ -79,12 +79,12 @@ class WebAuthAndCarrierTest extends TestCase
 
         $response->assertRedirect(route('panel.dropshipper'));
         $this->assertDatabaseHas('users', [
-            'email'       => 'nuevo.dropshipper@dropana.bo',
+            'email'       => 'nuevo.dropshipper@bolidrop.bo',
             'role'        => 'dropshipper',
             'document_id' => '9988776 SC',
         ]);
 
-        $newUser = User::where('email', 'nuevo.dropshipper@dropana.bo')->first();
+        $newUser = User::where('email', 'nuevo.dropshipper@bolidrop.bo')->first();
         $this->assertNotNull($newUser);
 
         // Wallet en BOB debe haberse creado automáticamente
@@ -150,3 +150,4 @@ class WebAuthAndCarrierTest extends TestCase
         $this->assertStringContainsString('Se visitó el domicilio', $order->novedad_notes);
     }
 }
+

@@ -42,3 +42,4 @@ class WalletTransaction extends Model
         return $this->belongsTo(BankSettlementBatch::class, 'bank_settlement_batch_id');
     }
 }
+

@@ -23,3 +23,4 @@ class Lead extends Model
         'status',
     ];
 }
+

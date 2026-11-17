@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Notificaciones Transaccionales WhatsApp | Dropana Bolivia')
+@section('title', 'Notificaciones Transaccionales WhatsApp | Bolidrop Bolivia')
 
 @section('content')
 <div class="space-y-6">
@@ -14,7 +14,7 @@
                 </span>
                 <span class="text-xs text-slate-500 font-medium">Automatización Transaccional COD</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#960016] font-heading">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
                 Centro de Notificaciones WhatsApp
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -133,3 +133,6 @@
 
 </div>
 @endsection
+
+
+

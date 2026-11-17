@@ -34,7 +34,7 @@ class InitKardexBalancesCommand extends Command
                 $kardexService->recordOpeningBalance(
                     $inv,
                     $adminId,
-                    'Saldo inicial de apertura del ecosistema Dropana Bolivia'
+                    'Saldo inicial de apertura del ecosistema Bolidrop Bolivia'
                 );
                 $count++;
             }
@@ -44,3 +44,4 @@ class InitKardexBalancesCommand extends Command
         return Command::SUCCESS;
     }
 }
+

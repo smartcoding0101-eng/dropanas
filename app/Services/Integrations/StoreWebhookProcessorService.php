@@ -22,7 +22,7 @@ class StoreWebhookProcessorService
     ) {}
 
     /**
-     * Procesa un webhook de Shopify y genera la orden en Dropana Bolivia.
+     * Procesa un webhook de Shopify y genera la orden en Bolidrop Bolivia.
      */
     public function processShopify(StoreIntegration $integration, array $payload, string $eventType): StoreWebhookLog
     {
@@ -108,7 +108,7 @@ class StoreWebhookProcessorService
             $platformFeeBob = round(($totalAmountBob * 0.05) + 2.00, 2); // Estimación inicial
             $dropshipperProfitBob = $totalAmountBob - $totalCostBob - $shippingFeeBob - $platformFeeBob;
 
-            // Creación del Pedido en Dropana Bolivia
+            // Creación del Pedido en Bolidrop Bolivia
             $orderNumber = 'SHP-' . ($payload['order_number'] ?? rand(1000, 9999));
             $order = Order::create([
                 'tenant_id'              => $integration->tenant_id,
@@ -179,7 +179,7 @@ class StoreWebhookProcessorService
     }
 
     /**
-     * Procesa un webhook de WooCommerce y genera la orden en Dropana Bolivia.
+     * Procesa un webhook de WooCommerce y genera la orden en Bolidrop Bolivia.
      */
     public function processWooCommerce(StoreIntegration $integration, array $payload, string $eventType): StoreWebhookLog
     {
@@ -341,3 +341,4 @@ class StoreWebhookProcessorService
         };
     }
 }
+

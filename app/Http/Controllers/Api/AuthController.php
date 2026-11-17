@@ -33,7 +33,7 @@ class AuthController extends Controller
         // Si no envía tenant_code, se asigna al tenant oficial por defecto de Bolivia
         $tenant = $validated['tenant_code'] ?? false
             ? Tenant::where('code', $validated['tenant_code'])->first()
-            : Tenant::where('code', 'dropana_bolivia')->first();
+            : Tenant::where('code', 'bolidrop_bolivia')->first();
 
         if (!$tenant) {
             $tenant = Tenant::first();
@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Usuario registrado exitosamente en Dropana Bolivia.',
+            'message' => 'Usuario registrado exitosamente en Bolidrop Bolivia.',
             'data' => [
                 'user' => $user->only(['id', 'name', 'email', 'role', 'phone', 'city', 'department']),
                 'tenant' => $tenant->only(['id', 'code', 'company_name', 'currency_code']),
@@ -127,3 +127,4 @@ class AuthController extends Controller
         ]);
     }
 }
+

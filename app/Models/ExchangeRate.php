@@ -33,3 +33,4 @@ class ExchangeRate extends Model
         return $this->belongsTo(Tenant::class);
     }
 }
+

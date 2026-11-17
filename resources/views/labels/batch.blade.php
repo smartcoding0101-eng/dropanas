@@ -119,7 +119,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            background: #960016;
+            background: #064E3B;
             color: #fff;
             padding: 10px 20px;
             font-size: 13px;
@@ -217,7 +217,7 @@
                 </div>
 
                 <div class="footer-note">
-                    <div><strong>Dropana Bolivia</strong> • Bodega: {{ $order->warehouse->name ?? 'Central Santa Cruz' }} • Pedido: {{ $order->order_number }}</div>
+                    <div><strong>Bolidrop Bolivia</strong> • Bodega: {{ $order->warehouse->name ?? 'Central Santa Cruz' }} • Pedido: {{ $order->order_number }}</div>
                     <div>Exige tu comprobante QR o recibo al cartero repartidor. Soporte DEX: (+591) 700-00000</div>
                 </div>
 
@@ -227,3 +227,6 @@
 
 </body>
 </html>
+
+
+

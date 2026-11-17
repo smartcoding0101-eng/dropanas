@@ -32,3 +32,4 @@ class InventoryAlert extends Model
         return $this->belongsTo(Warehouse::class);
     }
 }
+

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes - Dropana Bolivia E-commerce COD
+| API Routes - Bolidrop Bolivia E-commerce COD
 |--------------------------------------------------------------------------
 */
 
@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
 
         $events[] = [
             'label' => 'Despachado desde Bodega',
-            'description' => $order->warehouse ? $order->warehouse->name : 'Megabodega Central Dropana',
+            'description' => $order->warehouse ? $order->warehouse->name : 'Megabodega Central Bolidrop',
             'date' => $order->created_at->format('d/m/Y H:i'),
             'icon' => 'fa-boxes-packing',
             'color' => 'text-blue-500'
@@ -199,3 +199,4 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/store-integrations', [\App\Http\Controllers\Api\StoreIntegrationController::class, 'store']);
     Route::get('/store-integrations/{id}/logs', [\App\Http\Controllers\Api\StoreIntegrationController::class, 'logs']);
 });
+

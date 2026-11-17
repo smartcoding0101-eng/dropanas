@@ -36,3 +36,4 @@ class CarrierCoverage extends Model
         return $this->belongsTo(Carrier::class);
     }
 }
+

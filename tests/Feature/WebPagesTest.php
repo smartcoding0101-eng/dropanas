@@ -20,7 +20,7 @@ class WebPagesTest extends TestCase
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('Dropana');
+        $response->assertSee('Bolidrop');
         $response->assertSee('Bolivia');
         $response->assertDontSee('Nuevo Pedido COD');
     }
@@ -65,3 +65,4 @@ class WebPagesTest extends TestCase
         $response->assertSee('Tenant Admin');
     }
 }
+

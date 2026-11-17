@@ -127,3 +127,4 @@ class BankSettlementBatch extends Model
     public function isCompleted(): bool  { return $this->status === self::STATUS_COMPLETED; }
     public function isRejected(): bool   { return $this->status === self::STATUS_REJECTED; }
 }
+

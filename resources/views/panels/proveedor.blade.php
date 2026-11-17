@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Panel Proveedor | Megabodega Dropana Bolivia')
+@section('title', 'Panel Proveedor | Megabodega Bolidrop Bolivia')
 
 @section('content')
 <div class="space-y-8 bg-[#FFFFFF]" x-data="proveedorDashboard()">
@@ -9,24 +9,24 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
             <div class="flex items-center gap-3 mb-1">
-                <div class="w-10 h-10 rounded-xl bg-[#E88A38] text-white flex items-center justify-center text-lg font-extrabold font-heading shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-[#10B981] text-white flex items-center justify-center text-lg font-extrabold font-heading shadow-sm">
                     {{ strtoupper(substr($provider?->name ?? 'P', 0, 1)) }}
                 </div>
                 <div>
-                    <div class="text-xs text-[#E88A38] font-bold uppercase tracking-wider">Panel del Proveedor / Mayorista</div>
-                    <div class="text-2xl font-extrabold text-[#960016] font-heading leading-tight">
+                    <div class="text-xs text-[#10B981] font-bold uppercase tracking-wider">Panel del Proveedor / Mayorista</div>
+                    <div class="text-2xl font-extrabold text-[#064E3B] font-heading leading-tight">
                         {{ $provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega' }}
                     </div>
                 </div>
             </div>
             <div class="flex items-center gap-3 mt-2 text-xs text-slate-500">
                 <span class="flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-location-dot text-[#ED2100]"></i>
+                    <i class="fa-solid fa-location-dot text-[#059669]"></i>
                     {{ $provider?->city ?? 'Santa Cruz de la Sierra' }}, {{ $provider?->department ?? 'Santa Cruz' }}
                 </span>
                 <span>•</span>
                 <span class="flex items-center gap-1">
-                    <i class="fa-solid fa-id-card text-[#E88A38]"></i>
+                    <i class="fa-solid fa-id-card text-[#10B981]"></i>
                     NIT: {{ $provider?->document_id ?? '1029384019' }}
                 </span>
             </div>
@@ -38,7 +38,7 @@
             </button>
             <a href="{{ url('/catalogo') }}"
                 class="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs inline-flex items-center gap-2 shadow-sm transition">
-                <i class="fa-solid fa-boxes-stacked text-[#E88A38]"></i> Catálogo
+                <i class="fa-solid fa-boxes-stacked text-[#10B981]"></i> Catálogo
             </a>
         </div>
     </div>
@@ -60,8 +60,8 @@
     <!-- Tarjetas de estadísticas (Fondo #FFFFFF con bordes definidos) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Ingresos por liquidaciones (#E88A38 Naranja Fuego) -->
-        <div class="bg-[#E88A38] rounded-2xl p-5 text-white shadow-md space-y-2">
+        <!-- Ingresos por liquidaciones (#10B981 Naranja Fuego) -->
+        <div class="bg-[#10B981] rounded-2xl p-5 text-white shadow-md space-y-2">
             <div class="flex items-center gap-2 text-amber-100 text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-sack-dollar text-white"></i> Ingresos Liquidados
             </div>
@@ -73,8 +73,8 @@
 
         <!-- Saldo billetera (#FFFFFF) -->
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
-            <div class="flex items-center gap-2 text-[#E88A38] text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-wallet text-[#ED2100]"></i> Saldo Billetera
+            <div class="flex items-center gap-2 text-[#10B981] text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-wallet text-[#059669]"></i> Saldo Billetera
             </div>
             <div class="text-2xl font-extrabold font-mono text-emerald-600">
                 Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}
@@ -85,18 +85,18 @@
         <!-- Stock Total Físico (#FFFFFF) -->
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-cubes-stacked text-[#E88A38]"></i> Stock Físico Disponible
+                <i class="fa-solid fa-cubes-stacked text-[#10B981]"></i> Stock Físico Disponible
             </div>
-            <div class="text-2xl font-extrabold font-mono text-[#960016]">{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
+            <div class="text-2xl font-extrabold font-mono text-[#064E3B]">{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['active_products'] }} productos activos en catálogo</div>
         </div>
 
         <!-- Ventas y Pedidos (#FFFFFF) -->
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-cart-flatbed text-[#E88A38]"></i> Pedidos & Despachos
+                <i class="fa-solid fa-cart-flatbed text-[#10B981]"></i> Pedidos & Despachos
             </div>
-            <div class="text-2xl font-extrabold text-[#960016] font-heading">{{ $stats['total_sales'] ?? 0 }} pedidos</div>
+            <div class="text-2xl font-extrabold text-[#064E3B] font-heading">{{ $stats['total_sales'] ?? 0 }} pedidos</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['pending_orders'] ?? 0 }} en proceso / {{ $stats['delivered_orders'] ?? 0 }} entregados</div>
         </div>
     </div>
@@ -107,17 +107,17 @@
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-warehouse text-[#E88A38]"></i>
+                    <i class="fa-solid fa-warehouse text-[#10B981]"></i>
                     <div>
-                        <h3 class="font-bold text-[#960016] text-sm font-heading">Mis Bodegas de Despacho & Inventario</h3>
+                        <h3 class="font-bold text-[#064E3B] text-sm font-heading">Mis Bodegas de Despacho & Inventario</h3>
                         <p class="text-xs text-slate-500">Distribución física de stock disponible para despacho COD en Bolivia</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <button @click="transferModalOpen = true" class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-dolly text-[#E88A38]"></i> Transferir Stock
+                        <i class="fa-solid fa-dolly text-[#10B981]"></i> Transferir Stock
                     </button>
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-[#960016] border border-red-200 font-mono">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-[#064E3B] border border-red-200 font-mono">
                         {{ $stats['total_stock'] ?? 0 }} uds totales
                     </span>
                 </div>
@@ -129,11 +129,11 @@
                         <div>
                             <div class="font-bold text-slate-900 text-sm">{{ $warehouse->name }}</div>
                             <div class="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
-                                <i class="fa-solid fa-location-dot text-[#ED2100]"></i>
+                                <i class="fa-solid fa-location-dot text-[#059669]"></i>
                                 {{ $warehouse->address }}, {{ $warehouse->city }}
                             </div>
                             <div class="text-xs text-slate-500 mt-1">
-                                <i class="fa-solid fa-phone text-[#E88A38] mr-1"></i> {{ $warehouse->contact_phone ?? '+591 3 3456789' }}
+                                <i class="fa-solid fa-phone text-[#10B981] mr-1"></i> {{ $warehouse->contact_phone ?? '+591 3 3456789' }}
                             </div>
                         </div>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
@@ -142,7 +142,7 @@
                     </div>
 
                     <div class="pt-2 border-t border-slate-100">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-[#E88A38] mb-2 flex items-center justify-between">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[#10B981] mb-2 flex items-center justify-between">
                             <span>Stock en Bodega:</span>
                             <span class="font-mono text-slate-700">{{ $warehouse->inventories->sum('stock_available') }} uds</span>
                         </div>
@@ -153,7 +153,7 @@
                                 <span class="text-[10px] text-slate-400 font-mono">SKU: {{ $inv->product->sku }}</span>
                             </div>
                             <div class="text-right shrink-0">
-                                <span class="font-mono font-bold text-[#960016] block">{{ $inv->stock_available }} disp.</span>
+                                <span class="font-mono font-bold text-[#064E3B] block">{{ $inv->stock_available }} disp.</span>
                                 @if($inv->stock_reserved > 0)
                                 <span class="text-[10px] text-amber-600 font-mono">({{ $inv->stock_reserved }} res.)</span>
                                 @endif
@@ -173,11 +173,11 @@
         <div id="alertas" class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-[#E88A38] flex items-center justify-center font-bold text-base">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-[#10B981] flex items-center justify-center font-bold text-base">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] text-sm font-heading">Alertas de Stock & Reabastecimiento de Inventario</h3>
+                        <h3 class="font-bold text-[#064E3B] text-sm font-heading">Alertas de Stock & Reabastecimiento de Inventario</h3>
                         <p class="text-xs text-slate-500">Configura umbrales mínimos por bodega para evitar quiebres de stock en tus ventas COD</p>
                     </div>
                 </div>
@@ -206,7 +206,7 @@
                                 <span class="text-[10px] text-slate-400 font-mono">SKU: {{ $alert->product->sku ?? '' }}</span>
                             </div>
                             @if($isLow)
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-[#ED2100] border border-red-200 shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-[#059669] border border-red-200 shrink-0">
                                 <i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo
                             </span>
                             @else
@@ -233,7 +233,7 @@
 
                         <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
                             <span class="flex items-center gap-1">
-                                <i class="fa-solid fa-warehouse text-[#E88A38]"></i> {{ $alert->warehouse->name ?? 'Bodega' }}
+                                <i class="fa-solid fa-warehouse text-[#10B981]"></i> {{ $alert->warehouse->name ?? 'Bodega' }}
                             </span>
                             <span class="text-[10px] text-slate-400">
                                 Activa
@@ -255,9 +255,9 @@
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-clipboard-list text-[#E88A38]"></i>
+                    <i class="fa-solid fa-clipboard-list text-[#10B981]"></i>
                     <div>
-                        <h3 class="font-bold text-[#960016] text-sm font-heading">Trazabilidad Kardex de Mis Productos</h3>
+                        <h3 class="font-bold text-[#064E3B] text-sm font-heading">Trazabilidad Kardex de Mis Productos</h3>
                         <p class="text-xs text-slate-500">Historial inmutable de entradas por saldo inicial, salidas por despacho COD y transferencias</p>
                     </div>
                 </div>
@@ -340,9 +340,9 @@
         <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-cart-shopping text-[#E88A38]"></i>
+                    <i class="fa-solid fa-cart-shopping text-[#10B981]"></i>
                     <div>
-                        <h3 class="font-bold text-[#960016] text-sm font-heading">Ventas y Pedidos COD Despachados</h3>
+                        <h3 class="font-bold text-[#064E3B] text-sm font-heading">Ventas y Pedidos COD Despachados</h3>
                         <p class="text-xs text-slate-500">Pedidos que contienen tus productos publicados, con courier y liquidación</p>
                     </div>
                 </div>
@@ -369,7 +369,7 @@
                             <td class="py-3 px-4 whitespace-nowrap">
                                 <div class="font-bold text-slate-900 font-mono">{{ $order->order_number }}</div>
                                 <div class="text-[11px] text-slate-400">{{ $order->created_at->format('d/m/Y H:i') }}</div>
-                                <div class="text-[10px] text-[#E88A38] font-semibold">DS: {{ $order->dropshipper->name ?? 'Dropshipper' }}</div>
+                                <div class="text-[10px] text-[#10B981] font-semibold">DS: {{ $order->dropshipper->name ?? 'Dropshipper' }}</div>
                             </td>
                             <td class="py-3 px-4">
                                 @foreach($order->items as $item)
@@ -382,7 +382,7 @@
                             <td class="py-3 px-4 whitespace-nowrap">
                                 <div class="font-semibold text-slate-900">{{ $order->customer_name }}</div>
                                 <div class="text-[11px] text-slate-500 flex items-center gap-1">
-                                    <i class="fa-solid fa-location-dot text-[#ED2100]"></i>
+                                    <i class="fa-solid fa-location-dot text-[#059669]"></i>
                                     {{ $order->shipping_city }}, {{ $order->shipping_department }}
                                 </div>
                             </td>
@@ -437,15 +437,15 @@
     <div class="bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-boxes-stacked text-[#E88A38]"></i>
-                <h3 class="font-bold text-[#960016] text-sm font-heading">Mis Productos Publicados</h3>
+                <i class="fa-solid fa-boxes-stacked text-[#10B981]"></i>
+                <h3 class="font-bold text-[#064E3B] text-sm font-heading">Mis Productos Publicados</h3>
             </div>
             <div class="flex items-center gap-2">
                 <button @click="productModalOpen = true"
                     class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5">
                     <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Producto
                 </button>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-[#960016] border border-slate-200 font-mono">
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-[#064E3B] border border-slate-200 font-mono">
                     {{ $products->count() }} productos
                 </span>
             </div>
@@ -471,13 +471,13 @@
                                 @if(!empty($product->images) && count($product->images) > 0)
                                     <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-11 h-11 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0">
                                 @else
-                                    <div class="w-11 h-11 rounded-xl bg-red-50/60 border border-red-100 text-[#960016] flex items-center justify-center shrink-0 text-base">
+                                    <div class="w-11 h-11 rounded-xl bg-red-50/60 border border-red-100 text-[#064E3B] flex items-center justify-center shrink-0 text-base">
                                         <i class="fa-solid fa-box-open"></i>
                                     </div>
                                 @endif
                                 <div>
                                     <div class="font-bold text-slate-900">{{ $product->name }}</div>
-                                    <div class="text-[11px] text-[#E88A38] font-mono font-semibold">SKU: {{ $product->sku }}</div>
+                                    <div class="text-[11px] text-[#10B981] font-mono font-semibold">SKU: {{ $product->sku }}</div>
                                 </div>
                             </div>
                         </td>
@@ -487,10 +487,10 @@
                         <td class="py-3.5 px-5 font-mono font-bold text-slate-900">
                             Bs {{ number_format($product->cost_price_bob, 2) }}
                         </td>
-                        <td class="py-3.5 px-5 font-mono font-bold text-[#E88A38]">
+                        <td class="py-3.5 px-5 font-mono font-bold text-[#10B981]">
                             Bs {{ number_format($product->suggested_price_bob, 2) }}
                         </td>
-                        <td class="py-3.5 px-5 font-mono font-bold text-[#960016]">
+                        <td class="py-3.5 px-5 font-mono font-bold text-[#064E3B]">
                             {{ $product->warehouseInventories->sum('stock_available') }} uds
                         </td>
                         <td class="py-3.5 px-5">
@@ -532,11 +532,11 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#E88A38] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] font-heading text-lg leading-tight">Nueva Regla de Alerta</h3>
+                        <h3 class="font-bold text-[#064E3B] font-heading text-lg leading-tight">Nueva Regla de Alerta</h3>
                         <p class="text-xs text-slate-500">Notifica cuando el stock caiga por debajo del umbral</p>
                     </div>
                 </div>
@@ -549,7 +549,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Producto:</label>
                     <select x-model="alertForm.product_id" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                         <option value="">Selecciona un producto...</option>
                         @foreach($products as $p)
                             <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku }})</option>
@@ -560,7 +560,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Bodega / Almacén:</label>
                     <select x-model="alertForm.warehouse_id" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                         <option value="">Seleccionar bodega...</option>
                         @foreach($allWarehouses as $wh)
                             <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
@@ -572,13 +572,13 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Stock Mínimo (Umbral):</label>
                         <input type="number" x-model.number="alertForm.min_stock_threshold" min="1" required placeholder="Ej: 15"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#10B981]">
                         <span class="text-[10px] text-slate-400 mt-0.5 block">Dispara alerta</span>
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Lote de Reabastecimiento:</label>
                         <input type="number" x-model.number="alertForm.reorder_quantity" min="1" required placeholder="Ej: 50"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#10B981]">
                         <span class="text-[10px] text-slate-400 mt-0.5 block">Unidades sugeridas</span>
                     </div>
                 </div>
@@ -616,11 +616,11 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#E88A38] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-dolly"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] font-heading text-lg leading-tight">Transferir Mercadería entre Bodegas</h3>
+                        <h3 class="font-bold text-[#064E3B] font-heading text-lg leading-tight">Transferir Mercadería entre Bodegas</h3>
                         <p class="text-xs text-slate-500">Mueve inventario entre Santa Cruz, La Paz y Cochabamba con Kardex dual</p>
                     </div>
                 </div>
@@ -633,7 +633,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Producto a Mover:</label>
                     <select x-model="transferForm.product_id" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                         <option value="">Selecciona un producto...</option>
                         @foreach($products as $p)
                             <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku }})</option>
@@ -645,7 +645,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Bodega Origen:</label>
                         <select x-model="transferForm.from_warehouse_id" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                             <option value="">Seleccionar origen...</option>
                             @foreach($allWarehouses as $wh)
                                 <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
@@ -656,7 +656,7 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Bodega Destino:</label>
                         <select x-model="transferForm.to_warehouse_id" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                             <option value="">Seleccionar destino...</option>
                             @foreach($allWarehouses as $wh)
                                 <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
@@ -669,12 +669,12 @@
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Cantidad de Unidades:</label>
                         <input type="number" x-model.number="transferForm.quantity" min="1" required placeholder="Ej: 25"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#10B981]">
                     </div>
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Motivo / Guía interna:</label>
                         <input type="text" x-model="transferForm.notes" placeholder="Ej: Reabastecimiento eje troncal"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                     </div>
                 </div>
 
@@ -712,11 +712,11 @@
             <!-- Encabezado del Modal -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#ED2100] border border-red-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-boxes-packing"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#960016] font-heading text-lg leading-tight">Publicar Producto Mayorista</h3>
+                        <h3 class="font-bold text-[#064E3B] font-heading text-lg leading-tight">Publicar Producto Mayorista</h3>
                         <p class="text-xs text-slate-500">Disponible para miles de dropshippers en Bolivia</p>
                     </div>
                 </div>
@@ -735,19 +735,19 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Nombre del Producto:</label>
                             <input type="text" x-model="form.name" required placeholder="Ej: Mini Proyector LED Portátil Full HD"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block font-bold text-slate-700 mb-1">SKU / Código Único:</label>
                                 <input type="text" x-model="form.sku" required placeholder="PROJ-MINI-01"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                             </div>
                             <div>
                                 <label class="block font-bold text-slate-700 mb-1">Categoría:</label>
                                 <select x-model="form.category_id" required
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                                     <option value="">Seleccionar categoría...</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -773,7 +773,7 @@
                                     </template>
                                     <template x-if="!imagePreview">
                                         <div class="text-center p-1 text-slate-400">
-                                            <i class="fa-solid fa-image text-lg text-[#E88A38]"></i>
+                                            <i class="fa-solid fa-image text-lg text-[#10B981]"></i>
                                             <div class="text-[8px] font-bold">Sin foto</div>
                                         </div>
                                     </template>
@@ -784,7 +784,7 @@
                                     <div class="flex items-center gap-2">
                                         <button type="button" @click="$refs.fileInput.click()"
                                             class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] inline-flex items-center gap-1.5 shadow-sm transition">
-                                            <i class="fa-solid fa-upload text-[#E88A38]"></i> Subir Foto
+                                            <i class="fa-solid fa-upload text-[#10B981]"></i> Subir Foto
                                         </button>
                                         <span class="text-[10px] text-slate-500 truncate max-w-[140px]" x-text="imageFile ? imageFile.name : 'PNG, JPG (Máx 5MB)'"></span>
                                         <input type="file" x-ref="fileInput" @change="handleFileChange($event)" accept="image/png,image/jpeg,image/webp,image/jpg" class="hidden">
@@ -793,7 +793,7 @@
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-[9px] text-slate-400 font-bold uppercase shrink-0">O URL:</span>
                                         <input type="url" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg"
-                                            class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-800 text-[10px] focus:outline-none focus:border-[#E88A38]">
+                                            class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-800 text-[10px] focus:outline-none focus:border-[#10B981]">
                                     </div>
                                 </div>
                             </div>
@@ -806,37 +806,37 @@
                             <div>
                                 <label class="block font-bold text-slate-700 mb-1 text-[11px]">Costo (BOB):</label>
                                 <input type="number" step="0.5" x-model.number="form.cost_price_bob" required placeholder="120.00"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                                 <span class="text-[9px] text-slate-400 block mt-0.5">Cobro neto</span>
                             </div>
                             <div>
                                 <label class="block font-bold text-slate-700 mb-1 text-[11px]">Piso Mín. (BOB):</label>
                                 <input type="number" step="0.5" x-model.number="form.min_price_bob" required placeholder="150.00"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#10B981] focus:bg-white transition">
                                 <span class="text-[9px] text-slate-400 block mt-0.5">Piso venta</span>
                             </div>
                             <div>
                                 <label class="block font-bold text-slate-700 mb-1 text-[11px]">Sugerido (BOB):</label>
                                 <input type="number" step="0.5" x-model.number="form.suggested_price_bob" required placeholder="199.00"
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-[#E88A38] text-xs font-mono font-bold focus:outline-none focus:border-[#E88A38] focus:bg-white transition">
-                                <span class="text-[9px] text-[#E88A38] block mt-0.5">Venta público</span>
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-[#10B981] text-xs font-mono font-bold focus:outline-none focus:border-[#10B981] focus:bg-white transition">
+                                <span class="text-[9px] text-[#10B981] block mt-0.5">Venta público</span>
                             </div>
                         </div>
 
                         <!-- Asignación Inicial de Inventario Físico -->
                         <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                            <div class="font-bold text-[#960016] flex items-center justify-between">
+                            <div class="font-bold text-[#064E3B] flex items-center justify-between">
                                 <span class="flex items-center gap-1.5 text-[11px]">
-                                    <i class="fa-solid fa-warehouse text-[#E88A38]"></i>
+                                    <i class="fa-solid fa-warehouse text-[#10B981]"></i>
                                     Asignación Inicial de Inventario Físico
                                 </span>
-                                <span class="text-[9px] bg-red-100 text-[#960016] font-bold px-2 py-0.5 rounded-full">Kardex Auto</span>
+                                <span class="text-[9px] bg-red-100 text-[#064E3B] font-bold px-2 py-0.5 rounded-full">Kardex Auto</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div>
                                     <label class="block font-medium text-slate-600 mb-1 text-[10px]">Bodega de Ingreso:</label>
                                     <select x-model="form.initial_warehouse_id"
-                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-[#E88A38]">
+                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-[#10B981]">
                                         <option value="">Sin inventario inicial</option>
                                         @foreach($warehouses as $wh)
                                             <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
@@ -846,7 +846,7 @@
                                 <div>
                                     <label class="block font-medium text-slate-600 mb-1 text-[10px]">Cantidad Inicial (Uds):</label>
                                     <input type="number" x-model.number="form.initial_stock" placeholder="50" min="0"
-                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#E88A38]">
+                                        class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs font-mono focus:outline-none focus:border-[#10B981]">
                                 </div>
                             </div>
                         </div>
@@ -924,7 +924,7 @@ function proveedorDashboard() {
             const authRes = await fetch('/api/v1/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ email: 'proveedor@dropana.bo', password: 'password123' })
+                body: JSON.stringify({ email: 'proveedor@bolidrop.bo', password: 'password123' })
             });
             const authData = await authRes.json();
             return authData.data?.token;
@@ -1035,7 +1035,7 @@ function proveedorDashboard() {
                 const authRes = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'proveedor@dropana.bo', password: 'password123' })
+                    body: JSON.stringify({ email: 'proveedor@bolidrop.bo', password: 'password123' })
                 });
                 const authData = await authRes.json();
                 const token = authData.data?.token;
@@ -1079,3 +1079,6 @@ function proveedorDashboard() {
 }
 </script>
 @endsection
+
+
+

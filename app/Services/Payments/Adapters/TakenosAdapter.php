@@ -38,7 +38,7 @@ class TakenosAdapter implements PaymentProviderInterface
             'amount_usd' => $amountUsd,
             'amount_bob' => $amountBob,
             'exchange_rate' => $officialRate,
-            'description' => 'Pago Pedido Dropana #' . $order->order_number,
+            'description' => 'Pago Pedido Bolidrop #' . $order->order_number,
             'payment_url' => 'https://app.takenos.com/pay/' . $reference,
             'payment_link' => 'https://app.takenos.com/pay/' . $reference,
             'supports_takecard' => true,
@@ -57,3 +57,4 @@ class TakenosAdapter implements PaymentProviderInterface
         return 'PENDING';
     }
 }
+

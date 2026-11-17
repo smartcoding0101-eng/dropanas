@@ -26,7 +26,7 @@ use Tests\TestCase;
 
 /**
  * ═══════════════════════════════════════════════════════════════════════
- * STRESS AUDIT INTEGRATION TEST — Dropana Bolivia
+ * STRESS AUDIT INTEGRATION TEST — Bolidrop Bolivia
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Parámetros:
@@ -116,8 +116,8 @@ class StressAuditIntegrationTest extends TestCase
         // 1. Tenant
         $this->tenant = Tenant::create([
             'code'         => 'stress_test',
-            'domain'       => 'stress.dropana.bo',
-            'company_name' => 'Dropana Stress Test',
+            'domain'       => 'stress.bolidrop.bo',
+            'company_name' => 'Bolidrop Stress Test',
             'legal_nit'    => '9999999999',
             'country_code' => 'BO',
             'currency_code'=> 'BOB',
@@ -125,7 +125,7 @@ class StressAuditIntegrationTest extends TestCase
         ]);
 
         // 2. Admin
-        $this->admin = $this->createUser('tenant_admin', 'stress.admin@dropana.bo', 'Admin Stress');
+        $this->admin = $this->createUser('tenant_admin', 'stress.admin@bolidrop.bo', 'Admin Stress');
 
         // 3. 10 Dropshippers (1 wallet cada uno, saldo inicial 0)
         for ($i = 1; $i <= self::DROPSHIPPERS_COUNT; $i++) {
@@ -962,7 +962,7 @@ class StressAuditIntegrationTest extends TestCase
 
         // Log del reporte para inspección visual
         dump([
-            '═══ STRESS AUDIT REPORT — Dropana Bolivia ═══',
+            '═══ STRESS AUDIT REPORT — Bolidrop Bolivia ═══',
             'Pedidos Totales'           => $totalOrders,
             'Pedidos Settled (entregados+liquidados)' => $settled,
             'Pedidos Cancelados'        => $cancelled,
@@ -1078,4 +1078,5 @@ class StressAuditIntegrationTest extends TestCase
         return self::TOTAL_ORDERS;
     }
 }
+
 

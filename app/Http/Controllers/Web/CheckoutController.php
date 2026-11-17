@@ -31,3 +31,4 @@ class CheckoutController extends Controller
         return view('checkout', compact('products', 'warehouses', 'carriers', 'selectedProduct'));
     }
 }
+

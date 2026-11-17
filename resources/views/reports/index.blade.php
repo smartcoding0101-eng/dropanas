@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes & Analytics — Dropana Bolivia</title>
+    <title>Reportes & Analytics — Bolidrop Bolivia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -169,7 +169,7 @@
 <nav class="topnav">
     <div class="nav-brand">
         <span class="logo">🍌</span>
-        <span>Dropana <span style="color:var(--primary)">Analytics</span></span>
+        <span>Bolidrop <span style="color:var(--primary)">Analytics</span></span>
     </div>
     <div class="nav-links">
         <a href="{{ route('panel.admin') }}" class="nav-link">← Admin</a>
@@ -699,3 +699,6 @@ setInterval(async () => {
 
 </body>
 </html>
+
+
+

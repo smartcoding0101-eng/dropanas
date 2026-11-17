@@ -38,13 +38,13 @@ class QrBoliviaSimpleAdapter implements PaymentProviderInterface
             'transaction_currency' => 'BOB', // 068 = Bolivia
             'transaction_amount' => number_format((float) $order->total_amount_bob, 2, '.', ''),
             'country_code' => 'BO',
-            'merchant_name' => $order->tenant->company_name ?? 'Dropana Bolivia',
+            'merchant_name' => $order->tenant->company_name ?? 'Bolidrop Bolivia',
             'merchant_city' => $order->shipping_city ?? 'Santa Cruz',
             'postal_code' => '0000',
             'additional_data_field' => [
                 'order_reference' => $order->order_number,
                 'customer_id' => $order->customer_document_id ?? '0',
-                'glosa' => 'Pago Pedido Dropana #' . $order->order_number,
+                'glosa' => 'Pago Pedido Bolidrop #' . $order->order_number,
             ],
             'qr_identifier' => $qrId,
             'expires_at' => $expirationDate->toIso8601String(),
@@ -61,7 +61,7 @@ class QrBoliviaSimpleAdapter implements PaymentProviderInterface
             'qr_raw_string' => $rawQrString,
             'qr_image_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($rawQrString),
             'expires_at' => $expirationDate->toDateTimeString(),
-            'glosa' => 'Pago Pedido Dropana #' . $order->order_number,
+            'glosa' => 'Pago Pedido Bolidrop #' . $order->order_number,
         ];
     }
 
@@ -77,3 +77,4 @@ class QrBoliviaSimpleAdapter implements PaymentProviderInterface
         return 'PENDING';
     }
 }
+

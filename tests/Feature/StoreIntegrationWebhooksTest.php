@@ -45,7 +45,7 @@ class StoreIntegrationWebhooksTest extends TestCase
         ]);
     }
 
-    public function test_shopify_webhook_creates_cod_order_in_dropana(): void
+    public function test_shopify_webhook_creates_cod_order_in_Bolidrop(): void
     {
         $dropshipper = User::where('role', 'dropshipper')->first();
 
@@ -117,7 +117,7 @@ class StoreIntegrationWebhooksTest extends TestCase
         ]);
     }
 
-    public function test_woocommerce_webhook_creates_cod_order_in_dropana(): void
+    public function test_woocommerce_webhook_creates_cod_order_in_Bolidrop(): void
     {
         $dropshipper = User::where('role', 'dropshipper')->first();
 
@@ -182,3 +182,4 @@ class StoreIntegrationWebhooksTest extends TestCase
         ]);
     }
 }
+

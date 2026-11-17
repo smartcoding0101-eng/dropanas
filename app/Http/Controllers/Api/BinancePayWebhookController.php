@@ -59,7 +59,7 @@ class BinancePayWebhookController extends Controller
             $order = Order::where('order_number', $orderNumber)->first();
         }
         if (!$order && !empty($bizData['productName'])) {
-            // Intentar extraer de "Pedido Dropana #ORD-XXX"
+            // Intentar extraer de "Pedido Bolidrop #ORD-XXX"
             if (preg_match('/#([A-Z0-9\-]+)/', $bizData['productName'], $m)) {
                 $order = Order::where('order_number', $m[1])->first();
             }
@@ -99,3 +99,4 @@ class BinancePayWebhookController extends Controller
         ]);
     }
 }
+

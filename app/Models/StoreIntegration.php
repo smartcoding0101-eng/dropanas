@@ -43,3 +43,4 @@ class StoreIntegration extends Model
         return $this->hasMany(StoreWebhookLog::class);
     }
 }
+

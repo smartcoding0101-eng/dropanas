@@ -26,3 +26,4 @@ interface PaymentProviderInterface
      */
     public function checkStatus(string $transactionReference): string;
 }
+

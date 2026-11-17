@@ -29,3 +29,4 @@ interface CarrierAdapterInterface
      */
     public function parseSettlementFile(string $filePath): Collection;
 }
+

@@ -51,3 +51,4 @@ class Customer extends Model
         $this->save();
     }
 }
+

@@ -103,3 +103,4 @@ class ReturnsManagementController extends Controller
         return back()->with('success', $msg);
     }
 }
+

@@ -53,3 +53,4 @@ class SyncExchangeRateCommand extends Command
         }
     }
 }
+

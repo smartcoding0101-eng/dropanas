@@ -24,7 +24,7 @@ class LeadController extends Controller
             'notes'                    => 'nullable|string|max:500',
         ]);
 
-        $tenant = Tenant::where('code', 'dropana_bolivia')->first() ?? Tenant::first();
+        $tenant = Tenant::where('code', 'bolidrop_bolivia')->first() ?? Tenant::first();
 
         $lead = Lead::create([
             'tenant_id'                => $tenant?->id,
@@ -41,7 +41,7 @@ class LeadController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'message' => '¡Gracias por tu interés en Dropana Bolivia! Un asesor comercial se pondrá en contacto contigo vía WhatsApp.',
+            'message' => '¡Gracias por tu interés en Bolidrop Bolivia! Un asesor comercial se pondrá en contacto contigo vía WhatsApp.',
             'data'    => $lead,
         ], 201);
     }
@@ -57,3 +57,4 @@ class LeadController extends Controller
         ]);
     }
 }
+

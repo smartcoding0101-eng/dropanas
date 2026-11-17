@@ -64,3 +64,4 @@ class WhatsAppNotificationController extends Controller
         ]);
     }
 }
+

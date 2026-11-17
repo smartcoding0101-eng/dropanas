@@ -14,7 +14,7 @@ class WhatsAppNotificationService
     public const TEMPLATES = [
         'order_confirmed' => [
             'name' => 'Confirmación de Pedido COD',
-            'body' => "¡Hola *{customer_name}*! 👋 Tu pedido *#{order_number}* en Dropana Bolivia fue recibido con éxito.\n\n📦 *Productos:* {items_summary}\n💰 *Monto a pagar al recibir (COD):* Bs {total_amount_bob}\n📍 *Ciudad/Destino:* {shipping_city}, {shipping_department}\n\nNuestro transportista de *{carrier_name}* te contactará antes de la entrega. ¡Gracias por confiar en nosotros!",
+            'body' => "¡Hola *{customer_name}*! 👋 Tu pedido *#{order_number}* en Bolidrop Bolivia fue recibido con éxito.\n\n📦 *Productos:* {items_summary}\n💰 *Monto a pagar al recibir (COD):* Bs {total_amount_bob}\n📍 *Ciudad/Destino:* {shipping_city}, {shipping_department}\n\nNuestro transportista de *{carrier_name}* te contactará antes de la entrega. ¡Gracias por confiar en nosotros!",
         ],
         'order_dispatched' => [
             'name' => 'Pedido en Camino (Despachado)',
@@ -114,3 +114,4 @@ class WhatsAppNotificationService
         return $log;
     }
 }
+

@@ -44,7 +44,7 @@ class AuthController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'Tu cuenta ha sido desactivada por el administrador. Contacta a soporte Dropana.',
+                    'email' => 'Tu cuenta ha sido desactivada por el administrador. Contacta a soporte Bolidrop.',
                 ]);
             }
 
@@ -144,3 +144,4 @@ class AuthController extends Controller
         };
     }
 }
+

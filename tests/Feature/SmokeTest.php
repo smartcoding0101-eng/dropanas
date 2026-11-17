@@ -56,3 +56,4 @@ class SmokeTest extends TestCase
         $this->getJson('/api/v1/products')->assertStatus(200);
     }
 }
+

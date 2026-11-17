@@ -29,7 +29,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Auditoría Integral de Flujos del Sistema Dropana Bolivia
+ * Auditoría Integral de Flujos del Sistema Bolidrop Bolivia
  *
  * Módulos auditados:
  * 1. Aprovisionamiento y Compras (Purchase & Warehouse Inbound)
@@ -500,4 +500,5 @@ class SystemAuditFlowsTest extends TestCase
         $this->assertEquals(2, $linkedTxCount);
     }
 }
+
 

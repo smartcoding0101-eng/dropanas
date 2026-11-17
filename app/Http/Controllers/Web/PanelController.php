@@ -248,7 +248,7 @@ class PanelController extends Controller
 
     /**
      * Panel del Cliente de Fulfillment (Tienda Online):
-     * Tú vendes — Dropana almacena, empaca y entrega.
+     * Tú vendes — Bolidrop almacena, empaca y entrega.
      */
     public function fulfillment(Request $request)
     {
@@ -282,4 +282,5 @@ class PanelController extends Controller
         return view('carrier.cobro', compact('carrierUser'));
     }
 }
+
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Kardex Global de Inventario y Trazabilidad | Dropana Admin')
+@section('title', 'Kardex Global de Inventario y Trazabilidad | Bolidrop Admin')
 
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto pb-12" x-data="{ adjustModal: false }">
@@ -8,11 +8,11 @@
     <!-- Encabezado con Título y Acciones -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#960016] mb-1.5">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#064E3B] mb-1.5">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>Exclusivo Administrador del Sistema</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-[#960016] font-heading tracking-tight">
+            <h1 class="text-2xl sm:text-3xl font-black text-[#064E3B] font-heading tracking-tight">
                 Kardex Global y Trazabilidad de Inventario
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -55,9 +55,9 @@
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span>Stock Físico Total</span>
-                <i class="fa-solid fa-boxes-stacked text-[#960016]"></i>
+                <i class="fa-solid fa-boxes-stacked text-[#064E3B]"></i>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-[#960016] font-mono">
+            <div class="text-2xl sm:text-3xl font-black text-[#064E3B] font-mono">
                 {{ number_format($metrics['total_physical']) }} <span class="text-xs font-normal text-slate-400">uds</span>
             </div>
             <div class="text-[11px] text-slate-500 flex justify-between border-t border-slate-100 pt-2 font-medium">
@@ -70,7 +70,7 @@
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span>Valorización (Costo Fijo)</span>
-                <i class="fa-solid fa-vault text-[#E88A38]"></i>
+                <i class="fa-solid fa-vault text-[#10B981]"></i>
             </div>
             <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
                 Bs. {{ number_format($metrics['total_valuation'], 2) }}
@@ -189,7 +189,7 @@
     <!-- 3. Tabla Principal del Kardex Global -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="font-bold text-[#960016] text-sm flex items-center gap-2">
+            <h2 class="font-bold text-[#064E3B] text-sm flex items-center gap-2">
                 <i class="fa-solid fa-list-check"></i>
                 <span>Movimientos Históricos Inmutables ({{ $records->total() }} registros)</span>
             </h2>
@@ -356,7 +356,7 @@
              class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-scale-in">
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-2 text-[#960016] font-bold text-base font-heading">
+                <div class="flex items-center gap-2 text-[#064E3B] font-bold text-base font-heading">
                     <i class="fa-solid fa-sliders"></i>
                     <span>Ajuste Manual de Inventario (Auditoría)</span>
                 </div>
@@ -430,4 +430,7 @@
 
 </div>
 @endsection
+
+
+
 

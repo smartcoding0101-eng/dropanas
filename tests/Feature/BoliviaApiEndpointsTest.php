@@ -66,7 +66,7 @@ class BoliviaApiEndpointsTest extends TestCase
 
     public function test_can_authenticate_and_create_cod_order_with_qr_and_waybill(): void
     {
-        $dropshipper = User::where('email', 'dropshipper@dropana.bo')->first();
+        $dropshipper = User::where('email', 'dropshipper@bolidrop.bo')->first();
         $token = $dropshipper->createToken('test_token')->plainTextToken;
 
         $warehouse = Warehouse::first();
@@ -128,7 +128,7 @@ class BoliviaApiEndpointsTest extends TestCase
 
     public function test_can_query_wallet_balance_and_transactions(): void
     {
-        $dropshipper = User::where('email', 'dropshipper@dropana.bo')->first();
+        $dropshipper = User::where('email', 'dropshipper@bolidrop.bo')->first();
         $token = $dropshipper->createToken('test_token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
@@ -144,3 +144,4 @@ class BoliviaApiEndpointsTest extends TestCase
             ]);
     }
 }
+

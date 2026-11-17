@@ -54,7 +54,7 @@ class AdminUserManagementTest extends TestCase
 
         $payload = [
             'name'                  => 'Importadora Cochabamba Mayorista',
-            'email'                 => 'mayorista.cbba@dropana.bo',
+            'email'                 => 'mayorista.cbba@bolidrop.bo',
             'password'              => 'password123',
             'role'                  => 'provider',
             'phone'                 => '+591 71239999',
@@ -68,11 +68,11 @@ class AdminUserManagementTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('status', 'success')
-            ->assertJsonPath('data.email', 'mayorista.cbba@dropana.bo')
+            ->assertJsonPath('data.email', 'mayorista.cbba@bolidrop.bo')
             ->assertJsonPath('data.role', 'provider');
 
         $this->assertDatabaseHas('users', [
-            'email' => 'mayorista.cbba@dropana.bo',
+            'email' => 'mayorista.cbba@bolidrop.bo',
             'role'  => 'provider',
         ]);
     }
@@ -111,3 +111,4 @@ class AdminUserManagementTest extends TestCase
         $postResponse->assertStatus(403);
     }
 }
+

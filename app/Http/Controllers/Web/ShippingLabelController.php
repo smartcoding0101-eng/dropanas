@@ -67,3 +67,4 @@ class ShippingLabelController extends Controller
         return view('labels.delivery_note', compact('order', 'barcodeSvg', 'barcodeText'));
     }
 }
+

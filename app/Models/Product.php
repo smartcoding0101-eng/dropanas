@@ -61,3 +61,4 @@ class Product extends Model
         return (int) $this->warehouseInventories()->sum('stock_available');
     }
 }
+

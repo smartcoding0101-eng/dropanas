@@ -177,7 +177,7 @@ class KardexController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $filename = 'kardex_global_dropana_' . date('Ymd_His') . '.csv';
+        $filename = 'kardex_global_Bolidrop_' . date('Ymd_His') . '.csv';
 
         return response()->streamDownload(function () use ($query) {
             $handle = fopen('php://output', 'w');
@@ -242,4 +242,5 @@ class KardexController extends Controller
         ]);
     }
 }
+
 

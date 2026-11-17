@@ -63,7 +63,7 @@ class BinancePayAdapter implements PaymentProviderInterface
             'base_amount_bob'       => $amountBob,
             'applied_exchange_rate' => $officialSellRate,
             'goods_type'            => '02', // 02: Bienes físicos e-commerce
-            'goods_name'            => 'Pedido Dropana #' . $order->order_number,
+            'goods_name'            => 'Pedido Bolidrop #' . $order->order_number,
             'checkout_url'          => $checkoutUrl,
             'payment_link'          => $checkoutUrl,
             'qr_code_url'           => $qrImageUrl,
@@ -135,7 +135,7 @@ class BinancePayAdapter implements PaymentProviderInterface
                     'goodsType'     => '02',
                     'goodsCategory' => '6000',
                     'referenceGoodsId' => $order->id,
-                    'goodsName'     => 'Pedido Dropana #' . $order->order_number,
+                    'goodsName'     => 'Pedido Bolidrop #' . $order->order_number,
                     'goodsDetail'   => 'E-commerce COD Bolivia',
                 ],
             ];
@@ -167,3 +167,4 @@ class BinancePayAdapter implements PaymentProviderInterface
         return null;
     }
 }
+

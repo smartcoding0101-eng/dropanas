@@ -131,3 +131,4 @@ class DeliveryNotePrintingTest extends TestCase
         $response->assertViewIs('labels.thermal');
     }
 }
+

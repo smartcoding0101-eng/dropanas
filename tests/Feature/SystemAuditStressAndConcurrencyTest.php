@@ -23,7 +23,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 /**
- * Pruebas de Estrés, Concurrencia y Resiliencia del Sistema Dropana Bolivia
+ * Pruebas de Estrés, Concurrencia y Resiliencia del Sistema Bolidrop Bolivia
  *
  * Módulos sometidos a estrés:
  * 1. Disputa Concurrente de Inventario (Prevención de Sobreventa / Race Conditions)
@@ -421,4 +421,5 @@ class SystemAuditStressAndConcurrencyTest extends TestCase
         $this->assertEquals(0, $unassignedWithdrawals, 'Todos los retiros deben estar asignados al lote');
     }
 }
+
 

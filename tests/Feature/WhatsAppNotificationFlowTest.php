@@ -183,3 +183,4 @@ class WhatsAppNotificationFlowTest extends TestCase
             ->assertJsonStructure(['status', 'link', 'message']);
     }
 }
+

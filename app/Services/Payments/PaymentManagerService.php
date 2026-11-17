@@ -46,3 +46,4 @@ class PaymentManagerService
         return $adapter->createPaymentPayload($order);
     }
 }
+

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout COD + QR Bolivia | Dropana')
+@section('title', 'Checkout COD + QR Bolivia | Bolidrop')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#FFFFFF]" x-data="checkoutDemo()">
@@ -8,12 +8,12 @@
     <!-- Header -->
     <div class="mb-8 border-b border-slate-200 pb-6">
         <div class="flex items-center gap-2 mb-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#960016] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
                 Demo en Vivo
             </span>
             <span class="text-xs text-slate-500 font-medium">Flujo real — sin pagos reales</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#960016] font-heading">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
             Checkout Contra Entrega (COD) + QR Simple Bolivia
         </h1>
         <p class="text-slate-500 text-sm mt-1">
@@ -30,8 +30,8 @@
             <!-- PASO 1: Producto -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#960016] text-white flex items-center justify-center text-xs font-bold">1</div>
-                    <h2 class="font-bold text-[#960016] text-sm font-heading">Producto a Despachar</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#064E3B] text-white flex items-center justify-center text-xs font-bold">1</div>
+                    <h2 class="font-bold text-[#064E3B] text-sm font-heading">Producto a Despachar</h2>
                 </div>
                 <div class="p-5 space-y-4">
                     <div>
@@ -80,15 +80,15 @@
             <!-- PASO 2: Bodega y Transportadora -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#960016] text-white flex items-center justify-center text-xs font-bold">2</div>
-                    <h2 class="font-bold text-[#960016] text-sm font-heading">Bodega de Despacho y Transportadora</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#064E3B] text-white flex items-center justify-center text-xs font-bold">2</div>
+                    <h2 class="font-bold text-[#064E3B] text-sm font-heading">Bodega de Despacho y Transportadora</h2>
                 </div>
                 <div class="p-5 space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bodega de Origen</label>
                             <select x-model="form.warehouse_id"
-                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#E88A38] outline-none bg-white">
+                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#10B981] outline-none bg-white">
                                 <option value="">— Seleccionar bodega —</option>
                                 @foreach($warehouses as $w)
                                 <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->city }})</option>
@@ -98,7 +98,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Transportadora COD</label>
                             <select x-model="form.carrier_code"
-                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#E88A38] outline-none bg-white">
+                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#10B981] outline-none bg-white">
                                 <option value="">— Seleccionar transportadora —</option>
                                 @foreach($carriers as $c)
                                 <option value="{{ $c->code }}">{{ $c->name }}</option>
@@ -112,29 +112,29 @@
             <!-- PASO 3: Datos del cliente -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#960016] text-white flex items-center justify-center text-xs font-bold">3</div>
-                    <h2 class="font-bold text-[#960016] text-sm font-heading">Datos del Cliente Final (Bolivia)</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#064E3B] text-white flex items-center justify-center text-xs font-bold">3</div>
+                    <h2 class="font-bold text-[#064E3B] text-sm font-heading">Datos del Cliente Final (Bolivia)</h2>
                 </div>
                 <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nombre Completo</label>
                         <input type="text" x-model="form.customer_name" placeholder="Ej: Rodrigo Morales Vaca"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none" />
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Teléfono (WhatsApp)</label>
                         <input type="text" x-model="form.customer_phone" placeholder="+591 78512345"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none font-mono" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none font-mono" />
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Carnet de Identidad (CI / NIT)</label>
                         <input type="text" x-model="form.customer_document_id" placeholder="Ej: 7891234 SC"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none" />
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Departamento de Entrega</label>
                         <select x-model="form.shipping_department"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#E88A38] outline-none bg-white">
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-[#10B981] outline-none bg-white">
                             <option value="">— Seleccionar departamento —</option>
                             @foreach(['Santa Cruz','La Paz','Cochabamba','Oruro','Potosí','Chuquisaca','Tarija','Beni','Pando'] as $dep)
                             <option value="{{ $dep }}">{{ $dep }}</option>
@@ -144,17 +144,17 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Ciudad</label>
                         <input type="text" x-model="form.shipping_city" placeholder="Ej: Santa Cruz de la Sierra"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none" />
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Dirección de Entrega</label>
                         <input type="text" x-model="form.shipping_address" placeholder="Ej: Av. San Martín #123, Zona Centro"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none" />
                     </div>
                     <div class="sm:col-span-2">
                         <label class="block text-xs font-semibold text-slate-600 mb-1.5">Referencia de Ubicación</label>
                         <input type="text" x-model="form.shipping_reference" placeholder="Frente a la farmacia, portón café con timbre blanco"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#E88A38] outline-none" />
+                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-[#10B981] outline-none" />
                     </div>
                 </div>
             </div>
@@ -162,8 +162,8 @@
             <!-- PASO 4: Método de Cobro -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#960016] text-white flex items-center justify-center text-xs font-bold">4</div>
-                    <h2 class="font-bold text-[#960016] text-sm font-heading">Método de Cobro al Entregar (COD Bolivia)</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#064E3B] text-white flex items-center justify-center text-xs font-bold">4</div>
+                    <h2 class="font-bold text-[#064E3B] text-sm font-heading">Método de Cobro al Entregar (COD Bolivia)</h2>
                 </div>
                 <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- COD Efectivo -->
@@ -306,7 +306,7 @@
                 </div>
             </div>
 
-            <!-- Botón de Enviar (Primario Escarlata #ED2100 con Títulos y Feedback de Estado) -->
+            <!-- Botón de Enviar (Primario Escarlata #059669 con Títulos y Feedback de Estado) -->
             <div class="space-y-3 pt-2">
                 <button type="button" @click.prevent="submitOrder()" :disabled="loading || priceError || !isFormValid()"
                     class="w-full py-4 px-6 btn-scarlet font-bold rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 text-base transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed group">
@@ -340,10 +340,10 @@
                 <!-- Feedback explicativo de validación si el botón está deshabilitado -->
                 <div x-show="!isFormValid() && !loading" class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-[#E88A38]"></i>
+                        <i class="fa-solid fa-circle-info text-[#10B981]"></i>
                         <span>Campos requeridos: <strong class="font-bold underline" x-text="missingFieldsSummary()"></strong></span>
                     </div>
-                    <button @click="fillDemoData()" type="button" class="font-bold text-[#960016] hover:text-[#ED2100] hover:underline flex items-center gap-1">
+                    <button @click="fillDemoData()" type="button" class="font-bold text-[#064E3B] hover:text-[#059669] hover:underline flex items-center gap-1">
                         <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Autocompletar datos de prueba
                     </button>
                 </div>
@@ -540,7 +540,7 @@
                                 <span class="font-mono" x-text="parseFloat(result?.order?.shipping_fee_bob).toFixed(2) + ' BOB'"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-slate-600">Comisión Dropana:</span>
+                                <span class="text-slate-600">Comisión Bolidrop:</span>
                                 <span class="font-mono" x-text="parseFloat(result?.order?.platform_fee_bob).toFixed(2) + ' BOB'"></span>
                             </div>
                             <div class="flex justify-between border-t border-slate-200 pt-1 text-emerald-700 font-bold">
@@ -704,7 +704,7 @@ function checkoutDemo() {
                 const loginRes = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@dropana.bo', password: 'password123' }),
+                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' }),
                 });
                 const loginData = await loginRes.json();
                 
@@ -776,3 +776,6 @@ function checkoutDemo() {
 }
 </script>
 @endsection
+
+
+

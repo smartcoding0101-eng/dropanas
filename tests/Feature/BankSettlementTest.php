@@ -243,3 +243,4 @@ class BankSettlementTest extends TestCase
         $response->assertSee($batch->batch_number);
     }
 }
+

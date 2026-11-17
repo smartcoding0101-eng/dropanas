@@ -34,3 +34,4 @@ class CommissionRule extends Model
         'priority' => 'integer',
     ];
 }
+

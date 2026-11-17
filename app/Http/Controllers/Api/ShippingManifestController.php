@@ -119,3 +119,4 @@ class ShippingManifestController extends Controller
         ]);
     }
 }
+

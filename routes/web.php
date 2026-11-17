@@ -80,10 +80,10 @@ Route::prefix('notifications/whatsapp')->name('notifications.whatsapp.')->group(
 });
 
 // ─────────────────────────────────────────────────────────────────
-// BRECHAS IMPLEMENTADAS — Nuevas rutas del sistema Dropana Bolivia
+// BRECHAS IMPLEMENTADAS — Nuevas rutas del sistema Bolidrop Bolivia
 // ─────────────────────────────────────────────────────────────────
 
-// [BRECHA #4] Panel Fulfillment (Tiendas Online que tercerizan logística a Dropana)
+// [BRECHA #4] Panel Fulfillment (Tiendas Online que tercerizan logística a Bolidrop)
 Route::get('/panel/fulfillment', [PanelController::class, 'fulfillment'])->name('panel.fulfillment');
 
 // [BRECHA #5] Cobro QR/Efectivo en Campo para el Repartidor
@@ -117,4 +117,5 @@ Route::get('/storage/products/{filename}', function (string $filename) {
     }
     return response()->file($path);
 })->where('filename', '.*');
+
 

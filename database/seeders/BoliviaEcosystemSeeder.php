@@ -33,14 +33,14 @@ class BoliviaEcosystemSeeder extends Seeder
 
         // 2. Tenant Principal para Bolivia (Evitar duplicado)
         $tenant = Tenant::firstOrCreate(
-            ['domain' => 'dropana.bo'],
+            ['domain' => 'bolidrop.bo'],
             [
-                'code' => 'dropana_bolivia',
-                'company_name' => 'Dropana Bolivia S.R.L.',
+                'code' => 'bolidrop_bolivia',
+                'company_name' => 'Bolidrop Bolivia S.R.L.',
                 'legal_nit' => '1028493021',
                 'country_code' => 'BO',
                 'currency_code' => 'BOB',
-                'support_email' => 'soporte@dropana.bo',
+                'support_email' => 'soporte@bolidrop.bo',
                 'support_phone' => '+591 70012345',
                 'is_active' => true,
             ]
@@ -48,10 +48,10 @@ class BoliviaEcosystemSeeder extends Seeder
 
         // 3. Usuarios Clave de Demostración
         $admin = User::firstOrCreate(
-            ['email' => 'admin@dropana.bo'],
+            ['email' => 'admin@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
-                'name' => 'Administrador Dropana Bolivia',
+                'name' => 'Administrador Bolidrop Bolivia',
                 'password' => Hash::make('password123'),
                 'role' => 'tenant_admin',
                 'phone' => '+591 70011111',
@@ -62,7 +62,7 @@ class BoliviaEcosystemSeeder extends Seeder
         );
 
         $provider = User::firstOrCreate(
-            ['email' => 'proveedor@dropana.bo'],
+            ['email' => 'proveedor@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
                 'name' => 'Importadora Oriental Mayorista',
@@ -77,7 +77,7 @@ class BoliviaEcosystemSeeder extends Seeder
         );
 
         $dropshipper = User::firstOrCreate(
-            ['email' => 'dropshipper@dropana.bo'],
+            ['email' => 'dropshipper@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
                 'name' => 'Vendedor E-commerce Emprendedor',
@@ -92,7 +92,7 @@ class BoliviaEcosystemSeeder extends Seeder
         );
 
         $carrierUser = User::firstOrCreate(
-            ['email' => 'carrier@dropana.bo'],
+            ['email' => 'carrier@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
                 'name' => 'Repartidor DEX Express Carlos',
@@ -107,7 +107,7 @@ class BoliviaEcosystemSeeder extends Seeder
         );
 
         $fulfillmentUser = User::firstOrCreate(
-            ['email' => 'fulfillment@dropana.bo'],
+            ['email' => 'fulfillment@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
                 'name' => 'Tienda Online Glow Bolivia',

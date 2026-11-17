@@ -44,7 +44,7 @@ class NotificationController extends Controller
             'channel'        => $validated['channel'],
             'event_type'     => $validated['event_type'],
             'recipient'      => $validated['recipient'],
-            'subject'        => $validated['subject'] ?? 'Notificación Dropana Bolivia',
+            'subject'        => $validated['subject'] ?? 'Notificación Bolidrop Bolivia',
             'body'           => $validated['body'],
             'status'         => 'sent',
             'metadata'       => [
@@ -62,3 +62,4 @@ class NotificationController extends Controller
         ], 201);
     }
 }
+

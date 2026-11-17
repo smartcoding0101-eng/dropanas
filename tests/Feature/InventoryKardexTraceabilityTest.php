@@ -439,3 +439,4 @@ class InventoryKardexTraceabilityTest extends TestCase
     }
 }
 
+

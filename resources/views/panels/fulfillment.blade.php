@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Panel Fulfillment | Dropana Bolivia – Tu Tienda Online')
+@section('title', 'Panel Fulfillment | Bolidrop Bolivia – Tu Tienda Online')
 
 @section('content')
 <div class="space-y-6 pb-10" x-data="fulfillmentPanel()">
 
     <!-- Header -->
-    <div class="bg-gradient-to-r from-[#960016] to-[#ED2100] rounded-2xl p-6 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-[#064E3B] to-[#059669] rounded-2xl p-6 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <div class="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center text-2xl">
                 <i class="fa-solid fa-store"></i>
             </div>
             <div>
                 <h1 class="text-xl font-black font-heading">Panel de Fulfillment</h1>
-                <p class="text-white/70 text-sm">Tú vendes — Dropana almacena, empaca y entrega</p>
+                <p class="text-white/70 text-sm">Tú vendes — Bolidrop almacena, empaca y entrega</p>
             </div>
         </div>
         <div class="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm">
@@ -48,35 +48,35 @@
         <!-- Enviar un pedido manual -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 lg:col-span-1">
             <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-                <i class="fa-solid fa-plus text-[#ED2100]"></i>
+                <i class="fa-solid fa-plus text-[#059669]"></i>
                 Enviar Nuevo Pedido
             </h2>
             <div class="space-y-3">
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Nombre del Cliente</label>
                     <input type="text" placeholder="Ej: María López" x-model="order.customer_name"
-                           class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38]">
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981]">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Teléfono (WhatsApp)</label>
                     <input type="tel" placeholder="+591 7X-XXX-XXXX" x-model="order.customer_phone"
-                           class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38]">
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981]">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Dirección de Entrega</label>
                     <textarea rows="2" placeholder="Calle, barrio, ciudad..." x-model="order.address"
-                              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38] resize-none"></textarea>
+                              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] resize-none"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="text-xs font-bold text-slate-600 block mb-1">Monto COD (Bs.)</label>
                         <input type="number" placeholder="0.00" x-model="order.cod_amount"
-                               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38]">
+                               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981]">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-600 block mb-1">Departamento</label>
                         <select x-model="order.department"
-                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#E88A38]">
+                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981]">
                             @foreach(['Santa Cruz','La Paz','El Alto','Cochabamba','Oruro','Potosí','Chuquisaca','Tarija','Beni','Pando'] as $dept)
                             <option>{{ $dept }}</option>
                             @endforeach
@@ -96,7 +96,7 @@
                 <div class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Tarifa de Envío Estimada</div>
                 <div class="flex justify-between items-center">
                     <span class="text-slate-600">Destino: <span class="font-semibold text-slate-800" x-text="order.department"></span></span>
-                    <span class="font-black text-[#960016]">Bs. <span x-text="shippingRate"></span></span>
+                    <span class="font-black text-[#064E3B]">Bs. <span x-text="shippingRate"></span></span>
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1">Tarifa plana hasta 3 kg • Almacenaje $0</div>
             </div>
@@ -106,10 +106,10 @@
         <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
                 <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-[#E88A38]"></i>
+                    <i class="fa-solid fa-list-check text-[#10B981]"></i>
                     Mis Pedidos Recientes
                 </h2>
-                <a href="{{ url('/tracking') }}" class="text-xs text-[#960016] font-bold hover:underline flex items-center gap-1">
+                <a href="{{ url('/tracking') }}" class="text-xs text-[#064E3B] font-bold hover:underline flex items-center gap-1">
                     Rastrear <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
             </div>
@@ -135,7 +135,7 @@
                             ['guide'=>'DRP-2026-0138','name'=>'Jorge Salinas','city'=>'Santa Cruz','amount'=>'Bs. 520','status'=>'delivered'],
                         ] as $order)
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-4 py-3 font-mono text-xs text-[#960016] font-bold">{{ $order['guide'] }}</td>
+                            <td class="px-4 py-3 font-mono text-xs text-[#064E3B] font-bold">{{ $order['guide'] }}</td>
                             <td class="px-4 py-3 font-medium text-slate-800 text-xs">{{ $order['name'] }}</td>
                             <td class="px-4 py-3 text-slate-500 text-xs">{{ $order['city'] }}</td>
                             <td class="px-4 py-3 font-bold text-slate-900">{{ $order['amount'] }}</td>
@@ -162,11 +162,11 @@
         </div>
     </div>
 
-    <!-- Inventario en bodega Dropana -->
+    <!-- Inventario en bodega Bolidrop -->
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-            <i class="fa-solid fa-warehouse text-[#E88A38]"></i>
-            Mi Inventario en Bodega Dropana
+            <i class="fa-solid fa-warehouse text-[#10B981]"></i>
+            Mi Inventario en Bodega Bolidrop
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             @foreach([
@@ -191,7 +191,7 @@
             @endforeach
         </div>
         <div class="text-center pt-2">
-            <a href="{{ url('/contactenos') }}" class="text-xs text-[#960016] font-bold hover:underline">
+            <a href="{{ url('/contactenos') }}" class="text-xs text-[#064E3B] font-bold hover:underline">
                 ¿Quieres ingresar más stock? Contacta al equipo logístico →
             </a>
         </div>
@@ -233,3 +233,6 @@ function fulfillmentPanel() {
 }
 </script>
 @endsection
+
+
+
