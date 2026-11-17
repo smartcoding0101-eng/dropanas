@@ -37,7 +37,7 @@
     </div>
 
     <!-- TARJETAS DE MÉTRICAS (SB Admin Pro Overlap) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 -mt-14 relative z-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 !-mt-14 relative z-10">
         
         <!-- Total Recaudación BOB -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#0061f2] hover:shadow-md transition">

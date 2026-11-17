@@ -13,7 +13,7 @@
     </x-page-header>
 
     <!-- Formulario búsqueda (SB Admin Pro Overlap) -->
-    <div class="max-w-2xl mx-auto space-y-6 -mt-14 relative z-10">
+    <div class="max-w-2xl mx-auto space-y-6 !-mt-14 relative z-10">
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div class="flex gap-3">
             <div class="flex-1 relative">

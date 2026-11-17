@@ -6,7 +6,7 @@
 ])
 
 <!-- SB Admin Pro Signature Page Header (bg-gradient-primary-to-secondary + Overlap) -->
-<header class="page-header-sb text-white pt-10 pb-24 px-4 sm:px-8 -mx-4 sm:-mx-8 -mt-3 sm:-mt-5 mb-0 relative overflow-hidden">
+<header class="page-header-sb text-white pt-8 pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 mb-0 relative overflow-hidden">
     <!-- Subtle geometric pattern overlay -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.35) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.25) 0%, transparent 40%);"></div>
 

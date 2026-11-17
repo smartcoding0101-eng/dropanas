@@ -37,7 +37,7 @@
     </div>
 
     <!-- Tarjetas de estadísticas (SB Admin Pro Overlap) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-14 relative z-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         
         <!-- Ingresos por liquidaciones (#10B981 Naranja Fuego) -->
         <div class="bg-gradient-to-br from-[#0061f2] to-[#6900c7] rounded-2xl p-5 text-white shadow-sm space-y-2">

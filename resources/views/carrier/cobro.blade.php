@@ -17,7 +17,7 @@
         </x-slot:actions>
     </x-page-header>
 
-    <div class="max-w-2xl mx-auto space-y-5 -mt-14 relative z-10">
+    <div class="max-w-2xl mx-auto space-y-5 !-mt-14 relative z-10">
 
     <!-- Resumen de hoja de ruta del día -->
     <div class="grid grid-cols-3 gap-3">

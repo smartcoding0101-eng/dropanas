@@ -18,7 +18,7 @@
     </x-page-header>
 
     <!-- Barra de Filtros (SB Admin Pro Overlap) -->
-    <div class="bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-200 -mt-14 relative z-10">
+    <div class="bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-200 !-mt-14 relative z-10">
         <div class="relative w-full sm:w-96">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input type="text" placeholder="Buscar por producto, SKU o categoría..."

@@ -39,7 +39,7 @@
     </div>
 
     <!-- Tarjetas de Métricas & Rendimiento (SB Admin Pro Overlap) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 -mt-14 relative z-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 !-mt-14 relative z-10">
         
         <!-- Total Pedidos -->
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-emerald-400 hover:shadow-md transition">

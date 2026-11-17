@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- SB Admin Pro Main Landing Page -->
-<div class="space-y-16 pb-12" x-data="landingLeadMagnet()">
+<div class="space-y-12 pb-12" x-data="landingLeadMagnet()">
 
     <!-- Toast Notification -->
     <div x-show="toast.show" x-cloak
@@ -15,60 +15,60 @@
     </div>
 
     <!-- ================================================================ -->
-    <!-- 1. SB ADMIN PRO HERO HEADER (Gradient Primary-to-Secondary)       -->
+    <!-- 1. SB ADMIN PRO HERO HEADER (Dimensiones Ajustadas sin Espacios)  -->
     <!-- ================================================================ -->
-    <section class="page-header-sb text-white pt-12 pb-28 px-4 sm:px-8 -mx-4 sm:-mx-8 -mt-3 sm:-mt-5 relative overflow-hidden shadow-md">
+    <section class="page-header-sb text-white pt-8 pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 relative overflow-hidden shadow-md">
         <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 40%);"></div>
 
         <div class="max-w-7xl mx-auto relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                 
-                <div class="lg:col-span-7 space-y-5">
+                <div class="lg:col-span-7 space-y-4">
                     <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 border border-white/25 text-xs font-bold text-white">
                         <span class="flex h-2 w-2 rounded-full bg-[#00ac69]"></span>
                         <span>El Ecosistema de Dropshipping & Logística COD Nº 1 de Bolivia</span>
                     </div>
 
-                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight font-heading text-white">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] font-heading text-white">
                         Conectamos Proveedores, Vendedores y Tiendas con el Consumidor Final.
                     </h1>
 
-                    <p class="text-white/85 text-base sm:text-lg leading-relaxed max-w-xl">
+                    <p class="text-white/90 text-sm sm:text-base leading-relaxed max-w-2xl">
                         Almacenaje, Fulfillment y Logística con <strong class="text-white font-bold">Pago Contra Entrega (COD)</strong> en Santa Cruz, La Paz, Cochabamba y los 9 departamentos. Recaudación en Bolivianos en efectivo o mediante <strong class="text-white underline decoration-[#00ac69] decoration-2">QR Simple</strong>.
                     </p>
 
-                    <div class="flex flex-wrap items-center gap-3.5 pt-2">
-                        <a href="#lead-magnet" class="px-7 py-3.5 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white font-bold text-sm shadow-lg flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                    <div class="flex flex-wrap items-center gap-3 pt-1">
+                        <a href="#lead-magnet" class="px-6 py-3 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white font-bold text-sm shadow-lg flex items-center gap-2 transition transform hover:-translate-y-0.5">
                             <span>Comienza a Vender Ahora</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="px-6 py-3.5 rounded-xl bg-white text-[#0061f2] hover:bg-blue-50 font-bold text-sm transition shadow-md flex items-center gap-2">
+                        <a href="{{ url('/catalogo') }}" class="px-6 py-3 rounded-xl bg-white text-[#0061f2] hover:bg-blue-50 font-bold text-sm transition shadow-md flex items-center gap-2">
                             <i class="fa-solid fa-boxes-stacked"></i>
                             <span>Ver Catálogo Mayorista</span>
                         </a>
                     </div>
 
-                    <!-- Métricas Destacadas -->
-                    <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/20">
-                        <div>
-                            <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading">9 / 9</div>
-                            <div class="text-xs text-white/75 font-medium">Deptos. Cobertura</div>
+                    <!-- Métricas Destacadas en Tarjetas Compactas -->
+                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/20">
+                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
+                            <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">9 / 9</div>
+                            <div class="text-[11px] text-white/80 font-medium">Deptos. Cobertura</div>
                         </div>
-                        <div>
-                            <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
-                            <div class="text-xs text-white/75 font-medium">Tasa Oficial BCB</div>
+                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
+                            <div class="text-xl sm:text-2xl font-extrabold text-white font-mono">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
+                            <div class="text-[11px] text-white/80 font-medium">Tasa Oficial BCB</div>
                         </div>
-                        <div>
-                            <div class="text-2xl sm:text-3xl font-extrabold text-white font-heading">24 hrs</div>
-                            <div class="text-xs text-white/75 font-medium">Retiros a Billetera</div>
+                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
+                            <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">24 hrs</div>
+                            <div class="text-[11px] text-white/80 font-medium">Retiros a Billetera</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Columna Derecha: Tarjeta Blanca SB Admin Pro -->
                 <div class="lg:col-span-5">
-                    <div class="bg-white text-[#212832] rounded-2xl p-6 sm:p-7 border border-slate-200 shadow-2xl space-y-5">
-                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="bg-white text-[#212832] rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-xl bg-blue-50 text-[#0061f2] flex items-center justify-center font-bold text-lg">
                                     <i class="fa-solid fa-truck-fast"></i>
@@ -85,7 +85,7 @@
                             </span>
                         </div>
 
-                        <div class="space-y-2.5 text-xs">
+                        <div class="space-y-2 text-xs">
                             <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-[#f2f6fc]">
                                 <span class="text-[#69707a] font-medium">Recaudación:</span>
                                 <span class="font-bold text-[#212832] flex items-center gap-1.5">
@@ -116,9 +116,9 @@
     </section>
 
     <!-- ================================================================ -->
-    <!-- 2. LOS 4 PERFILES (SB Admin Pro Overlap Cards -mt-24)            -->
+    <!-- 2. LOS 4 PERFILES (SB Admin Pro Overlap Cards !-mt-12)           -->
     <!-- ================================================================ -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 !-mt-12 relative z-20">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             <!-- Card 1: DROPSHIPPERS -->
