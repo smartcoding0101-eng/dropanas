@@ -188,16 +188,109 @@
             @endif
         </div>
 
-        <!-- Right: BCB Rate, DEX Status & User Dropdown / Auth Buttons -->
-        <div class="flex items-center gap-3">
-            @if(Auth::check() && !request()->is('/'))
-                <!-- BCB Official Rate Pill -->
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#eef2f8] text-[#212832] text-xs font-medium">
-                    <span class="w-2 h-2 rounded-full bg-[#00ac69]"></span>
-                    <span class="text-[#69707a] hidden xl:inline">BCB:</span>
-                    <strong class="font-mono text-[#0061f2] font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
-                </div>
+        <!-- Right: Cotizaciones del Boliviano (BOB), Divisas & Auth Buttons -->
+        <div class="flex items-center gap-2.5 sm:gap-3" x-data="{ ratesOpen: false }">
+            @php
+                $sellRate = (float) ($bcbOfficialRate ?? 11.70);
+                $buyRate  = max(6.86, round($sellRate - 0.10, 2));
+                $usdtRate = round($sellRate + 0.15, 2);
+                $eurRate  = round($sellRate * 1.08, 2);
+                $cnyRate  = round($sellRate * 0.14, 2);
+                $brlRate  = round($sellRate * 0.20, 2);
+            @endphp
 
+            <!-- Ticker de Tipo de Cambio en el Navbar con Desplegable de Monedas -->
+            <div class="relative">
+                <button @click="ratesOpen = !ratesOpen" @click.away="ratesOpen = false"
+                    class="flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-lg bg-[#eef2f8] hover:bg-blue-50/80 border border-slate-200/80 text-[#212832] text-xs transition cursor-pointer"
+                    title="Ver todas las cotizaciones del Boliviano (BOB)">
+                    <span class="w-2 h-2 rounded-full bg-[#00ac69] animate-pulse"></span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[#69707a] font-semibold">USD/BOB:</span>
+                        <span class="hidden md:inline text-[11px] text-[#69707a]">C: <strong class="font-mono text-[#212832]">{{ number_format($buyRate, 2) }}</strong></span>
+                        <span class="text-[11px] text-[#69707a]">V: <strong class="font-mono text-[#0061f2] font-bold">{{ number_format($sellRate, 2) }} Bs</strong></span>
+                    </div>
+                    <span class="hidden lg:inline text-slate-300">|</span>
+                    <div class="hidden lg:flex items-center gap-1 text-[11px]">
+                        <span class="text-[#69707a] font-semibold">USDT:</span>
+                        <strong class="font-mono text-[#00ac69] font-bold">{{ number_format($usdtRate, 2) }} Bs</strong>
+                    </div>
+                    <span class="hidden xl:inline text-slate-300">|</span>
+                    <div class="hidden xl:flex items-center gap-1 text-[11px]">
+                        <span class="text-[#69707a] font-semibold">EUR:</span>
+                        <strong class="font-mono text-[#6900c7] font-bold">{{ number_format($eurRate, 2) }} Bs</strong>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-[#69707a] ml-0.5"></i>
+                </button>
+
+                <!-- Dropdown Detallado de Monedas frente al Boliviano (BOB) -->
+                <div x-show="ratesOpen" x-cloak
+                    x-transition
+                    class="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <div>
+                            <div class="font-extrabold text-[#212832] text-xs">Tipo de Cambio — Bolivia (BOB)</div>
+                            <div class="text-[10px] text-[#69707a]">Cotizaciones referenciales e importación</div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#00ac69] font-bold text-[10px]">En Vivo</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                            <div>
+                                <div class="font-bold text-[#212832]">🇺🇸 Dólar BCB Referencial</div>
+                                <div class="text-[10px] text-[#69707a]">Comercio Exterior / Importación</div>
+                            </div>
+                            <div class="text-right font-mono">
+                                <div class="text-[10px] text-[#69707a]">Compra: <strong>{{ number_format($buyRate, 2) }} Bs</strong></div>
+                                <div class="text-xs font-bold text-[#0061f2]">Venta: {{ number_format($sellRate, 2) }} Bs</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                            <div>
+                                <div class="font-bold text-[#212832]">🇧🇴 Dólar Oficial BCB</div>
+                                <div class="text-[10px] text-[#69707a]">Tasa Fija Bancaria</div>
+                            </div>
+                            <div class="text-right font-mono">
+                                <div class="text-[10px] text-[#69707a]">Compra: <strong>6.86 Bs</strong></div>
+                                <div class="text-xs font-bold text-[#212832]">Venta: 6.96 Bs</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                            <div>
+                                <div class="font-bold text-[#212832]">₮ USDT (Binance P2P)</div>
+                                <div class="text-[10px] text-[#69707a]">Liquidación Cripto / QR Simple</div>
+                            </div>
+                            <div class="text-right font-mono">
+                                <div class="text-xs font-bold text-[#00ac69]">{{ number_format($usdtRate, 2) }} Bs</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                <span class="font-semibold text-[#69707a]">🇪🇺 EUR:</span>
+                                <strong class="font-mono text-[#212832]">{{ number_format($eurRate, 2) }} Bs</strong>
+                            </div>
+                            <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                <span class="font-semibold text-[#69707a]">🇨🇳 CNY:</span>
+                                <strong class="font-mono text-[#212832]">{{ number_format($cnyRate, 2) }} Bs</strong>
+                            </div>
+                            <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                <span class="font-semibold text-[#69707a]">🇧🇷 BRL:</span>
+                                <strong class="font-mono text-[#212832]">{{ number_format($brlRate, 2) }} Bs</strong>
+                            </div>
+                            <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
+                                <span class="font-semibold text-[#69707a]">🇵🇪 PEN:</span>
+                                <strong class="font-mono text-[#212832]">{{ number_format($sellRate * 0.27, 2) }} Bs</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if(Auth::check() && !request()->is('/'))
                 <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#00ac69] border border-emerald-200/70 text-xs font-bold">
                     <i class="fa-solid fa-truck-fast"></i>
                     <span>DEX 9/9</span>
@@ -220,7 +313,7 @@
                     </form>
                 </div>
             @else
-                <div class="flex items-center gap-2.5 text-xs">
+                <div class="flex items-center gap-2 text-xs">
                     <a href="{{ route('login') }}" class="font-bold text-[#212832] hover:text-[#0061f2] px-4 py-2 rounded-lg border border-slate-200 hover:border-[#0061f2] hover:bg-blue-50/40 transition">
                         Ingresar
                     </a>

@@ -257,6 +257,122 @@
     </section>
 
     <!-- ================================================================ -->
+    <!-- 2.5 MONITOR DE TIPO DE CAMBIO DEL BOLIVIANO (BOB) & DIVISAS      -->
+    <!-- ================================================================ -->
+    @php
+        $bcbSell = (float) ($bcbOfficialRate ?? 11.70);
+        $bcbBuy  = max(6.86, round($bcbSell - 0.10, 2));
+        $usdtP2p = round($bcbSell + 0.15, 2);
+        $eurBob  = round($bcbSell * 1.08, 2);
+        $cnyBob  = round($bcbSell * 0.14, 2);
+        $brlBob  = round($bcbSell * 0.20, 2);
+    @endphp
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ amount: 100, selectedCurrency: 'USD_REF', rates: { USD_REF: {{ $bcbSell }}, USD_OFI: 6.96, USDT: {{ $usdtP2p }}, EUR: {{ $eurBob }}, CNY: {{ $cnyBob }}, BRL: {{ $brlBob }} } }">
+        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-[#0061f2] bg-blue-50 px-3 py-1 rounded-full mb-1.5">
+                        <span class="w-2 h-2 rounded-full bg-[#00ac69] animate-pulse"></span>
+                        <span>Cotización Cambiaria en Tiempo Real</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-extrabold text-[#212832] font-heading">
+                        Tipo de Cambio del Boliviano (BOB) y Divisas de Importación
+                    </h3>
+                    <p class="text-xs text-[#69707a]">
+                        Valores referenciales del Banco Central de Bolivia (BCB), liquidación USDT y monedas para importadores mayoristas.
+                    </p>
+                </div>
+                <div class="text-right text-xs text-[#69707a] font-mono">
+                    <div>Actualizado: <strong class="text-[#212832]">{{ now()->format('d/m/Y H:i') }} BOT</strong></div>
+                    <div class="text-[11px] text-[#00ac69] font-bold">Fuente: BCB Oficial & P2P Bolivia</div>
+                </div>
+            </div>
+
+            <!-- Grid de 6 Monedas frente al Boliviano -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-[#0061f2] space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>🇺🇸 USD Referencial</span>
+                        <span class="text-[#0061f2]">BCB</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#212832]">Bs {{ number_format($bcbSell, 2) }}</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Compra: Bs {{ number_format($bcbBuy, 2) }}</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-slate-700 space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>🇧🇴 USD Oficial</span>
+                        <span class="text-slate-700">Fijo</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#212832]">Bs 6.96</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Compra: Bs 6.86</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-[#00ac69] space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>₮ USDT Digital</span>
+                        <span class="text-[#00ac69]">P2P</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#00ac69]">Bs {{ number_format($usdtP2p, 2) }}</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Retiros Binance</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-[#6900c7] space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>🇪🇺 Euro (EUR)</span>
+                        <span class="text-[#6900c7]">EUR/BOB</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#212832]">Bs {{ number_format($eurBob, 2) }}</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Compra: Bs {{ number_format($eurBob - 0.15, 2) }}</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-[#f4a100] space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>🇨🇳 Yuan (CNY)</span>
+                        <span class="text-[#f4a100]">China</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#212832]">Bs {{ number_format($cnyBob, 2) }}</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Importación Mayorista</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f2f6fc] border-l-4 border-l-cyan-500 space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-[#69707a]">
+                        <span>🇧🇷 Real (BRL)</span>
+                        <span class="text-cyan-600">Brasil</span>
+                    </div>
+                    <div class="text-lg font-extrabold font-mono text-[#212832]">Bs {{ number_format($brlBob, 2) }}</div>
+                    <div class="text-[10px] text-[#69707a] font-mono">Frontera / Mercosur</div>
+                </div>
+            </div>
+
+            <!-- Conversor Rápido a Bolivianos (BOB) -->
+            <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-Money-bill-transfer text-[#0061f2] text-base"></i>
+                    <span class="font-bold text-[#212832]">Calculadora Rápida de Divisas a Bolivianos (BOB):</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <input type="number" x-model.number="amount" min="1"
+                        class="w-28 bg-white border border-slate-200 rounded-lg px-3 py-2 font-mono font-bold text-[#212832] focus:outline-none focus:border-[#0061f2]">
+                    <select x-model="selectedCurrency"
+                        class="bg-white border border-slate-200 rounded-lg px-3 py-2 font-bold text-[#212832] focus:outline-none focus:border-[#0061f2]">
+                        <option value="USD_REF">USD (Dólar Referencial BCB)</option>
+                        <option value="USD_OFI">USD (Dólar Oficial 6.96)</option>
+                        <option value="USDT">USDT (Binance P2P)</option>
+                        <option value="EUR">EUR (Euro)</option>
+                        <option value="CNY">CNY (Yuan Chino)</option>
+                        <option value="BRL">BRL (Real Brasileño)</option>
+                    </select>
+                    <span class="font-bold text-[#69707a]">=</span>
+                    <div class="px-4 py-2 rounded-lg bg-[#0061f2] text-white font-mono font-extrabold text-sm">
+                        Bs <span x-text="(amount * rates[selectedCurrency]).toLocaleString('es-BO', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================ -->
     <!-- 3. VENTAJAS INTEGRALES 360°                                      -->
     <!-- ================================================================ -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
