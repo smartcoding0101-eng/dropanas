@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Bolidrop | Ecosistema E-commerce COD Bolivia')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Bolidrop — Plataforma e-Commerce COD & Logística Nacional')</title>
 
-    <!-- Google Fonts: Plus Jakarta Sans + Outfit + JetBrains Mono -->
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit (Fintech Executive Typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,19 +18,19 @@
             theme: {
                 extend: {
                     colors: {
-                        nordic: {
-                            canvas: '#F8FAFC',   /* Fondo nórdico frío y limpio */
-                            slate: '#0F172A',    /* Títulos oscuros de máximo contraste */
-                            jade: '#0D9488',     /* Jade / Teal primario nórdico */
-                            jadeHover: '#0F766E',
-                            mint: '#14B8A6',     /* Menta acento y badges */
-                            muted: '#64748B',    /* Texto secundario */
-                            glassBorder: 'rgba(226, 232, 240, 0.8)',
+                        midnight: {
+                            navy: '#0A1128',     /* Sidebar Imperial Midnight Navy */
+                            card: '#0F172A',     /* Navy Profundo */
+                            ice: '#F1F5F9',      /* Canvas Principal Platino Frío */
+                            mint: '#00A884',     /* Menta Real / Primario CTA */
+                            mintHover: '#047857',
+                            emerald: '#10B981',  /* Verde Éxito */
+                            silver: '#94A3B8',
                         },
                         fireworks: {
-                            scarlet: '#0D9488', /* Primario Jade Nórdico */
-                            amber: '#14B8A6',   /* Secundario Menta Nórdico */
-                            carmine: '#0F172A', /* Terciario Slate Oscuro */
+                            scarlet: '#00A884', /* Primario Royal Mint */
+                            amber: '#10B981',   /* Secundario Esmeralda */
+                            carmine: '#0A1128', /* Terciario Midnight Navy */
                         }
                     },
                     fontFamily: {
@@ -50,16 +51,16 @@
 
     <style>
         :root {
-            --color-carmine: #0F172A; /* Nordic Slate */
-            --color-amber: #14B8A6;   /* Mint */
-            --color-scarlet: #0D9488; /* Jade */
-            --nordic-canvas: #F8FAFC;
+            --color-carmine: #0A1128; /* Midnight Navy */
+            --color-amber: #10B981;   /* Emerald */
+            --color-scarlet: #00A884; /* Royal Mint */
+            --midnight-ice: #F1F5F9;
             --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-            background-color: #F8FAFC;
+            background-color: #F1F5F9;
             color: #0F172A;
             overflow-x: hidden;
         }
@@ -73,26 +74,24 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Sidebar Glassmorphism Nórdico (Efecto Vidrio Esmerilado Premium) */
+        /* Sidebar Imperial Midnight Navy (Propuesta C) */
         .sidebar-carmine {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(226, 232, 240, 0.85);
-            color: #0F172A;
-            box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.05);
+            background-color: #0A1128;
+            border-right: 1px solid #1E293B;
+            color: #F8FAFC;
+            box-shadow: 4px 0 24px -4px rgba(10, 17, 40, 0.35);
         }
 
         /* Glass Card Utility */
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: 0 10px 25px -5px rgba(0, 168, 132, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
         }
 
-        /* Animaciones & Micro-interacciones (ui-motion-transitions standard) */
+        /* Animaciones & Micro-interacciones */
         .interactive-card {
             transition: transform 0.22s var(--ease-spring),
                         box-shadow 0.22s var(--ease-spring),
@@ -101,16 +100,16 @@
         }
         .interactive-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px -6px rgba(13, 148, 136, 0.10), 0 4px 8px -2px rgba(0, 0, 0, 0.03);
-            border-color: #99F6E4;
+            box-shadow: 0 12px 24px -6px rgba(0, 168, 132, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.03);
+            border-color: #A7F3D0;
         }
         .interactive-card:active {
             transform: translateY(0) scale(0.99);
         }
 
-        /* Botón de Alta Conversión Jade Nórdico (#0D9488) */
+        /* Botón de Alta Conversión Royal Mint (#00A884) */
         .btn-scarlet {
-            background-color: #0D9488;
+            background-color: #00A884;
             color: #FFFFFF;
             transition: transform 0.2s var(--ease-spring),
                         background-color 0.18s ease,
@@ -118,17 +117,17 @@
             will-change: transform;
         }
         .btn-scarlet:hover {
-            background-color: #0F766E;
+            background-color: #047857;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px -4px rgba(13, 148, 136, 0.35);
+            box-shadow: 0 8px 20px -4px rgba(0, 168, 132, 0.35);
         }
         .btn-scarlet:active {
             transform: translateY(0) scale(0.98);
         }
 
-        /* Botón Secundario Menta Pastel (#14B8A6) */
+        /* Botón Secundario Esmeralda (#10B981) */
         .btn-amber {
-            background-color: #14B8A6;
+            background-color: #10B981;
             color: #FFFFFF;
             transition: transform 0.2s var(--ease-spring),
                         background-color 0.18s ease,
@@ -136,15 +135,15 @@
             will-change: transform;
         }
         .btn-amber:hover {
-            background-color: #0D9488;
+            background-color: #059669;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px -4px rgba(20, 184, 166, 0.3);
+            box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.3);
         }
         .btn-amber:active {
             transform: translateY(0) scale(0.98);
         }
 
-        /* Botón Neutro / Ghost Nórdico */
+        /* Botón Neutro / Ghost */
         .btn-ghost {
             transition: transform 0.18s var(--ease-spring),
                         background-color 0.18s ease,
@@ -160,7 +159,7 @@
             transform: translateY(0);
         }
 
-        /* Enlaces de Navegación del Sidebar Nórdico */
+        /* Enlaces de Navegación del Sidebar */
         .nav-item-transition {
             transition: transform 0.18s var(--ease-spring),
                         background-color 0.18s ease,
@@ -171,7 +170,7 @@
             transform: translateX(3px);
         }
 
-        /* Tarjetas Blancas (#FFFFFF) Nórdicas */
+        /* Tarjetas Blancas (#FFFFFF) */
         .white-card {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -204,43 +203,43 @@
             height: 7px;
         }
         ::-webkit-scrollbar-track {
-            background: #F8FAFC;
+            background: #0A1128;
         }
         ::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
+            background: #1E293B;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8;
+            background: #334155;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row antialiased selection:bg-teal-500 selection:text-white bg-[#F8FAFC]" x-data="{ mobileMenuOpen: false }">
+<body class="min-h-screen flex flex-col md:flex-row antialiased selection:bg-emerald-500 selection:text-white bg-[#F1F5F9]" x-data="{ mobileMenuOpen: false }">
 
-    <!-- SIDEBAR PRINCIPAL NÓRDICO (Vidrio Esmerilado Frosted Glass) -->
+    <!-- SIDEBAR PRINCIPAL (Imperial Midnight Navy #0A1128) -->
     @auth
     <aside class="sidebar-carmine w-full md:w-64 md:h-screen md:sticky md:top-0 flex flex-col justify-between shrink-0 z-40 overflow-y-auto">
         
         <div>
-            <!-- Branding Header con Logo y Mascota Nano Banana Nórdica -->
-            <div class="p-6 border-b border-slate-200/60 flex items-center justify-between">
+            <!-- Branding Header con Logo y Mascota Nano Banana -->
+            <div class="p-6 border-b border-white/10 flex items-center justify-between">
                 <a href="{{ url('/') }}" class="flex items-center space-x-3 group">
-                    <div class="relative w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center border border-slate-200 shadow-xs group-hover:scale-105 transition">
+                    <div class="relative w-10 h-10 rounded-2xl bg-white/10 p-1 flex items-center justify-center border border-white/20 shadow-xs group-hover:scale-105 transition">
                         <img src="{{ asset('images/nano_banana.jpg') }}" alt="Nano Banana" class="w-full h-full object-cover rounded-xl shadow-xs">
-                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full border-2 border-white"></span>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-[#00A884] rounded-full border-2 border-[#0A1128]"></span>
                     </div>
                     <div>
-                        <div class="text-xl font-extrabold font-heading tracking-tight leading-none text-slate-900">
+                        <div class="text-xl font-extrabold font-heading tracking-tight leading-none text-white">
                             Bolidrop
                         </div>
-                        <span class="text-[10px] font-bold tracking-widest uppercase text-teal-600">
-                            Nordic COD
+                        <span class="text-[10px] font-bold tracking-widest uppercase text-[#00A884]">
+                            Executive COD
                         </span>
                     </div>
                 </a>
 
                 <!-- Mobile menu toggle -->
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-slate-600 hover:text-slate-900 p-2">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-slate-300 hover:text-white p-2">
                     <i class="fa-solid" :class="mobileMenuOpen ? 'fa-xmark' : 'fa-bars'"></i>
                 </button>
             </div>
@@ -250,61 +249,58 @@
 
                 @auth
                     {{-- ================================================ --}}
-                    {{-- ADMINISTRADOR (tenant_admin) — Vista global total  --}}
+                    {{-- ADMINISTRADOR (tenant_admin) — Control Total     --}}
                     {{-- ================================================ --}}
-                    {{-- ======================================================== --}}
-                    {{-- ADMINISTRADOR (tenant_admin) — Control Total del Sistema --}}
-                    {{-- ======================================================== --}}
                     @if(Auth::user()->role === 'tenant_admin')
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Gestión General
                         </div>
-                        <a href="{{ url('/panel/admin') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/admin') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/admin') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/admin') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/admin') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/admin') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Dashboard Admin</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Megabodega Nacional</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Crear Pedido COD</span>
                         </a>
 
                         <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Finanzas & Liquidaciones
                         </div>
-                        <a href="{{ url('/settlements') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('settlements*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-building-columns w-5 text-center {{ request()->is('settlements*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/settlements') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('settlements*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-building-columns w-5 text-center {{ request()->is('settlements*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Liquidaciones Bancarias</span>
                         </a>
-                        <a href="{{ url('/reports') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('reports*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-chart-line w-5 text-center {{ request()->is('reports*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/reports') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('reports*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-chart-line w-5 text-center {{ request()->is('reports*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Reportes & Analytics</span>
                         </a>
 
                         <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Logística & Operaciones
                         </div>
-                        <a href="{{ route('admin.kardex.index') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/admin/kardex*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-clipboard-list w-5 text-center {{ request()->is('panel/admin/kardex*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ route('admin.kardex.index') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/admin/kardex*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-clipboard-list w-5 text-center {{ request()->is('panel/admin/kardex*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Kardex Global & Stock</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Devoluciones & Log. Inv.</span>
                         </a>
-                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('carrier/cobro*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-qrcode w-5 text-center {{ request()->is('carrier/cobro*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('carrier/cobro*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-qrcode w-5 text-center {{ request()->is('carrier/cobro*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Cobro QR Repartidor</span>
                         </a>
-                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/fulfillment') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-boxes-packing w-5 text-center {{ request()->is('panel/fulfillment') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/fulfillment') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-boxes-packing w-5 text-center {{ request()->is('panel/fulfillment') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Fulfillment & Tiendas</span>
                         </a>
-                        <a href="{{ url('/notifications/whatsapp') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('notifications/whatsapp*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-brands fa-whatsapp w-5 text-center {{ request()->is('notifications/whatsapp*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/notifications/whatsapp') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('notifications/whatsapp*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-brands fa-whatsapp w-5 text-center {{ request()->is('notifications/whatsapp*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>WhatsApp Bot (+591)</span>
                         </a>
                     @endif
@@ -316,24 +312,24 @@
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Mi Negocio Dropshipping
                         </div>
-                        <a href="{{ url('/panel/dropshipper') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/dropshipper') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/dropshipper') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/dropshipper') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/dropshipper') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/dropshipper') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Mi Dashboard</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Megabodega</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Crear Pedido COD</span>
                         </a>
-                        <a href="{{ url('/panel/dropshipper') }}#billetera" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium">
+                        <a href="{{ url('/panel/dropshipper') }}#billetera" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/10 hover:text-white font-medium">
                             <i class="fa-solid fa-wallet w-5 text-center text-slate-400"></i>
                             <span>Mi Billetera & Ganancias</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Mis Devoluciones</span>
                         </a>
                     @endif
@@ -345,19 +341,19 @@
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Panel de Proveedor
                         </div>
-                        <a href="{{ url('/panel/proveedor') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/proveedor') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/proveedor') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/proveedor') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/proveedor') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->is('panel/proveedor') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Mi Dashboard</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('catalogo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-boxes-stacked w-5 text-center {{ request()->is('catalogo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Catálogo Publicado</span>
                         </a>
-                        <a href="{{ url('/panel/proveedor') }}#inventario" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium">
+                        <a href="{{ url('/panel/proveedor') }}#inventario" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/10 hover:text-white font-medium">
                             <i class="fa-solid fa-warehouse w-5 text-center text-slate-400"></i>
                             <span>Mi Inventario Físico</span>
                         </a>
-                        <a href="{{ url('/panel/proveedor') }}#alertas" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium">
+                        <a href="{{ url('/panel/proveedor') }}#alertas" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/10 hover:text-white font-medium">
                             <i class="fa-solid fa-triangle-exclamation w-5 text-center text-slate-400"></i>
                             <span>Alertas de Stock</span>
                         </a>
@@ -370,16 +366,16 @@
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Repartidor / Courier
                         </div>
-                        <a href="{{ url('/panel/carrier') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/carrier') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-truck-fast w-5 text-center {{ request()->is('panel/carrier') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/carrier') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/carrier') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-truck-fast w-5 text-center {{ request()->is('panel/carrier') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Mi Hoja de Ruta</span>
                         </a>
-                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('carrier/cobro*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-qrcode w-5 text-center {{ request()->is('carrier/cobro*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('carrier/cobro*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-qrcode w-5 text-center {{ request()->is('carrier/cobro*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Cobro QR / Efectivo</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Reportar Novedad</span>
                         </a>
                     @endif
@@ -391,16 +387,16 @@
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Fulfillment e-Commerce
                         </div>
-                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/fulfillment') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-store w-5 text-center {{ request()->is('panel/fulfillment') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('panel/fulfillment') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-store w-5 text-center {{ request()->is('panel/fulfillment') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Mi Tienda Online</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('checkout-demo') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-cart-shopping w-5 text-center {{ request()->is('checkout-demo') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Enviar Pedidos</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm {{ request()->is('returns*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-rotate-left w-5 text-center {{ request()->is('returns*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Devoluciones</span>
                         </a>
                     @endif
@@ -408,20 +404,20 @@
                     {{-- ======================================================== --}}
                     {{-- ENLACES GENERALES / HERRAMIENTAS GLOBALES (Todos los roles) --}}
                     {{-- ======================================================== --}}
-                    <div class="pt-2 mt-2 border-t border-slate-200/70 space-y-1">
+                    <div class="pt-2 mt-2 border-t border-white/10 space-y-1">
                         <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                             Herramientas
                         </div>
-                        <a href="{{ url('/tracking') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('tracking*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-magnifying-glass-location w-5 text-center {{ request()->is('tracking*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/tracking') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('tracking*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-magnifying-glass-location w-5 text-center {{ request()->is('tracking*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Rastrear Guía</span>
                         </a>
-                        <a href="{{ url('/contactenos') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('contactenos*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-map-location-dot w-5 text-center {{ request()->is('contactenos*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/contactenos') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('contactenos*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-map-location-dot w-5 text-center {{ request()->is('contactenos*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Sedes & Almacenes</span>
                         </a>
-                        <a href="{{ url('/soporte') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('soporte*') ? 'bg-teal-50/90 text-teal-900 font-bold border border-teal-200/80 shadow-xs' : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-medium' }}">
-                            <i class="fa-solid fa-headset w-5 text-center {{ request()->is('soporte*') ? 'text-teal-600' : 'text-slate-400' }}"></i>
+                        <a href="{{ url('/soporte') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 rounded-xl text-sm {{ request()->is('soporte*') ? 'bg-[#00A884] text-white font-bold shadow-md' : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium' }}">
+                            <i class="fa-solid fa-headset w-5 text-center {{ request()->is('soporte*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>Centro de Soporte</span>
                         </a>
                     </div>
@@ -430,14 +426,14 @@
             </nav>
         </div>
 
-        <!-- Sidebar Footer / Tarjeta de Mascota Nano Banana Nórdica -->
-        <div class="p-4 border-t border-slate-200/70 hidden md:block">
-            <div class="bg-slate-50/90 rounded-2xl p-3.5 border border-slate-200/80 space-y-2">
+        <!-- Sidebar Footer / Tarjeta de Mascota Nano Banana -->
+        <div class="p-4 border-t border-white/10 hidden md:block">
+            <div class="bg-white/5 rounded-2xl p-3.5 border border-white/10 space-y-2">
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-                    <span class="text-[11px] font-bold text-teal-800 uppercase tracking-wider">Nano Banana Bot</span>
+                    <span class="w-2 h-2 rounded-full bg-[#00A884] animate-pulse"></span>
+                    <span class="text-[11px] font-bold text-[#00A884] uppercase tracking-wider">Nano Banana Bot</span>
                 </div>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
+                <p class="text-[11px] text-slate-300 leading-relaxed">
                     Sincronización activa con DEX Bolivia y pasarela QR Simple.
                 </p>
                 <div class="text-[10px] text-slate-400 font-mono">
@@ -449,35 +445,35 @@
     </aside>
     @endauth
 
-    <!-- CONTENEDOR PRINCIPAL (#F8FAFC Nordic Canvas) -->
-    <div class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]">
+    <!-- CONTENEDOR PRINCIPAL (#F1F5F9 Platinum Ice Canvas) -->
+    <div class="flex-grow flex flex-col min-w-0 bg-[#F1F5F9]">
         
-        <!-- TOPBAR SUPERIOR (Glassmorphism Nórdico) -->
-        <header class="bg-white/85 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-xs">
+        <!-- TOPBAR SUPERIOR (Blanco Platino con Sombra Sutil) -->
+        <header class="bg-white border-b border-slate-200/80 sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-xs">
             
             @guest
             <!-- Logo Bolidrop para visitantes en Landing -->
             <a href="{{ url('/') }}" class="flex items-center space-x-2.5 group">
-                <div class="relative w-8 h-8 rounded-lg bg-teal-50 p-1 flex items-center justify-center border border-teal-200">
+                <div class="relative w-8 h-8 rounded-lg bg-emerald-50 p-1 flex items-center justify-center border border-emerald-200">
                     <img src="{{ asset('images/nano_banana.jpg') }}" alt="Nano Banana" class="w-full h-full object-cover rounded-md shadow-xs">
                 </div>
                 <div>
                     <span class="text-lg font-black font-heading tracking-tight text-slate-900">Bolidrop</span>
-                    <span class="text-[9px] font-bold text-teal-600 uppercase block leading-none">Bolivia</span>
+                    <span class="text-[9px] font-bold text-[#00A884] uppercase block leading-none">Bolivia</span>
                 </div>
             </a>
             @endguest
             
             <!-- Tasa Oficial del BCB -->
             <div class="flex items-center space-x-3 text-xs">
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50/80 border border-teal-200/70 text-teal-900 font-medium">
-                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-emerald-950 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-[#00A884] animate-ping"></span>
                     <span>Tasa BCB Oficial:</span>
-                    <strong class="font-mono text-teal-950 font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
+                    <strong class="font-mono text-[#00A884] font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
                 </div>
 
                 <div class="flex items-center gap-2 text-slate-500 text-xs">
-                    <i class="fa-solid fa-truck-fast text-teal-600"></i>
+                    <i class="fa-solid fa-truck-fast text-[#00A884]"></i>
                     <span class="hidden md:inline">Operador:</span>
                     <strong class="text-slate-800">DEX Bolivia Express</strong>
                 </div>
@@ -487,12 +483,12 @@
             <div class="flex items-center space-x-3">
                 @auth
                     <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                        <div class="w-8 h-8 rounded-full bg-[#0A1128] text-emerald-400 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-xs">
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         </div>
                         <div class="hidden sm:block text-left">
                             <div class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</div>
-                            <div class="text-[10px] text-teal-600 font-semibold capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
+                            <div class="text-[10px] text-[#00A884] font-semibold capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
                         </div>
                         <form method="POST" action="{{ route('logout') }}" class="inline ml-1">
                             @csrf
@@ -503,7 +499,7 @@
                     </div>
                 @else
                     <div class="flex items-center gap-2 text-xs">
-                        <a href="{{ route('login') }}" class="font-bold text-slate-700 hover:text-teal-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">
+                        <a href="{{ route('login') }}" class="font-bold text-slate-700 hover:text-[#00A884] px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">
                             Ingresar
                         </a>
                         <a href="{{ route('register') }}" class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold shadow-xs">
@@ -514,18 +510,18 @@
             </div>
         </header>
 
-        <!-- CONTENIDO DE LA VISTA (Nordic Canvas) -->
-        <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow bg-[#F8FAFC]">
+        <!-- CONTENIDO DE LA VISTA (Platinum Ice Canvas) -->
+        <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow bg-[#F1F5F9]">
             @yield('content')
         </main>
 
-        <!-- FOOTER DISCRETO Y COMPLETO NÓRDICO -->
+        <!-- FOOTER CORPORATIVO EJECUTIVO -->
         <footer class="bg-white border-t border-slate-200 px-6 sm:px-12 py-8 text-xs text-slate-500 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-100">
                 <div class="space-y-2">
                     <div class="flex items-center space-x-2">
                         <span class="text-base font-extrabold font-heading text-slate-900">Bolidrop</span>
-                        <span class="text-[9px] font-bold text-teal-600 uppercase">Bolivia</span>
+                        <span class="text-[9px] font-bold text-[#00A884] uppercase">Bolivia</span>
                     </div>
                     <p class="text-[11px] text-slate-500 leading-relaxed">
                         Infraestructura e-commerce COD, Megabodega y Logística Express con cobertura en los 9 departamentos.
@@ -534,27 +530,27 @@
                 <div>
                     <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Ecosistema</h5>
                     <ul class="space-y-1.5 text-[11px]">
-                        <li><a href="{{ url('/catalogo') }}" class="hover:text-teal-600 transition">Megabodega Catálogo</a></li>
-                        <li><a href="{{ url('/panel/fulfillment') }}" class="hover:text-teal-600 transition">Fulfillment Tiendas</a></li>
-                        <li><a href="{{ url('/checkout-demo') }}" class="hover:text-teal-600 transition">Checkout COD Simple</a></li>
+                        <li><a href="{{ url('/catalogo') }}" class="hover:text-[#00A884] transition">Megabodega Catálogo</a></li>
+                        <li><a href="{{ url('/panel/fulfillment') }}" class="hover:text-[#00A884] transition">Fulfillment Tiendas</a></li>
+                        <li><a href="{{ url('/checkout-demo') }}" class="hover:text-[#00A884] transition">Checkout COD Simple</a></li>
                     </ul>
                 </div>
                 <div>
                     <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Atención & Ayuda</h5>
                     <ul class="space-y-1.5 text-[11px]">
-                        <li><a href="{{ url('/tracking') }}" class="hover:text-teal-600 transition flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass text-teal-600"></i> Rastrear Mi Pedido</a></li>
-                        <li><a href="{{ url('/soporte') }}" class="hover:text-teal-600 transition">Centro de Ayuda & FAQ</a></li>
-                        <li><a href="{{ url('/contactenos') }}" class="hover:text-teal-600 transition">Contáctanos / Sedes</a></li>
+                        <li><a href="{{ url('/tracking') }}" class="hover:text-[#00A884] transition flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass text-[#00A884]"></i> Rastrear Mi Pedido</a></li>
+                        <li><a href="{{ url('/soporte') }}" class="hover:text-[#00A884] transition">Centro de Ayuda & FAQ</a></li>
+                        <li><a href="{{ url('/contactenos') }}" class="hover:text-[#00A884] transition">Contáctanos / Sedes</a></li>
                     </ul>
                 </div>
                 <div>
                     <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Red de Cobranza</h5>
                     <div class="space-y-2 text-[11px]">
-                        <div class="flex items-center gap-2 text-teal-600 font-semibold">
+                        <div class="flex items-center gap-2 text-[#00A884] font-semibold">
                             <i class="fa-solid fa-qrcode"></i> QR Simple Bolivia
                         </div>
                         <div class="flex items-center gap-2 text-slate-700">
-                            <i class="fa-solid fa-money-bill-wave text-teal-600"></i> Efectivo Contra Entrega (COD)
+                            <i class="fa-solid fa-money-bill-wave text-[#00A884]"></i> Efectivo Contra Entrega (COD)
                         </div>
                         <div class="text-[10px] text-slate-400">
                             DEX Bolivia Express • Red 9/9 Deptos
@@ -568,11 +564,11 @@
                     &copy; {{ date('Y') }} <strong class="text-slate-800">Bolidrop Bolivia</strong> — Todos los derechos reservados.
                 </div>
                 <div class="flex items-center space-x-4 text-[11px]">
-                    <a href="{{ url('/tracking') }}" class="hover:text-teal-600">Rastreo de Guías</a>
+                    <a href="{{ url('/tracking') }}" class="hover:text-[#00A884]">Rastreo de Guías</a>
                     <span>•</span>
-                    <a href="{{ url('/soporte') }}" class="hover:text-teal-600">Soporte Técnico</a>
+                    <a href="{{ url('/soporte') }}" class="hover:text-[#00A884]">Soporte Técnico</a>
                     <span>•</span>
-                    <a href="{{ url('/contactenos') }}" class="hover:text-teal-600">Ubicaciones & Bodegas</a>
+                    <a href="{{ url('/contactenos') }}" class="hover:text-[#00A884]">Ubicaciones & Bodegas</a>
                 </div>
             </div>
         </footer>
@@ -582,6 +578,3 @@
     @stack('scripts')
 </body>
 </html>
-
-
-
