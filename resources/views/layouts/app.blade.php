@@ -448,34 +448,34 @@
     <!-- CONTENEDOR PRINCIPAL (#F1F5F9 Platinum Ice Canvas) -->
     <div class="flex-grow flex flex-col min-w-0 bg-[#F1F5F9]">
         
-        <!-- TOPBAR SUPERIOR (Blanco Platino con Sombra Sutil) -->
-        <header class="bg-white border-b border-slate-200/80 sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-xs">
+        <!-- TOPBAR SUPERIOR (Imperial Midnight Navy con Sombra Tecnológica) -->
+        <header class="bg-[#0A1128] border-b border-slate-800 sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-md text-white">
             
             @guest
             <!-- Logo Bolidrop para visitantes en Landing -->
             <a href="{{ url('/') }}" class="flex items-center space-x-2.5 group">
-                <div class="relative w-8 h-8 rounded-lg bg-emerald-50 p-1 flex items-center justify-center border border-emerald-200">
+                <div class="relative w-8 h-8 rounded-lg bg-white/10 p-1 flex items-center justify-center border border-white/20">
                     <img src="{{ asset('images/nano_banana.jpg') }}" alt="Nano Banana" class="w-full h-full object-cover rounded-md shadow-xs">
                 </div>
                 <div>
-                    <span class="text-lg font-black font-heading tracking-tight text-slate-900">Bolidrop</span>
-                    <span class="text-[9px] font-bold text-[#00A884] uppercase block leading-none">Bolivia</span>
+                    <span class="text-lg font-black font-heading tracking-tight text-white">Bolidrop</span>
+                    <span class="text-[9px] font-bold text-emerald-400 uppercase block leading-none">Bolivia</span>
                 </div>
             </a>
             @endguest
             
             <!-- Tasa Oficial del BCB -->
             <div class="flex items-center space-x-3 text-xs">
-                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-emerald-950 font-medium">
-                    <span class="w-2 h-2 rounded-full bg-[#00A884] animate-ping"></span>
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-[#10B981] animate-ping"></span>
                     <span>Tasa BCB Oficial:</span>
-                    <strong class="font-mono text-[#00A884] font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
+                    <strong class="font-mono text-emerald-400 font-bold">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} BOB</strong>
                 </div>
 
-                <div class="flex items-center gap-2 text-slate-500 text-xs">
-                    <i class="fa-solid fa-truck-fast text-[#00A884]"></i>
+                <div class="flex items-center gap-2 text-slate-300 text-xs">
+                    <i class="fa-solid fa-truck-fast text-emerald-400"></i>
                     <span class="hidden md:inline">Operador:</span>
-                    <strong class="text-slate-800">DEX Bolivia Express</strong>
+                    <strong class="text-white">DEX Bolivia Express</strong>
                 </div>
             </div>
 
@@ -483,26 +483,26 @@
             <div class="flex items-center space-x-3">
                 @auth
                     <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-full bg-[#0A1128] text-emerald-400 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-xs">
+                        <div class="w-8 h-8 rounded-full bg-[#131E35] text-emerald-400 border border-slate-700 flex items-center justify-center font-bold text-xs shadow-xs">
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         </div>
                         <div class="hidden sm:block text-left">
-                            <div class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name }}</div>
-                            <div class="text-[10px] text-[#00A884] font-semibold capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
+                            <div class="text-xs font-bold text-white leading-tight">{{ Auth::user()->name }}</div>
+                            <div class="text-[10px] text-emerald-400 font-semibold capitalize">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
                         </div>
                         <form method="POST" action="{{ route('logout') }}" class="inline ml-1">
                             @csrf
-                            <button type="submit" title="Cerrar Sesión" class="text-slate-400 hover:text-slate-700 p-1 transition">
+                            <button type="submit" title="Cerrar Sesión" class="text-slate-400 hover:text-white p-1 transition">
                                 <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                             </button>
                         </form>
                     </div>
                 @else
                     <div class="flex items-center gap-2 text-xs">
-                        <a href="{{ route('login') }}" class="font-bold text-slate-700 hover:text-[#00A884] px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">
+                        <a href="{{ route('login') }}" class="font-bold text-slate-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition">
                             Ingresar
                         </a>
-                        <a href="{{ route('register') }}" class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold shadow-xs">
+                        <a href="{{ route('register') }}" class="px-4 py-1.5 rounded-xl font-bold bg-[#10B981] hover:bg-[#059669] text-slate-950 shadow-[0_0_15px_rgba(16,185,129,0.35)] transition">
                             Registrarse
                         </a>
                     </div>
@@ -510,49 +510,49 @@
             </div>
         </header>
 
-        <!-- CONTENIDO DE LA VISTA (Platinum Ice Canvas) -->
-        <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow bg-[#F1F5F9]">
+        <!-- CONTENIDO DE LA VISTA -->
+        <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow">
             @yield('content')
         </main>
 
-        <!-- FOOTER CORPORATIVO EJECUTIVO -->
-        <footer class="bg-white border-t border-slate-200 px-6 sm:px-12 py-8 text-xs text-slate-500 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-100">
+        <!-- FOOTER CORPORATIVO EJECUTIVO (Midnight Dark) -->
+        <footer class="bg-[#0A1128] border-t border-slate-800 px-6 sm:px-12 py-8 text-xs text-slate-400 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-slate-800/80">
                 <div class="space-y-2">
                     <div class="flex items-center space-x-2">
-                        <span class="text-base font-extrabold font-heading text-slate-900">Bolidrop</span>
-                        <span class="text-[9px] font-bold text-[#00A884] uppercase">Bolivia</span>
+                        <span class="text-base font-extrabold font-heading text-white">Bolidrop</span>
+                        <span class="text-[9px] font-bold text-emerald-400 uppercase">Bolivia</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
                         Infraestructura e-commerce COD, Megabodega y Logística Express con cobertura en los 9 departamentos.
                     </p>
                 </div>
                 <div>
-                    <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Ecosistema</h5>
+                    <h5 class="font-bold text-white uppercase tracking-wider text-[11px] mb-2.5">Ecosistema</h5>
                     <ul class="space-y-1.5 text-[11px]">
-                        <li><a href="{{ url('/catalogo') }}" class="hover:text-[#00A884] transition">Megabodega Catálogo</a></li>
-                        <li><a href="{{ url('/panel/fulfillment') }}" class="hover:text-[#00A884] transition">Fulfillment Tiendas</a></li>
-                        <li><a href="{{ url('/checkout-demo') }}" class="hover:text-[#00A884] transition">Checkout COD Simple</a></li>
+                        <li><a href="{{ url('/catalogo') }}" class="hover:text-emerald-400 transition">Megabodega Catálogo</a></li>
+                        <li><a href="{{ url('/panel/fulfillment') }}" class="hover:text-emerald-400 transition">Fulfillment Tiendas</a></li>
+                        <li><a href="{{ url('/checkout-demo') }}" class="hover:text-emerald-400 transition">Checkout COD Simple</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Atención & Ayuda</h5>
+                    <h5 class="font-bold text-white uppercase tracking-wider text-[11px] mb-2.5">Atención & Ayuda</h5>
                     <ul class="space-y-1.5 text-[11px]">
-                        <li><a href="{{ url('/tracking') }}" class="hover:text-[#00A884] transition flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass text-[#00A884]"></i> Rastrear Mi Pedido</a></li>
-                        <li><a href="{{ url('/soporte') }}" class="hover:text-[#00A884] transition">Centro de Ayuda & FAQ</a></li>
-                        <li><a href="{{ url('/contactenos') }}" class="hover:text-[#00A884] transition">Contáctanos / Sedes</a></li>
+                        <li><a href="{{ url('/tracking') }}" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass text-emerald-400"></i> Rastrear Mi Pedido</a></li>
+                        <li><a href="{{ url('/soporte') }}" class="hover:text-emerald-400 transition">Centro de Ayuda & FAQ</a></li>
+                        <li><a href="{{ url('/contactenos') }}" class="hover:text-emerald-400 transition">Contáctanos / Sedes</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">Red de Cobranza</h5>
+                    <h5 class="font-bold text-white uppercase tracking-wider text-[11px] mb-2.5">Red de Cobranza</h5>
                     <div class="space-y-2 text-[11px]">
-                        <div class="flex items-center gap-2 text-[#00A884] font-semibold">
+                        <div class="flex items-center gap-2 text-emerald-400 font-semibold">
                             <i class="fa-solid fa-qrcode"></i> QR Simple Bolivia
                         </div>
-                        <div class="flex items-center gap-2 text-slate-700">
-                            <i class="fa-solid fa-money-bill-wave text-[#00A884]"></i> Efectivo Contra Entrega (COD)
+                        <div class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Efectivo Contra Entrega (COD)
                         </div>
-                        <div class="text-[10px] text-slate-400">
+                        <div class="text-[10px] text-slate-500 font-mono">
                             DEX Bolivia Express • Red 9/9 Deptos
                         </div>
                     </div>
@@ -561,14 +561,14 @@
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
                 <div>
-                    &copy; {{ date('Y') }} <strong class="text-slate-800">Bolidrop Bolivia</strong> — Todos los derechos reservados.
+                    &copy; {{ date('Y') }} <strong class="text-white">Bolidrop Bolivia</strong> — Todos los derechos reservados.
                 </div>
                 <div class="flex items-center space-x-4 text-[11px]">
-                    <a href="{{ url('/tracking') }}" class="hover:text-[#00A884]">Rastreo de Guías</a>
+                    <a href="{{ url('/tracking') }}" class="hover:text-emerald-400">Rastreo de Guías</a>
                     <span>•</span>
-                    <a href="{{ url('/soporte') }}" class="hover:text-[#00A884]">Soporte Técnico</a>
+                    <a href="{{ url('/soporte') }}" class="hover:text-emerald-400">Soporte Técnico</a>
                     <span>•</span>
-                    <a href="{{ url('/contactenos') }}" class="hover:text-[#00A884]">Ubicaciones & Bodegas</a>
+                    <a href="{{ url('/contactenos') }}" class="hover:text-emerald-400">Ubicaciones & Bodegas</a>
                 </div>
             </div>
         </footer>
