@@ -56,14 +56,14 @@
         </div>
 
         <!-- Pedidos En Camino -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#00A884] hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#0061f2] hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#00A884] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center">
+                <span class="text-[#0061f2] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-[#00A884] font-heading font-mono">
+            <div class="text-3xl font-extrabold text-[#0061f2] font-heading font-mono">
                 {{ $stats['pending_orders'] }}
             </div>
             <div class="text-[11px] text-amber-600 font-medium">Por recaudar en destino COD</div>
@@ -84,10 +84,10 @@
         </div>
 
         <!-- Ganancia Acumulada -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#00A884] hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#0061f2] hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#00A884] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center">
+                <span class="text-[#0061f2] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center">
                     <i class="fa-solid fa-coins"></i>
                 </div>
             </div>
@@ -137,7 +137,7 @@
 
             <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-1">
                 <div class="text-xs text-slate-500 font-medium">Saldo Retenido (En Camino COD)</div>
-                <div class="text-3xl font-extrabold text-[#00A884] font-mono">
+                <div class="text-3xl font-extrabold text-[#0061f2] font-mono">
                     Bs {{ number_format($wallet->balance_pending, 2) }}
                 </div>
                 <div class="text-[11px] text-slate-400">Se libera cuando el courier confirme entrega</div>
@@ -198,7 +198,7 @@
                                 <div class="text-[11px] text-slate-400">{{ $order->shipping_department }}</div>
                             </td>
                             <td class="py-4 px-5">
-                                <div class="text-xs font-bold text-[#00A884]">{{ $order->carrier->name ?? 'DEX Bolivia' }}</div>
+                                <div class="text-xs font-bold text-[#0061f2]">{{ $order->carrier->name ?? 'DEX Bolivia' }}</div>
                                 <div class="text-[10px] font-mono text-slate-400">{{ $order->tracking_number ?? 'Por generar' }}</div>
                             </td>
                             <td class="py-4 px-5 font-mono font-bold text-slate-900 text-xs">
@@ -218,11 +218,11 @@
                                     </span>
                                 @elseif($order->status === 'dispatched')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-amber-800">
-                                        <i class="fa-solid fa-truck-fast mr-1.5 text-[#00A884]"></i> Despachado
+                                        <i class="fa-solid fa-truck-fast mr-1.5 text-[#0061f2]"></i> Despachado
                                     </span>
                                 @elseif($order->status === 'confirmed')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 border border-red-200 text-slate-900">
-                                        <i class="fa-solid fa-check mr-1.5 text-[#00A884]"></i> Confirmado
+                                        <i class="fa-solid fa-check mr-1.5 text-[#0061f2]"></i> Confirmado
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
@@ -234,7 +234,7 @@
                                 <a href="{{ route('orders.label', $order->id) }}" target="_blank"
                                     class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 inline-flex items-center gap-1 transition"
                                     title="Imprimir Rótulo Térmico">
-                                    <i class="fa-solid fa-print text-[#00A884]"></i>
+                                    <i class="fa-solid fa-print text-[#0061f2]"></i>
                                     <span>Imprimir</span>
                                 </a>
                             </td>
@@ -433,13 +433,13 @@
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Plataforma</label>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="p-3 rounded-xl border-2 cursor-pointer transition text-center"
-                            :class="integrationForm.platform === 'shopify' ? 'border-[#00A884] bg-emerald-50/50 text-emerald-950 font-bold' : 'border-slate-200 text-slate-600'">
+                            :class="integrationForm.platform === 'shopify' ? 'border-[#0061f2] bg-emerald-50/50 text-emerald-950 font-bold' : 'border-slate-200 text-slate-600'">
                             <input type="radio" value="shopify" x-model="integrationForm.platform" class="sr-only">
                             <i class="fa-brands fa-shopify text-lg block mb-1"></i>
                             <span class="text-xs">Shopify</span>
                         </label>
                         <label class="p-3 rounded-xl border-2 cursor-pointer transition text-center"
-                            :class="integrationForm.platform === 'woocommerce' ? 'border-[#00A884] bg-emerald-50/50 text-emerald-950 font-bold' : 'border-slate-200 text-slate-600'">
+                            :class="integrationForm.platform === 'woocommerce' ? 'border-[#0061f2] bg-emerald-50/50 text-emerald-950 font-bold' : 'border-slate-200 text-slate-600'">
                             <input type="radio" value="woocommerce" x-model="integrationForm.platform" class="sr-only">
                             <i class="fa-brands fa-wordpress text-lg block mb-1"></i>
                             <span class="text-xs">WooCommerce</span>
@@ -461,7 +461,7 @@
 
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="auto_dispatch" x-model="integrationForm.auto_dispatch"
-                        class="rounded border-slate-300 text-slate-900 focus:ring-[#00A884]">
+                        class="rounded border-slate-300 text-slate-900 focus:ring-[#0061f2]">
                     <label for="auto_dispatch" class="text-xs text-slate-700 cursor-pointer">
                         Despachar automáticamente con DEX Bolivia Express
                     </label>

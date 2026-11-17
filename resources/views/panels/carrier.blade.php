@@ -8,7 +8,7 @@
     <!-- Toast Notification -->
     <div x-show="toast.show" x-cloak
         class="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold flex items-center gap-3 transition"
-        :class="toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-[#0A1128] text-white'">
+        :class="toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-[#0061f2] text-white'">
         <i class="fa-solid" :class="toast.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'"></i>
         <span x-text="toast.message"></span>
     </div>
@@ -19,22 +19,18 @@
         icon="fa-solid fa-truck-fast"
         badge="Módulo de Última Milla & Call Center">
         <x-slot:actions>
-            <span class="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold flex items-center gap-2 backdrop-blur-sm">
-                <i class="fa-solid fa-route text-emerald-300"></i> Red Activa 9/9 Deptos
+            <span class="px-3.5 py-2 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold flex items-center gap-2">
+                <i class="fa-solid fa-motorcycle text-emerald-300"></i>
+                <span>Agente: {{ $carrierUser->name ?? 'Repartidor Central' }}</span>
             </span>
         </x-slot:actions>
     </x-page-header>
-                <i class="fa-solid fa-motorcycle text-[#00A884]"></i>
-                <span>Agente: {{ $carrierUser->name ?? 'Repartidor Central' }}</span>
-            </span>
-        </div>
-    </div>
 
-    <!-- 4 Métricas de Despacho (Fireworks 60/30/10) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- 4 Métricas de Despacho (SB Admin Pro Overlap) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 -mt-14 relative z-10">
         <div class="white-card p-5 rounded-2xl border-l-4 border-slate-800">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</div>
-            <div class="text-2xl font-black text-[#0A1128] mt-1">{{ $stats['in_route'] }}</div>
+            <div class="text-2xl font-black text-[#212832] mt-1">{{ $stats['in_route'] }}</div>
             <div class="text-[11px] text-slate-400 mt-1">Paquetes para entregar</div>
         </div>
 
@@ -46,13 +42,13 @@
 
         <div class="white-card p-5 rounded-2xl border-l-4 border-emerald-500">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Novedades Activas</div>
-            <div class="text-2xl font-black text-[#00A884] mt-1">{{ $stats['novedades_active'] }}</div>
+            <div class="text-2xl font-black text-[#0061f2] mt-1">{{ $stats['novedades_active'] }}</div>
             <div class="text-[11px] text-amber-700 font-semibold mt-1">Requieren gestión WhatsApp</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-[#00A884]">
+        <div class="white-card p-5 rounded-2xl border-l-4 border-[#0061f2]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Por Recaudar COD</div>
-            <div class="text-2xl font-black text-[#00A884] mt-1 font-mono">
+            <div class="text-2xl font-black text-[#0061f2] mt-1 font-mono">
                 Bs. {{ number_format($stats['cod_to_collect_bob'], 2) }}
             </div>
             <div class="text-[11px] text-slate-400 mt-1 font-mono">Total asignado en calle</div>
@@ -63,7 +59,7 @@
     <div class="white-card rounded-2xl overflow-hidden shadow-sm">
         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h2 class="text-lg font-bold text-[#0A1128]">Hoja de Ruta y Gestión de Entregas</h2>
+                <h2 class="text-lg font-bold text-[#212832]">Hoja de Ruta y Gestión de Entregas</h2>
                 <p class="text-xs text-slate-500">Haz clic en "Entregado" para recaudar o en "Reportar Novedad" si el cliente no responde.</p>
             </div>
             <span class="text-xs font-bold px-3 py-1 bg-slate-100 text-slate-700 rounded-lg">
@@ -88,7 +84,7 @@
                     @forelse($ordersInRoute as $order)
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="py-3.5 px-4">
-                                <div class="font-bold text-[#0A1128]">{{ $order->order_number }}</div>
+                                <div class="font-bold text-[#212832]">{{ $order->order_number }}</div>
                                 <div class="text-[10px] text-slate-400 font-mono">{{ $order->tracking_number ?? 'DEX-PENDIENTE' }}</div>
                             </td>
 
@@ -106,13 +102,13 @@
 
                             <td class="py-3.5 px-4 max-w-xs">
                                 <div class="font-semibold text-slate-800 truncate">{{ $order->shipping_address }}</div>
-                                <div class="text-[10px] text-slate-500">{{ $order->shipping_city }}, <strong class="text-[#0A1128]">{{ $order->shipping_department }}</strong></div>
+                                <div class="text-[10px] text-slate-500">{{ $order->shipping_city }}, <strong class="text-[#212832]">{{ $order->shipping_department }}</strong></div>
                                 @if($order->shipping_reference)
                                     <div class="text-[10px] text-amber-700 italic truncate">Ref: {{ $order->shipping_reference }}</div>
                                 @endif
                             </td>
 
-                            <td class="py-3.5 px-4 font-mono font-bold text-[#00A884] text-sm">
+                            <td class="py-3.5 px-4 font-mono font-bold text-[#0061f2] text-sm">
                                 Bs. {{ number_format($order->total_amount_bob, 2) }}
                             </td>
 
@@ -174,7 +170,7 @@
                         <i class="fa-solid fa-phone-volume"></i>
                     </span>
                     <div>
-                        <h3 class="font-bold text-[#0A1128] text-base">Registrar Novedad de Entrega</h3>
+                        <h3 class="font-bold text-[#212832] text-base">Registrar Novedad de Entrega</h3>
                         <p class="text-xs text-slate-500" x-text="'Pedido: ' + modalNovedad.orderNumber"></p>
                     </div>
                 </div>

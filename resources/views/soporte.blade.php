@@ -7,11 +7,11 @@
 
     <!-- Hero Soporte -->
     <div class="text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#0A1128]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#212832]">
             <i class="fa-solid fa-headset"></i>
             <span>Centro de Soporte Bolidrop Bolivia</span>
         </div>
-        <h1 class="text-4xl font-black text-[#0A1128] font-heading">¿En qué podemos ayudarte?</h1>
+        <h1 class="text-4xl font-black text-[#212832] font-heading">¿En qué podemos ayudarte?</h1>
         <p class="text-slate-500 text-base max-w-xl mx-auto">
             Nuestro equipo está disponible de Lunes a Sábado de <strong>8:00 AM a 6:00 PM</strong> (hora Bolivia).
             Tiempo de respuesta promedio: <strong class="text-emerald-600">menos de 2 horas</strong>.
@@ -35,8 +35,8 @@
         </a>
 
         <a href="{{ url('/contactenos') }}"
-           class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:border-[#00A884] transition shadow-sm group">
-            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-[#00A884] text-xl group-hover:scale-110 transition">
+           class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:border-[#0061f2] transition shadow-sm group">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-[#0061f2] text-xl group-hover:scale-110 transition">
                 <i class="fa-solid fa-envelope"></i>
             </div>
             <div>
@@ -49,7 +49,7 @@
         </a>
 
         <div class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 shadow-sm">
-            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#0A1128] text-xl">
+            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#212832] text-xl">
                 <i class="fa-solid fa-phone"></i>
             </div>
             <div>
@@ -139,7 +139,7 @@
                         class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50 transition gap-4">
                     <span class="font-semibold text-slate-800 text-sm">{{ $faq['q'] }}</span>
                     <i class="fa-solid fa-chevron-down text-slate-400 transition-transform shrink-0"
-                       :class="openFaq === {{ $i }} ? 'rotate-180 text-[#0A1128]' : ''"></i>
+                       :class="openFaq === {{ $i }} ? 'rotate-180 text-[#212832]' : ''"></i>
                 </button>
                 <div x-show="openFaq === {{ $i }}" x-collapse class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100">
                     <div class="pt-4">{!! $faq['a'] !!}</div>
@@ -150,12 +150,12 @@
     </div>
 
     <!-- CTA final -->
-    <div class="bg-[#0A1128] rounded-2xl p-8 text-center text-white space-y-4">
+    <div class="bg-[#0061f2] rounded-2xl p-8 text-center text-white space-y-4">
         <h3 class="text-xl font-black font-heading">¿No encontraste lo que buscabas?</h3>
         <p class="text-white/80 text-sm">Nuestro equipo de soporte está listo para ayudarte. Escríbenos y te respondemos en menos de 2 horas.</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="https://wa.me/59170000000?text=Hola%20Bolidrop%2C%20necesito%20ayuda%20con..." target="_blank"
-               class="bg-white text-[#0A1128] px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-50 transition">
+               class="bg-white text-[#212832] px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-50 transition">
                 <i class="fa-brands fa-whatsapp text-emerald-600"></i>
                 Contactar por WhatsApp
             </a>

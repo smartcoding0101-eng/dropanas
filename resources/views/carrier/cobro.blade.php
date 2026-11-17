@@ -3,25 +3,21 @@
 @section('title', 'Cobro COD – Bolidrop Bolivia | Repartidor')
 
 @section('content')
-<div class="max-w-2xl mx-auto px-4 py-6 space-y-5"
-     x-data="carrieroCobroPanel()">
+<div class="space-y-6 pb-8" x-data="carrieroCobroPanel()">
 
-    <!-- Header del repartidor -->
-    <div class="bg-gradient-to-r from-[#0A1128] to-[#00A884] rounded-2xl p-5 text-white flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-truck-fast"></i>
+    <x-page-header
+        title="Cobro COD en Campo"
+        subtitle="Confirma entregas en puerta y registra cobros en efectivo o QR Simple Bolivia."
+        icon="fa-solid fa-qrcode"
+        badge="Terminal Móvil Repartidor DEX">
+        <x-slot:actions>
+            <div class="px-4 py-2 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold">
+                {{ now()->format('d/m/Y') }}
             </div>
-            <div>
-                <h1 class="text-base font-black font-heading">Cobro COD en Campo</h1>
-                <p class="text-white/70 text-xs">Confirma entregas y registra pagos</p>
-            </div>
-        </div>
-        <div class="text-right">
-            <div class="text-2xl font-black">{{ now()->format('d/m') }}</div>
-            <div class="text-white/60 text-xs">{{ now()->format('D') }}</div>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
+
+    <div class="max-w-2xl mx-auto space-y-5 -mt-14 relative z-10">
 
     <!-- Resumen de hoja de ruta del día -->
     <div class="grid grid-cols-3 gap-3">
@@ -31,7 +27,7 @@
             ['label'=>'Novedades','value'=>'1','color'=>'red'],
         ] as $stat)
         <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-sm">
-            <div class="text-2xl font-black {{ $stat['color'] === 'amber' ? 'text-amber-500' : ($stat['color'] === 'emerald' ? 'text-emerald-600' : 'text-[#0A1128]') }} font-heading">{{ $stat['value'] }}</div>
+            <div class="text-2xl font-black {{ $stat['color'] === 'amber' ? 'text-amber-500' : ($stat['color'] === 'emerald' ? 'text-emerald-600' : 'text-[#212832]') }} font-heading">{{ $stat['value'] }}</div>
             <div class="text-[11px] text-slate-500 font-medium mt-0.5">{{ $stat['label'] }}</div>
         </div>
         @endforeach
@@ -40,7 +36,7 @@
     <!-- Buscar pedido por guía -->
     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
         <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-magnifying-glass text-[#00A884]"></i>
+            <i class="fa-solid fa-magnifying-glass text-[#0061f2]"></i>
             Buscar Pedido
         </h2>
         <div class="flex gap-2">
@@ -54,14 +50,14 @@
     </div>
 
     <!-- Pedido cargado -->
-    <div x-show="currentOrder" x-cloak class="bg-white border-2 border-[#00A884]/20 rounded-2xl shadow-sm overflow-hidden">
+    <div x-show="currentOrder" x-cloak class="bg-white border-2 border-[#0061f2]/20 rounded-2xl shadow-sm overflow-hidden">
 
         <!-- Datos del pedido -->
         <div class="p-5 space-y-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Guía</div>
-                    <div class="font-mono font-black text-[#0A1128] text-base" x-text="currentOrder?.guide_number"></div>
+                    <div class="font-mono font-black text-[#212832] text-base" x-text="currentOrder?.guide_number"></div>
                 </div>
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 uppercase">
                     Pendiente de Entrega
@@ -91,7 +87,7 @@
             <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
                 <div>
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Monto a Cobrar (COD)</div>
-                    <div class="text-3xl font-black text-[#0A1128] font-heading">
+                    <div class="text-3xl font-black text-[#212832] font-heading">
                         Bs. <span x-text="currentOrder?.cod_amount"></span>
                     </div>
                 </div>
@@ -108,8 +104,8 @@
                     <label class="cursor-pointer">
                         <input type="radio" x-model="paymentMethod" value="cash" class="sr-only">
                         <div class="border-2 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-2 transition"
-                             :class="paymentMethod === 'cash' ? 'border-[#00A884] bg-red-50' : 'border-slate-200'">
-                            <i class="fa-solid fa-money-bill-wave text-sm" :class="paymentMethod === 'cash' ? 'text-[#0A1128]' : 'text-slate-400'"></i>
+                             :class="paymentMethod === 'cash' ? 'border-[#0061f2] bg-red-50' : 'border-slate-200'">
+                            <i class="fa-solid fa-money-bill-wave text-sm" :class="paymentMethod === 'cash' ? 'text-[#212832]' : 'text-slate-400'"></i>
                             <div>
                                 <div class="text-xs font-bold text-slate-800">Efectivo</div>
                                 <div class="text-[10px] text-slate-400">BOB / USD</div>
@@ -223,7 +219,7 @@
     <div x-show="!currentOrder" class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
         <i class="fa-solid fa-barcode text-4xl text-slate-300"></i>
         <div class="text-slate-500 text-sm font-semibold">Ingresa un número de guía para cargar el pedido</div>
-        <button @click="loadDemoOrder()" class="text-xs text-[#0A1128] font-bold hover:underline">
+        <button @click="loadDemoOrder()" class="text-xs text-[#212832] font-bold hover:underline">
             Cargar pedido de demo →
         </button>
     </div>
@@ -232,7 +228,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-route text-[#00A884]"></i>
+                <i class="fa-solid fa-route text-[#0061f2]"></i>
                 Hoja de Ruta de Hoy
             </h3>
             <span class="text-xs font-bold text-slate-400">8 pedidos</span>
@@ -262,6 +258,7 @@
         </div>
     </div>
 
+    </div>
 </div>
 
 <script>

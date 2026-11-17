@@ -8,10 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --primary:#F4B400; --primary-dark:#D09800; --primary-faint:rgba(244,180,0,.08);
-            --bg:#0A0C14; --surface:#111827; --surface2:#1F2937; --surface3:#374151;
-            --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.12);
-            --text:#F1F5F9; --text-muted:#94A3B8; --text-dim:#64748B;
+            --primary:#0061f2; --primary-dark:#0052cc; --primary-faint:rgba(244,180,0,.08);
+            --bg:#f2f6fc; --surface:#ffffff; --surface2:#eef2f8; --surface3:#e0e5ec;
+            --border:#e0e5ec; --border2:#cbd5e1;
+            --text:#212832; --text-muted:#69707a; --text-dim:#8b929a;
             --success:#22C55E; --warning:#EAB308; --danger:#EF4444; --info:#3B82F6;
             --purple:#8B5CF6; --pink:#EC4899; --teal:#14B8A6;
             --radius:16px; --radius-sm:10px;

@@ -9,7 +9,7 @@
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             Plataforma Segura COD Bolivia
         </span>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128]">Ingreso a la Plataforma</h1>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#212832]">Ingreso a la Plataforma</h1>
         <p class="text-slate-500 text-sm mt-1">Accede a tus pedidos, megabodega y liquidaciones bancarias.</p>
     </div>
 
@@ -38,7 +38,7 @@
                     </span>
                     <input type="email" name="email" id="email" required value="{{ old('email') }}"
                         placeholder="tu-correo@ejemplo.com"
-                        class="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-[#00A884]/20 transition">
+                        class="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-[#0061f2]/20 transition">
                 </div>
             </div>
 
@@ -54,13 +54,13 @@
                     </span>
                     <input type="password" name="password" id="password" required
                         placeholder="••••••••"
-                        class="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-[#00A884]/20 transition">
+                        class="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-[#0061f2]/20 transition">
                 </div>
             </div>
 
             <div class="flex items-center justify-between text-xs pt-1">
                 <label class="flex items-center gap-2 cursor-pointer text-slate-600">
-                    <input type="checkbox" name="remember" class="rounded border-slate-300 text-[#0A1128] focus:ring-[#00A884]">
+                    <input type="checkbox" name="remember" class="rounded border-slate-300 text-[#212832] focus:ring-[#0061f2]">
                     <span>Recordar sesión</span>
                 </label>
                 <span class="text-slate-400">Soporte DEX 24/7</span>
@@ -76,7 +76,7 @@
 
         <div class="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
             ¿No tienes cuenta aún? 
-            <a href="{{ route('register') }}" class="font-bold text-[#0A1128] hover:text-[#00A884] transition ml-1">
+            <a href="{{ route('register') }}" class="font-bold text-[#212832] hover:text-[#0061f2] transition ml-1">
                 Regístrate como Dropshipper o Proveedor
             </a>
         </div>
@@ -85,17 +85,17 @@
     <!-- Credenciales Demo Rápidas -->
     <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
         <div class="font-bold text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-key text-[#00A884]"></i>
+            <i class="fa-solid fa-key text-[#0061f2]"></i>
             <span>Cuentas Demo para Pruebas:</span>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
             <div class="bg-white p-2 rounded border border-slate-200">
-                <strong class="text-[#0A1128]">Dropshipper:</strong><br>
+                <strong class="text-[#212832]">Dropshipper:</strong><br>
                 <span>dropshipper@bolidrop.bo</span><br>
                 <span class="text-slate-400 font-mono">password123</span>
             </div>
             <div class="bg-white p-2 rounded border border-slate-200">
-                <strong class="text-[#0A1128]">Administrador:</strong><br>
+                <strong class="text-[#212832]">Administrador:</strong><br>
                 <span>admin@bolidrop.bo</span><br>
                 <span class="text-slate-400 font-mono">password123</span>
             </div>

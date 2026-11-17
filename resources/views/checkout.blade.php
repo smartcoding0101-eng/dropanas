@@ -21,8 +21,8 @@
             <!-- PASO 1: Producto -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#0A1128] text-white flex items-center justify-center text-xs font-bold">1</div>
-                    <h2 class="font-bold text-[#0A1128] text-sm font-heading">Producto a Despachar</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">1</div>
+                    <h2 class="font-bold text-[#212832] text-sm font-heading">Producto a Despachar</h2>
                 </div>
                 <div class="p-5 space-y-4">
                     <div>
@@ -71,8 +71,8 @@
             <!-- PASO 2: Bodega y Transportadora -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#0A1128] text-white flex items-center justify-center text-xs font-bold">2</div>
-                    <h2 class="font-bold text-[#0A1128] text-sm font-heading">Bodega de Despacho y Transportadora</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">2</div>
+                    <h2 class="font-bold text-[#212832] text-sm font-heading">Bodega de Despacho y Transportadora</h2>
                 </div>
                 <div class="p-5 space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -103,8 +103,8 @@
             <!-- PASO 3: Datos del cliente -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#0A1128] text-white flex items-center justify-center text-xs font-bold">3</div>
-                    <h2 class="font-bold text-[#0A1128] text-sm font-heading">Datos del Cliente Final (Bolivia)</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">3</div>
+                    <h2 class="font-bold text-[#212832] text-sm font-heading">Datos del Cliente Final (Bolivia)</h2>
                 </div>
                 <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -153,8 +153,8 @@
             <!-- PASO 4: Método de Cobro -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#0A1128] text-white flex items-center justify-center text-xs font-bold">4</div>
-                    <h2 class="font-bold text-[#0A1128] text-sm font-heading">Método de Cobro al Entregar (COD Bolivia)</h2>
+                    <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">4</div>
+                    <h2 class="font-bold text-[#212832] text-sm font-heading">Método de Cobro al Entregar (COD Bolivia)</h2>
                 </div>
                 <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- COD Efectivo -->
@@ -331,10 +331,10 @@
                 <!-- Feedback explicativo de validación si el botón está deshabilitado -->
                 <div x-show="!isFormValid() && !loading" class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-[#00A884]"></i>
+                        <i class="fa-solid fa-circle-info text-[#0061f2]"></i>
                         <span>Campos requeridos: <strong class="font-bold underline" x-text="missingFieldsSummary()"></strong></span>
                     </div>
-                    <button @click="fillDemoData()" type="button" class="font-bold text-[#0A1128] hover:text-[#00A884] hover:underline flex items-center gap-1">
+                    <button @click="fillDemoData()" type="button" class="font-bold text-[#212832] hover:text-[#0061f2] hover:underline flex items-center gap-1">
                         <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Autocompletar datos de prueba
                     </button>
                 </div>

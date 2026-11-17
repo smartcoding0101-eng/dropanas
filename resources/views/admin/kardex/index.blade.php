@@ -3,36 +3,26 @@
 @section('title', 'Kardex Global de Inventario y Trazabilidad | Bolidrop Admin')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto pb-12" x-data="{ adjustModal: false }">
+<div class="space-y-6 pb-12" x-data="{ adjustModal: false }">
 
-    <!-- Encabezado con Título y Acciones -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#0A1128] mb-1.5">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>Exclusivo Administrador del Sistema</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-[#0A1128] font-heading tracking-tight">
-                Kardex Global y Trazabilidad de Inventario
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
-                Auditoría histórica inmutable de entradas, salidas, reservas, devoluciones y transferencias en todas las bodegas de Bolivia.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-2.5">
+    <x-page-header
+        title="Kardex Global y Trazabilidad de Inventario"
+        subtitle="Auditoría histórica inmutable de entradas, salidas, reservas, devoluciones y transferencias en todas las bodegas de Bolivia."
+        icon="fa-solid fa-clipboard-list"
+        badge="Exclusivo Administrador del Sistema">
+        <x-slot:actions>
             <a href="{{ route('admin.kardex.export', request()->query()) }}"
-               class="px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs transition flex items-center gap-2">
-                <i class="fa-solid fa-file-csv text-emerald-600 text-sm"></i>
+               class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-solid fa-file-csv text-emerald-300 text-sm"></i>
                 <span>Exportar CSV</span>
             </a>
             <button @click="adjustModal = true"
-                    class="btn-scarlet px-4 py-2.5 rounded-xl text-white text-xs font-bold shadow-sm flex items-center gap-2">
+                    class="px-4 py-2.5 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white text-xs font-bold shadow-md flex items-center gap-2 transition">
                 <i class="fa-solid fa-sliders"></i>
                 <span>Ajuste de Auditoría</span>
             </button>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Alertas Flash -->
     @if(session('success'))
@@ -55,9 +45,9 @@
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span>Stock Físico Total</span>
-                <i class="fa-solid fa-boxes-stacked text-[#0A1128]"></i>
+                <i class="fa-solid fa-boxes-stacked text-[#212832]"></i>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-[#0A1128] font-mono">
+            <div class="text-2xl sm:text-3xl font-black text-[#212832] font-mono">
                 {{ number_format($metrics['total_physical']) }} <span class="text-xs font-normal text-slate-400">uds</span>
             </div>
             <div class="text-[11px] text-slate-500 flex justify-between border-t border-slate-100 pt-2 font-medium">
@@ -70,7 +60,7 @@
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span>Valorización (Costo Fijo)</span>
-                <i class="fa-solid fa-vault text-[#00A884]"></i>
+                <i class="fa-solid fa-vault text-[#0061f2]"></i>
             </div>
             <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
                 Bs. {{ number_format($metrics['total_valuation'], 2) }}
@@ -189,7 +179,7 @@
     <!-- 3. Tabla Principal del Kardex Global -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="font-bold text-[#0A1128] text-sm flex items-center gap-2">
+            <h2 class="font-bold text-[#212832] text-sm flex items-center gap-2">
                 <i class="fa-solid fa-list-check"></i>
                 <span>Movimientos Históricos Inmutables ({{ $records->total() }} registros)</span>
             </h2>
@@ -356,7 +346,7 @@
              class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-scale-in">
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-2 text-[#0A1128] font-bold text-base font-heading">
+                <div class="flex items-center gap-2 text-[#212832] font-bold text-base font-heading">
                     <i class="fa-solid fa-sliders"></i>
                     <span>Ajuste Manual de Inventario (Auditoría)</span>
                 </div>

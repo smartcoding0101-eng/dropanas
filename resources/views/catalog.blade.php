@@ -11,25 +11,23 @@
         icon="fa-solid fa-boxes-stacked"
         badge="Megabodega Central">
         <x-slot:actions>
-            <a href="{{ url('/checkout-demo') }}" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center gap-2">
+            <a href="{{ url('/checkout-demo') }}" class="px-5 py-2.5 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white font-bold text-xs shadow-md flex items-center gap-2 transition">
                 <i class="fa-solid fa-bolt"></i> Simular Pedido COD
             </a>
         </x-slot:actions>
     </x-page-header>
-        </div>
-    </div>
 
-    <!-- Barra de Filtros (#FFFFFF con Borde Sutil) -->
-    <div class="bg-[#FFFFFF] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-200 shadow-sm">
+    <!-- Barra de Filtros (SB Admin Pro Overlap) -->
+    <div class="bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-200 -mt-14 relative z-10">
         <div class="relative w-full sm:w-96">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             <input type="text" placeholder="Buscar por producto, SKU o categoría..."
-                class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-[#00A884] transition">
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-[#0061f2] transition">
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto text-xs text-slate-500">
             <span class="hidden sm:inline font-medium">Filtrar por Bodega:</span>
-            <span class="px-3 py-1.5 rounded-lg bg-[#0A1128] text-white border border-slate-800 cursor-pointer font-bold shadow-sm">Todas</span>
+            <span class="px-3 py-1.5 rounded-lg bg-[#0061f2] text-white border border-slate-800 cursor-pointer font-bold shadow-sm">Todas</span>
             <span class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer transition font-medium">Santa Cruz</span>
             <span class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer transition font-medium">El Alto</span>
         </div>
@@ -38,14 +36,14 @@
     <!-- Grid de Productos (#FFFFFF Surface) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($products as $product)
-            <div class="interactive-card bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:border-[#00A884] group">
+            <div class="interactive-card bg-[#FFFFFF] rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:border-[#0061f2] group">
                 
                 <!-- Showcase Visual del Producto -->
                 <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden">
                     @if(!empty($product->images) && count($product->images) > 0)
                         <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
                     @else
-                        <div class="w-24 h-24 rounded-2xl bg-emerald-50 border border-emerald-200 text-[#0A1128] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
+                        <div class="w-24 h-24 rounded-2xl bg-emerald-50 border border-emerald-200 text-[#212832] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
                             @if(str_contains($product->slug, 'audifono'))
                                 <i class="fa-solid fa-headphones"></i>
                             @elseif(str_contains($product->slug, 'smartwatch'))
@@ -65,7 +63,7 @@
                     <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         <i class="fa-solid fa-truck-fast mr-1"></i> Contra Entrega
                     </span>
-                    <span class="absolute top-3.5 right-3.5 bg-white border border-slate-200 text-[#0A1128] font-mono font-bold text-[11px] px-2 py-0.5 rounded shadow-sm">
+                    <span class="absolute top-3.5 right-3.5 bg-white border border-slate-200 text-[#212832] font-mono font-bold text-[11px] px-2 py-0.5 rounded shadow-sm">
                         SKU: {{ $product->sku }}
                     </span>
                 </div>
@@ -73,10 +71,10 @@
                 <!-- Detalles del Producto -->
                 <div class="p-6 flex-grow space-y-4">
                     <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#00A884] font-heading">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#0061f2] font-heading">
                             {{ $product->category->name ?? 'Tecnología' }}
                         </span>
-                        <h3 class="text-lg font-bold text-slate-900 font-heading mt-1 group-hover:text-[#0A1128] transition line-clamp-1">
+                        <h3 class="text-lg font-bold text-slate-900 font-heading mt-1 group-hover:text-[#212832] transition line-clamp-1">
                             {{ $product->name }}
                         </h3>
                     </div>
@@ -95,9 +93,9 @@
                             <span>Precio Mínimo de Venta:</span>
                             <span class="font-bold text-slate-700 font-mono">{{ number_format($product->min_price_bob, 2) }} BOB</span>
                         </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-[#00A884] font-bold">
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-[#0061f2] font-bold">
                             <span>Precio Sugerido Tienda:</span>
-                            <span class="text-base font-extrabold font-mono text-[#0A1128]">{{ number_format($product->suggested_price_bob, 2) }} BOB</span>
+                            <span class="text-base font-extrabold font-mono text-[#212832]">{{ number_format($product->suggested_price_bob, 2) }} BOB</span>
                         </div>
                     </div>
 
@@ -112,7 +110,7 @@
                                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                     <span class="text-xs font-medium">{{ $inventory->warehouse->city }} ({{ $inventory->warehouse->department }})</span>
                                 </span>
-                                <span class="font-bold font-mono text-[#0A1128] text-xs">{{ $inventory->stock_available }} uds</span>
+                                <span class="font-bold font-mono text-[#212832] text-xs">{{ $inventory->stock_available }} uds</span>
                             </div>
                         @endforeach
                     </div>

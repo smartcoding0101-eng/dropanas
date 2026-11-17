@@ -7,14 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary:   #F4B400;
-            --primary-dark: #D09800;
-            --bg:        #0F1117;
-            --surface:   #1A1D2E;
-            --surface2:  #242740;
-            --border:    rgba(255,255,255,0.08);
-            --text:      #E8E9F0;
-            --text-muted:#8B90B0;
+            --primary:   #0061f2;
+            --primary-dark: #0052cc;
+            --bg:        #f2f6fc;
+            --surface:   #ffffff;
+            --surface2:  #eef2f8;
+            --border:    #e0e5ec;
+            --text:      #212832;
+            --text-muted:#69707a;
             --success:   #22C55E;
             --warning:   #EAB308;
             --danger:    #EF4444;

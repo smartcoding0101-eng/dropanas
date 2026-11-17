@@ -44,7 +44,7 @@
         <!-- Enviar un pedido manual -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 lg:col-span-1">
             <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-                <i class="fa-solid fa-plus text-[#00A884]"></i>
+                <i class="fa-solid fa-plus text-[#0061f2]"></i>
                 Enviar Nuevo Pedido
             </h2>
             <div class="space-y-3">
@@ -92,7 +92,7 @@
                 <div class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Tarifa de Envío Estimada</div>
                 <div class="flex justify-between items-center">
                     <span class="text-slate-600">Destino: <span class="font-semibold text-slate-800" x-text="order.department"></span></span>
-                    <span class="font-black text-[#0A1128]">Bs. <span x-text="shippingRate"></span></span>
+                    <span class="font-black text-[#212832]">Bs. <span x-text="shippingRate"></span></span>
                 </div>
                 <div class="text-[10px] text-slate-400 mt-1">Tarifa plana hasta 3 kg • Almacenaje $0</div>
             </div>
@@ -102,10 +102,10 @@
         <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
                 <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-[#00A884]"></i>
+                    <i class="fa-solid fa-list-check text-[#0061f2]"></i>
                     Mis Pedidos Recientes
                 </h2>
-                <a href="{{ url('/tracking') }}" class="text-xs text-[#0A1128] font-bold hover:underline flex items-center gap-1">
+                <a href="{{ url('/tracking') }}" class="text-xs text-[#212832] font-bold hover:underline flex items-center gap-1">
                     Rastrear <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
             </div>
@@ -131,7 +131,7 @@
                             ['guide'=>'DRP-2026-0138','name'=>'Jorge Salinas','city'=>'Santa Cruz','amount'=>'Bs. 520','status'=>'delivered'],
                         ] as $order)
                         <tr class="hover:bg-slate-50 transition">
-                            <td class="px-4 py-3 font-mono text-xs text-[#0A1128] font-bold">{{ $order['guide'] }}</td>
+                            <td class="px-4 py-3 font-mono text-xs text-[#212832] font-bold">{{ $order['guide'] }}</td>
                             <td class="px-4 py-3 font-medium text-slate-800 text-xs">{{ $order['name'] }}</td>
                             <td class="px-4 py-3 text-slate-500 text-xs">{{ $order['city'] }}</td>
                             <td class="px-4 py-3 font-bold text-slate-900">{{ $order['amount'] }}</td>
@@ -161,7 +161,7 @@
     <!-- Inventario en bodega Bolidrop -->
     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <h2 class="font-bold text-slate-800 font-heading flex items-center gap-2">
-            <i class="fa-solid fa-warehouse text-[#00A884]"></i>
+            <i class="fa-solid fa-warehouse text-[#0061f2]"></i>
             Mi Inventario en Bodega Bolidrop
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -187,7 +187,7 @@
             @endforeach
         </div>
         <div class="text-center pt-2">
-            <a href="{{ url('/contactenos') }}" class="text-xs text-[#0A1128] font-bold hover:underline">
+            <a href="{{ url('/contactenos') }}" class="text-xs text-[#212832] font-bold hover:underline">
                 ¿Quieres ingresar más stock? Contacta al equipo logístico →
             </a>
         </div>
