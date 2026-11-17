@@ -86,26 +86,6 @@
             </a>
         </div>
     </div>
-
-    <!-- Credenciales Demo Rápidas -->
-    <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5">
-        <div class="font-bold text-slate-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-key text-[#0061f2]"></i>
-            <span>Cuentas Demo para Pruebas:</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-            <div class="bg-white p-2 rounded border border-slate-200">
-                <strong class="text-[#212832]">Dropshipper:</strong><br>
-                <span>dropshipper@bolidrop.bo</span><br>
-                <span class="text-slate-400 font-mono">password123</span>
-            </div>
-            <div class="bg-white p-2 rounded border border-slate-200">
-                <strong class="text-[#212832]">Administrador:</strong><br>
-                <span>admin@bolidrop.bo</span><br>
-                <span class="text-slate-400 font-mono">password123</span>
-            </div>
-        </div>
-    </div>
 </div>
 @endsection
 
