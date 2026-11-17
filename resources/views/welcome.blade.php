@@ -3,7 +3,7 @@
 @section('title', 'Bolidrop Bolivia | El Ecosistema de Dropshipping COD y Fulfillment')
 
 @section('content')
-<div class="space-y-16 pb-12 pt-1 sm:pt-2 bg-[#FFFFFF]" x-data="landingLeadMagnet()">
+<div class="space-y-16 pb-12 pt-1 sm:pt-2 " x-data="landingLeadMagnet()">
 
     <!-- Toast Notification -->
     <div x-show="toast.show" x-cloak
@@ -18,17 +18,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             <div class="lg:col-span-7 space-y-5">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#064E3B]">
-                    <span class="flex h-2 w-2 rounded-full bg-[#059669] animate-pulse"></span>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-[#0A1128]">
+                    <span class="flex h-2 w-2 rounded-full bg-[#00A884] animate-pulse"></span>
                     <span>El Ecosistema de Dropshipping más grande de Bolivia</span>
                 </div>
 
-                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#064E3B] leading-tight font-heading">
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#0A1128] leading-tight font-heading">
                     Conectamos Proveedores, Vendedores y Tiendas con el Consumidor Final.
                 </h1>
 
                 <p class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl">
-                    Almacenaje, Fulfillment y Logística con <strong class="text-slate-900 font-bold">Pago Contra Entrega (COD)</strong> en Santa Cruz, La Paz, Cochabamba y El Alto. Recaudación en Bolivianos en efectivo o mediante <strong class="text-[#10B981]">QR Simple</strong> al momento de recibir el paquete.
+                    Almacenaje, Fulfillment y Logística con <strong class="text-slate-900 font-bold">Pago Contra Entrega (COD)</strong> en Santa Cruz, La Paz, Cochabamba y El Alto. Recaudación en Bolivianos en efectivo o mediante <strong class="text-[#00A884]">QR Simple</strong> al momento de recibir el paquete.
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 pt-2">
@@ -37,7 +37,7 @@
                         <i class="fa-solid fa-arrow-down text-xs"></i>
                     </a>
                     <a href="{{ url('/catalogo') }}" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-semibold text-sm transition shadow-xs flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-stacked text-[#10B981]"></i>
+                        <i class="fa-solid fa-boxes-stacked text-[#00A884]"></i>
                         <span>Ver Catálogo Mayorista</span>
                     </a>
                 </div>
@@ -45,15 +45,15 @@
                 <!-- Métricas destacadas en barra ámbar -->
                 <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-100">
                     <div class="space-y-1">
-                        <div class="text-2xl sm:text-3xl font-black text-[#064E3B] font-heading">9 / 9</div>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0A1128] font-heading">9 / 9</div>
                         <div class="text-xs text-slate-500 font-medium">Deptos. de Cobertura</div>
                     </div>
                     <div class="space-y-1">
-                        <div class="text-2xl sm:text-3xl font-black text-[#10B981] font-heading">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
+                        <div class="text-2xl sm:text-3xl font-black text-[#00A884] font-heading">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
                         <div class="text-xs text-slate-500 font-medium">Tasa Oficial BCB</div>
                     </div>
                     <div class="space-y-1">
-                        <div class="text-2xl sm:text-3xl font-black text-[#059669] font-heading">24 hrs</div>
+                        <div class="text-2xl sm:text-3xl font-black text-[#00A884] font-heading">24 hrs</div>
                         <div class="text-xs text-slate-500 font-medium">Retiros a tu Billetera</div>
                     </div>
                 </div>
@@ -61,10 +61,10 @@
 
             <!-- Columna Derecha: Tarjeta Visual de Producto Ganador & Logística -->
             <div class="lg:col-span-5">
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6 relative hover:border-amber-400 transition">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6 relative hover:border-[#00A884] transition">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-red-50 text-[#064E3B] border border-red-200 flex items-center justify-center font-bold">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#0A1128] border border-red-200 flex items-center justify-center font-bold">
                                 <i class="fa-solid fa-truck-fast"></i>
                             </div>
                             <div>
@@ -74,7 +74,7 @@
                                 </span>
                             </div>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-[#10B981] border border-amber-200 uppercase">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-[#00A884] border border-emerald-200 uppercase">
                             Red COD Activa
                         </span>
                     </div>
@@ -88,14 +88,14 @@
                             <span class="text-slate-500">Costo Almacenaje:</span>
                             <span class="font-black text-emerald-600 text-sm">Bs 0.00 (Gratis)</span>
                         </div>
-                        <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-red-50/50 border border-red-100">
-                            <span class="text-[#064E3B] font-semibold">Tus Ganancias:</span>
-                            <span class="font-black text-[#064E3B] text-sm font-mono">+100% Retiro en 24h</span>
+                        <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                            <span class="text-[#0A1128] font-semibold">Tus Ganancias:</span>
+                            <span class="font-black text-[#0A1128] text-sm font-mono">+100% Retiro en 24h</span>
                         </div>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-[#10B981] text-xl"></i>
+                    <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved text-[#00A884] text-xl"></i>
                         <p class="text-[11px] text-slate-700 leading-snug">
                             <strong>Call Center de Novedades:</strong> Nuestro equipo contacta al cliente final en caso de reprogramación de entrega para no perder tu venta.
                         </p>
@@ -109,10 +109,10 @@
     <!-- 2. SECCIÓN: ¿CÓMO QUIERES USAR BolidropS? (Los 4 Perfiles de Bolidrops.com) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div class="text-center max-w-2xl mx-auto space-y-2">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-[#10B981] font-heading">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#00A884] font-heading">
                 Adaptado a tu Modelo de Negocio
             </h2>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#064E3B] font-heading">
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#0A1128] font-heading">
                 ¿Cómo quieres usar Bolidrop Bolivia?
             </h3>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -123,14 +123,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             <!-- Card 1: DROPSHIPPERS (Venta sin Stock) -->
-            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-amber-400 flex flex-col justify-between">
+            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-[#00A884] flex flex-col justify-between">
                 <div class="space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-red-50 text-[#059669] border border-red-200 flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-[#00A884] border border-red-200 flex items-center justify-center text-xl">
                         <i class="fa-solid fa-store"></i>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#10B981]">Perfil 1</span>
-                        <h4 class="text-lg font-bold text-[#064E3B] font-heading">DROPSHIPPERS</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#00A884]">Perfil 1</span>
+                        <h4 class="text-lg font-bold text-[#0A1128] font-heading">DROPSHIPPERS</h4>
                         <p class="text-xs font-semibold text-slate-700">Venta sin Inventario Propio</p>
                     </div>
                     <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
@@ -154,14 +154,14 @@
             </div>
 
             <!-- Card 2: PROVEEDORES MAYORISTAS -->
-            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-amber-400 flex flex-col justify-between">
+            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-[#00A884] flex flex-col justify-between">
                 <div class="space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center text-xl">
                         <i class="fa-solid fa-boxes-packing"></i>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#10B981]">Perfil 2</span>
-                        <h4 class="text-lg font-bold text-[#064E3B] font-heading">PROVEEDORES</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#00A884]">Perfil 2</span>
+                        <h4 class="text-lg font-bold text-[#0A1128] font-heading">PROVEEDORES</h4>
                         <p class="text-xs font-semibold text-slate-700">Abastecimiento Mayorista</p>
                     </div>
                     <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
@@ -185,14 +185,14 @@
             </div>
 
             <!-- Card 3: TIENDAS ONLINE (Fulfillment) -->
-            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-amber-400 flex flex-col justify-between">
+            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-[#00A884] flex flex-col justify-between">
                 <div class="space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-xl">
                         <i class="fa-solid fa-cart-flatbed"></i>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#10B981]">Perfil 3</span>
-                        <h4 class="text-lg font-bold text-[#064E3B] font-heading">TIENDAS ONLINE</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#00A884]">Perfil 3</span>
+                        <h4 class="text-lg font-bold text-[#0A1128] font-heading">TIENDAS ONLINE</h4>
                         <p class="text-xs font-semibold text-slate-700">Fulfillment para Marcas Propias</p>
                     </div>
                     <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
@@ -216,14 +216,14 @@
             </div>
 
             <!-- Card 4: OPERADOR LOGÍSTICO & BODEGAS -->
-            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-amber-400 flex flex-col justify-between">
+            <div class="interactive-card bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5 hover:border-[#00A884] flex flex-col justify-between">
                 <div class="space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center text-xl">
                         <i class="fa-solid fa-warehouse"></i>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#10B981]">Perfil 4</span>
-                        <h4 class="text-lg font-bold text-[#064E3B] font-heading">OPERADOR LOGÍSTICO</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#00A884]">Perfil 4</span>
+                        <h4 class="text-lg font-bold text-[#0A1128] font-heading">OPERADOR LOGÍSTICO</h4>
                         <p class="text-xs font-semibold text-slate-700">Racks y Despacho Masivo</p>
                     </div>
                     <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
@@ -252,10 +252,10 @@
         <div class="bg-gradient-to-r from-red-50/70 via-white to-amber-50/70 rounded-3xl p-8 sm:p-12 border border-red-100 shadow-sm">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div class="lg:col-span-5 space-y-4">
-                    <span class="text-xs font-bold uppercase tracking-wider text-[#064E3B] bg-red-100/80 px-3 py-1 rounded-full border border-red-200">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#0A1128] bg-red-100/80 px-3 py-1 rounded-full border border-red-200">
                         Infraestructura 360° en Bolivia
                     </span>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading leading-snug">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading leading-snug">
                         En Bolidrop vender en línea nunca fue tan fácil.
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -264,8 +264,8 @@
                 </div>
 
                 <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-amber-400 transition">
-                        <div class="w-8 h-8 rounded-lg bg-red-50 text-[#059669] flex items-center justify-center text-sm font-bold">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-[#00A884] transition">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#00A884] flex items-center justify-center text-sm font-bold">
                             <i class="fa-solid fa-boxes-stacked"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-xs">Catálogo Listo para Vender</h4>
@@ -274,8 +274,8 @@
                         </p>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-amber-400 transition">
-                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-[#10B981] flex items-center justify-center text-sm font-bold">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-[#00A884] transition">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-[#00A884] flex items-center justify-center text-sm font-bold">
                             <i class="fa-solid fa-users-viewfinder"></i>
                         </div>
                         <h4 class="font-bold text-slate-800 text-xs">Stock Garantizado & Networking</h4>
@@ -284,7 +284,7 @@
                         </p>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-amber-400 transition">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-[#00A884] transition">
                         <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">
                             <i class="fa-solid fa-box-open"></i>
                         </div>
@@ -294,7 +294,7 @@
                         </p>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-amber-400 transition">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 hover:border-[#00A884] transition">
                         <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">
                             <i class="fa-solid fa-wallet"></i>
                         </div>
@@ -311,10 +311,10 @@
     <!-- 2.6 SERVICIOS PARA PROVEEDORES (Replicado de Bolidrops.com) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div class="text-center max-w-2xl mx-auto space-y-2">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-[#10B981] font-heading">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#00A884] font-heading">
                 Para Importadores y Fabricantes
             </h2>
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
+            <h3 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
                 ¿Tienes inventario en Bolivia? Escálalo con Bolidrop
             </h3>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -323,8 +323,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-red-400 transition">
-                <div class="w-10 h-10 rounded-xl bg-red-50 text-[#064E3B] border border-red-200 flex items-center justify-center text-lg font-bold">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#00A884] transition">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#0A1128] border border-red-200 flex items-center justify-center text-lg font-bold">
                     <i class="fa-solid fa-bullhorn"></i>
                 </div>
                 <h4 class="font-bold text-slate-800 text-sm">Ventas sin Gasto Publicitario</h4>
@@ -333,8 +333,8 @@
                 </p>
             </div>
 
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-amber-400 transition">
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-[#10B981] border border-amber-200 flex items-center justify-center text-lg font-bold">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#00A884] transition">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center text-lg font-bold">
                     <i class="fa-solid fa-coins"></i>
                 </div>
                 <h4 class="font-bold text-slate-800 text-sm">Costo Operativo Bs 0</h4>
@@ -356,10 +356,10 @@
     </section>
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="profitCalculator()">
         <div class="text-center max-w-2xl mx-auto space-y-2 mb-10">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-[#10B981] font-heading">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#00A884] font-heading">
                 Simulador de Rentabilidad
             </h2>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#064E3B] font-heading">
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#0A1128] font-heading">
                 ¿Cuánto puedes ganar con Bolidrop?
             </h3>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -372,7 +372,7 @@
             <!-- Panel Izquierdo: Inputs -->
             <div class="lg:col-span-5 bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-5">
                 <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-[#10B981]"></i>
+                    <i class="fa-solid fa-sliders text-[#00A884]"></i>
                     Configura tu Producto
                 </h4>
 
@@ -380,10 +380,10 @@
                 <div class="space-y-2">
                     <div class="flex justify-between text-xs">
                         <label class="font-semibold text-slate-700">Precio de Venta (COD):</label>
-                        <span class="font-black text-[#064E3B]" x-text="'Bs ' + salePrice"></span>
+                        <span class="font-black text-[#0A1128]" x-text="'Bs ' + salePrice"></span>
                     </div>
                     <input type="range" x-model.number="salePrice" min="50" max="1000" step="5"
-                        class="w-full h-2 rounded-full appearance-none cursor-pointer accent-[#059669]">
+                        class="w-full h-2 rounded-full appearance-none cursor-pointer accent-[#00A884]">
                     <div class="flex justify-between text-[10px] text-slate-400">
                         <span>Bs 50</span><span>Bs 1,000</span>
                     </div>
@@ -406,10 +406,10 @@
                 <div class="space-y-2">
                     <div class="flex justify-between text-xs">
                         <label class="font-semibold text-slate-700">Pedidos al Mes:</label>
-                        <span class="font-black text-[#10B981]" x-text="orders + ' pedidos'"></span>
+                        <span class="font-black text-[#00A884]" x-text="orders + ' pedidos'"></span>
                     </div>
                     <input type="range" x-model.number="orders" min="10" max="500" step="10"
-                        class="w-full h-2 rounded-full appearance-none cursor-pointer accent-[#10B981]">
+                        class="w-full h-2 rounded-full appearance-none cursor-pointer accent-[#00A884]">
                     <div class="flex justify-between text-[10px] text-slate-400">
                         <span>10</span><span>500</span>
                     </div>
@@ -419,7 +419,7 @@
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-slate-700">Departamento de Entrega:</label>
                     <select x-model="selectedDept"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-[#10B981]">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-800 focus:outline-none focus:border-emerald-500">
                         <template x-for="dept in depts" :key="dept.name">
                             <option :value="dept.name" x-text="dept.name + ' — Bs ' + dept.rate"></option>
                         </template>
@@ -432,7 +432,7 @@
                 <!-- Desglose de costos -->
                 <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm space-y-3 text-xs">
                     <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-receipt text-[#064E3B]"></i>
+                        <i class="fa-solid fa-receipt text-[#0A1128]"></i>
                         Desglose por Pedido
                     </h4>
                     <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -451,14 +451,14 @@
                         <span class="text-slate-500">(-) Almacenaje Bolidrop:</span>
                         <span class="font-bold text-emerald-600">- Bs 0.00 (Gratis)</span>
                     </div>
-                    <div class="flex justify-between items-center py-2.5 px-3 rounded-xl bg-red-50 border border-red-200 mt-1">
-                        <span class="font-bold text-[#064E3B]">Ganancia Neta por Pedido:</span>
-                        <span class="font-black text-[#064E3B] text-sm font-mono" x-text="'Bs ' + profitPerOrder.toFixed(2)"></span>
+                    <div class="flex justify-between items-center py-2.5 px-3 rounded-xl bg-emerald-50 border border-emerald-200 mt-1">
+                        <span class="font-bold text-[#0A1128]">Ganancia Neta por Pedido:</span>
+                        <span class="font-black text-[#0A1128] text-sm font-mono" x-text="'Bs ' + profitPerOrder.toFixed(2)"></span>
                     </div>
                 </div>
 
                 <!-- Resultado mensual prominente -->
-                <div class="rounded-3xl p-7 border-2 border-[#059669] bg-gradient-to-br from-[#064E3B] to-[#059669] text-white shadow-xl space-y-4">
+                <div class="rounded-3xl p-7 border-2 border-[#00A884] bg-gradient-to-br from-[#0A1128] to-[#00A884] text-white shadow-xl space-y-4">
                     <div class="text-xs font-bold uppercase tracking-widest text-red-200">Proyección Mensual</div>
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="space-y-1">
@@ -479,7 +479,7 @@
                             <i class="fa-solid fa-circle-info mr-1"></i>
                             Tasa de entrega estimada del <strong>85%</strong>. Almacenaje <strong class="text-white">Bs 0</strong>.
                         </p>
-                        <a href="#lead-magnet" class="px-4 py-2 rounded-xl bg-white text-[#064E3B] text-xs font-black hover:bg-red-50 transition shadow">
+                        <a href="#lead-magnet" class="px-4 py-2 rounded-xl bg-white text-[#0A1128] text-xs font-black hover:bg-red-50 transition shadow">
                             Empezar Ahora →
                         </a>
                     </div>
@@ -491,10 +491,10 @@
     <!-- 4. RED COD POR DEPARTAMENTO (Tarifas Planas DEX Bolivia) -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto space-y-2 mb-10">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-[#10B981] font-heading">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#00A884] font-heading">
                 Cobertura Nacional
             </h2>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#064E3B] font-heading">
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#0A1128] font-heading">
                 Red COD en los 9 Departamentos de Bolivia
             </h3>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -505,19 +505,19 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
 
             <!-- Santa Cruz -->
-            <div class="bg-white rounded-2xl p-5 border-2 border-[#059669] shadow-sm relative overflow-hidden hover:shadow-lg transition">
+            <div class="bg-white rounded-2xl p-5 border-2 border-[#00A884] shadow-sm relative overflow-hidden hover:shadow-lg transition">
                 <div class="absolute top-3 right-3">
-                    <span class="px-2 py-0.5 rounded-full bg-[#059669] text-white text-[9px] font-black uppercase tracking-wider">Hub Principal</span>
+                    <span class="px-2 py-0.5 rounded-full bg-[#00A884] text-white text-[9px] font-black uppercase tracking-wider">Hub Principal</span>
                 </div>
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-[#059669] text-sm font-black flex-shrink-0">SC</div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-[#00A884] text-sm font-black flex-shrink-0">SC</div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold text-slate-900">Santa Cruz</h4>
                         <p class="text-[10px] text-slate-500 mb-2">Santa Cruz de la Sierra · Plan 3000</p>
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 8.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 8.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Interprovincial:</span>
@@ -533,16 +533,16 @@
             </div>
 
             <!-- La Paz -->
-            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400">
+            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884]">
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-[#10B981] text-sm font-black flex-shrink-0">LP</div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-[#00A884] text-sm font-black flex-shrink-0">LP</div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold text-slate-900">La Paz</h4>
                         <p class="text-[10px] text-slate-500 mb-2">La Paz · El Alto</p>
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 12.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 12.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">El Alto:</span>
@@ -558,7 +558,7 @@
             </div>
 
             <!-- Cochabamba -->
-            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400">
+            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884]">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-sm font-black flex-shrink-0">CB</div>
                     <div class="flex-1 min-w-0">
@@ -567,7 +567,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 10.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 10.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Interprovincial:</span>
@@ -583,7 +583,7 @@
             </div>
 
             <!-- Oruro -->
-            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400">
+            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884]">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">OR</div>
                     <div class="flex-1 min-w-0">
@@ -592,7 +592,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 18.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 18.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -608,7 +608,7 @@
             </div>
 
             <!-- Potosí -->
-            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400">
+            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884]">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">PT</div>
                     <div class="flex-1 min-w-0">
@@ -617,7 +617,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 20.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 20.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -633,7 +633,7 @@
             </div>
 
             <!-- Chuquisaca -->
-            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400">
+            <div class="interactive-card bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884]">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">CH</div>
                     <div class="flex-1 min-w-0">
@@ -642,7 +642,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 20.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 20.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -658,7 +658,7 @@
             </div>
 
             <!-- Tarija -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400 hover:shadow-lg transition">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884] hover:shadow-lg transition">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">TJ</div>
                     <div class="flex-1 min-w-0">
@@ -667,7 +667,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 22.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 22.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -683,7 +683,7 @@
             </div>
 
             <!-- Beni -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400 hover:shadow-lg transition">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884] hover:shadow-lg transition">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">BE</div>
                     <div class="flex-1 min-w-0">
@@ -692,7 +692,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 25.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 25.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -708,7 +708,7 @@
             </div>
 
             <!-- Pando -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400 hover:shadow-lg transition">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-[#00A884] hover:shadow-lg transition">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-black flex-shrink-0">PA</div>
                     <div class="flex-1 min-w-0">
@@ -717,7 +717,7 @@
                         <div class="space-y-1 text-xs">
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tarifa Urbana:</span>
-                                <span class="font-black text-[#064E3B]">Bs 28.00</span>
+                                <span class="font-black text-[#0A1128]">Bs 28.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-500">Tiempo estimado:</span>
@@ -735,11 +735,11 @@
         </div>
 
         <!-- Banner COD informativo -->
-        <div class="rounded-2xl p-5 bg-amber-50 border border-amber-200 flex flex-wrap items-center justify-between gap-4">
+        <div class="rounded-2xl p-5 bg-emerald-50 border border-emerald-200 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-start gap-3">
-                <i class="fa-solid fa-circle-info text-[#10B981] text-xl mt-0.5"></i>
+                <i class="fa-solid fa-circle-info text-[#00A884] text-xl mt-0.5"></i>
                 <p class="text-xs text-slate-700 leading-relaxed max-w-2xl">
-                    <strong class="text-[#064E3B]">Política de Devoluciones COD:</strong>
+                    <strong class="text-[#0A1128]">Política de Devoluciones COD:</strong>
                     En caso de no entrega tras 2 intentos, el paquete regresa a bodega y se descuenta el costo de retorno al saldo del dropshipper.
                     La tasa de entrega promedio en Bolivia es del <strong>85%</strong>. El Call Center de Novedades gestiona reprogramaciones para reducir devoluciones.
                 </p>
@@ -753,10 +753,10 @@
     <!-- 5. FAQ / CENTRO DE SOPORTE -->
     <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ openFaq: null }">
         <div class="text-center max-w-2xl mx-auto space-y-2 mb-10">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-[#10B981] font-heading">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-[#00A884] font-heading">
                 Centro de Soporte
             </h2>
-            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#064E3B] font-heading">
+            <h3 class="text-2xl sm:text-4xl font-extrabold text-[#0A1128] font-heading">
                 Preguntas Frecuentes
             </h3>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -793,9 +793,9 @@
                 <button @click="open = !open"
                     class="w-full flex items-center justify-between p-5 text-left gap-4 focus:outline-none">
                     <span class="text-sm font-bold text-slate-800 leading-snug">{{ $faq['q'] }}</span>
-                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-red-50 border border-red-200 flex items-center justify-center transition-transform"
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center transition-transform"
                          :class="{ 'rotate-45': open }">
-                        <i class="fa-solid fa-plus text-[#064E3B] text-[10px]"></i>
+                        <i class="fa-solid fa-plus text-[#0A1128] text-[10px]"></i>
                     </div>
                 </button>
                 <div x-show="open" x-collapse>
@@ -825,10 +825,10 @@
         <div class="rounded-3xl bg-slate-50 border border-slate-200 p-8 sm:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             <div class="lg:col-span-5 space-y-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200 px-3 py-1 rounded-full">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#0A1128] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
                     Formulario de Capacitación & Afiliación
                 </span>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
+                <h3 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
                     Únete a la Red Bolidrop Bolivia
                 </h3>
                 <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -857,12 +857,12 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Nombre Completo:</label>
                             <input type="text" x-model="form.full_name" required placeholder="Tu nombre y apellido"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">WhatsApp (+591 Bolivia):</label>
                             <input type="text" x-model="form.phone" required placeholder="Ej: +591 71234567"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                         </div>
                     </div>
 
@@ -870,7 +870,7 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Me interesa:</label>
                             <select x-model="form.interest_role" required
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                                 <option value="dropshipper">Ser Dropshipper (Venta sin Stock)</option>
                                 <option value="provider">Ser Proveedor Mayorista</option>
                                 <option value="fulfillment">Fulfillment para mi Tienda</option>
@@ -880,7 +880,7 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Volumen Estimado:</label>
                             <select x-model="form.estimated_monthly_volume" required
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                                 <option value="1-50 envíos mes">1 - 50 pedidos al mes</option>
                                 <option value="50-200 envíos mes">50 - 200 pedidos al mes</option>
                                 <option value="+200 envíos mes">+200 pedidos al mes</option>
@@ -892,7 +892,7 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Departamento:</label>
                             <select x-model="form.department" required
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                                 <option value="Santa Cruz">Santa Cruz</option>
                                 <option value="La Paz">La Paz</option>
                                 <option value="Cochabamba">Cochabamba</option>
@@ -907,7 +907,7 @@
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Correo Electrónico (opcional):</label>
                             <input type="email" x-model="form.email" placeholder="correo@ejemplo.com"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-[#10B981]">
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-emerald-500">
                         </div>
                     </div>
 

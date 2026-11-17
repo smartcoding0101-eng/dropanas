@@ -14,7 +14,7 @@
                 </span>
                 <span class="text-xs text-slate-500 font-medium">Automatización Transaccional COD</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
                 Centro de Notificaciones WhatsApp
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">

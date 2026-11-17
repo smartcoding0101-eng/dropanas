@@ -9,12 +9,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
             <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-xs font-bold uppercase tracking-wider text-[#064E3B] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#0A1128] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
                     Logística Inversa • Reverse Logistics Bolivia
                 </span>
                 <span class="text-xs text-slate-500 font-medium">Control de Novedades DEX y Reingresos a Bodega</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B] font-heading">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
                 Gestión de Devoluciones & Novedades COD
             </h1>
             <p class="text-xs sm:text-sm text-slate-500">
@@ -25,11 +25,11 @@
         <!-- Filtros Rápidos -->
         <div class="flex items-center gap-2">
             <a href="{{ route('returns.index', ['status' => 'novedades']) }}"
-               class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm {{ $status === 'novedades' ? 'bg-[#059669] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+               class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm {{ $status === 'novedades' ? 'bg-[#00A884] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
                 <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Novedades Activas
             </a>
             <a href="{{ route('returns.index', ['status' => 'returned']) }}"
-               class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm {{ $status === 'returned' ? 'bg-[#064E3B] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
+               class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm {{ $status === 'returned' ? 'bg-[#0A1128] text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
                 <i class="fa-solid fa-rotate-left mr-1.5"></i> Devueltos a Bodega
             </a>
         </div>
@@ -49,7 +49,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
-                <i class="fa-solid fa-boxes-packing text-[#10B981]"></i>
+                <i class="fa-solid fa-boxes-packing text-[#00A884]"></i>
                 <span>Registros en Logística Inversa ({{ $orders->total() }})</span>
             </div>
         </div>
@@ -71,14 +71,14 @@
                         @foreach($orders as $order)
                             <tr class="hover:bg-slate-50/60 transition">
                                 <td class="p-4 font-mono">
-                                    <div class="font-bold text-[#064E3B]">#{{ $order->order_number }}</div>
+                                    <div class="font-bold text-[#0A1128]">#{{ $order->order_number }}</div>
                                     <div class="text-[11px] text-slate-400">Trk: {{ $order->tracking_number ?? 'S/T' }}</div>
                                     <div class="text-[10px] text-slate-500 mt-0.5">Carrier: {{ $order->carrier->name ?? 'DEX Express' }}</div>
                                 </td>
 
                                 <td class="p-4">
                                     <div class="font-semibold text-slate-800">{{ $order->customer_name }}</div>
-                                    <div class="text-slate-500 text-[11px]"><i class="fa-solid fa-phone text-[10px] mr-1 text-[#10B981]"></i>{{ $order->customer_phone }}</div>
+                                    <div class="text-slate-500 text-[11px]"><i class="fa-solid fa-phone text-[10px] mr-1 text-[#00A884]"></i>{{ $order->customer_phone }}</div>
                                     <div class="text-slate-500 text-[11px]"><i class="fa-solid fa-location-dot text-[10px] mr-1 text-slate-400"></i>{{ $order->shipping_department }} - {{ $order->shipping_city }}</div>
                                 </td>
 
@@ -125,14 +125,14 @@
                                             <!-- Reprogramar -->
                                             <button type="button" 
                                                     onclick="document.getElementById('modal-reschedule-{{ $order->id }}').classList.remove('hidden')"
-                                                    class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-[#10B981] font-bold border border-amber-200 text-[11px] transition">
+                                                    class="px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-[#00A884] font-bold border border-amber-200 text-[11px] transition">
                                                 <i class="fa-solid fa-calendar-days mr-1"></i> Reprogramar
                                             </button>
 
                                             <!-- Confirmar Retorno -->
                                             <form action="{{ route('returns.process', $order->id) }}" method="POST" onsubmit="return confirm('¿Confirmas el reingreso físico a bodega y cobro de flete al dropshipper?')">
                                                 @csrf
-                                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-[#064E3B] font-bold border border-red-200 text-[11px] transition">
+                                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-[#0A1128] font-bold border border-red-200 text-[11px] transition">
                                                     <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Reingresar a Bodega
                                                 </button>
                                             </form>
@@ -151,15 +151,15 @@
                                                     @csrf
                                                     <div>
                                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nueva Fecha y Hora:</label>
-                                                        <input type="datetime-local" name="rescheduled_date" required class="w-full text-xs rounded-xl border-slate-200 px-3 py-2 border focus:ring-[#064E3B]">
+                                                        <input type="datetime-local" name="rescheduled_date" required class="w-full text-xs rounded-xl border-slate-200 px-3 py-2 border focus:ring-[#00A884]">
                                                     </div>
                                                     <div>
                                                         <label class="block text-xs font-semibold text-slate-700 mb-1">Instrucciones o Notas:</label>
-                                                        <textarea name="notes" rows="2" placeholder="Ej: Llamar antes de llegar, timbre blanco" class="w-full text-xs rounded-xl border-slate-200 px-3 py-2 border focus:ring-[#064E3B]"></textarea>
+                                                        <textarea name="notes" rows="2" placeholder="Ej: Llamar antes de llegar, timbre blanco" class="w-full text-xs rounded-xl border-slate-200 px-3 py-2 border focus:ring-[#00A884]"></textarea>
                                                     </div>
                                                     <div class="flex justify-end gap-2 pt-2">
                                                         <button type="button" onclick="document.getElementById('modal-reschedule-{{ $order->id }}').classList.add('hidden')" class="px-3 py-1.5 rounded-xl border text-xs text-slate-600 font-semibold">Cancelar</button>
-                                                        <button type="submit" class="px-4 py-1.5 rounded-xl bg-[#059669] text-white text-xs font-bold hover:bg-red-700">Guardar Reprogramación</button>
+                                                        <button type="submit" class="px-4 py-1.5 rounded-xl bg-[#00A884] text-white text-xs font-bold hover:bg-red-700">Guardar Reprogramación</button>
                                                     </div>
                                                 </form>
                                             </div>

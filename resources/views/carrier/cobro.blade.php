@@ -7,7 +7,7 @@
      x-data="carrieroCobroPanel()">
 
     <!-- Header del repartidor -->
-    <div class="bg-gradient-to-r from-[#064E3B] to-[#059669] rounded-2xl p-5 text-white flex items-center justify-between">
+    <div class="bg-gradient-to-r from-[#0A1128] to-[#00A884] rounded-2xl p-5 text-white flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-truck-fast"></i>
@@ -31,7 +31,7 @@
             ['label'=>'Novedades','value'=>'1','color'=>'red'],
         ] as $stat)
         <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-sm">
-            <div class="text-2xl font-black {{ $stat['color'] === 'amber' ? 'text-amber-500' : ($stat['color'] === 'emerald' ? 'text-emerald-600' : 'text-[#064E3B]') }} font-heading">{{ $stat['value'] }}</div>
+            <div class="text-2xl font-black {{ $stat['color'] === 'amber' ? 'text-amber-500' : ($stat['color'] === 'emerald' ? 'text-emerald-600' : 'text-[#0A1128]') }} font-heading">{{ $stat['value'] }}</div>
             <div class="text-[11px] text-slate-500 font-medium mt-0.5">{{ $stat['label'] }}</div>
         </div>
         @endforeach
@@ -40,12 +40,12 @@
     <!-- Buscar pedido por guía -->
     <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
         <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-            <i class="fa-solid fa-magnifying-glass text-[#10B981]"></i>
+            <i class="fa-solid fa-magnifying-glass text-[#00A884]"></i>
             Buscar Pedido
         </h2>
         <div class="flex gap-2">
             <input type="text" x-model="searchGuide" placeholder="Ej: DRP-2026-001234"
-                   class="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981] font-mono"
+                   class="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-sm bg-slate-50 focus:outline-none focus:border-emerald-500 font-mono"
                    @keydown.enter="loadOrder()">
             <button @click="loadOrder()" class="btn-scarlet px-4 py-3 rounded-xl text-white font-bold text-sm">
                 <i class="fa-solid fa-search"></i>
@@ -54,14 +54,14 @@
     </div>
 
     <!-- Pedido cargado -->
-    <div x-show="currentOrder" x-cloak class="bg-white border-2 border-[#059669]/20 rounded-2xl shadow-sm overflow-hidden">
+    <div x-show="currentOrder" x-cloak class="bg-white border-2 border-[#00A884]/20 rounded-2xl shadow-sm overflow-hidden">
 
         <!-- Datos del pedido -->
         <div class="p-5 space-y-4">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Guía</div>
-                    <div class="font-mono font-black text-[#064E3B] text-base" x-text="currentOrder?.guide_number"></div>
+                    <div class="font-mono font-black text-[#0A1128] text-base" x-text="currentOrder?.guide_number"></div>
                 </div>
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 uppercase">
                     Pendiente de Entrega
@@ -91,7 +91,7 @@
             <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
                 <div>
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Monto a Cobrar (COD)</div>
-                    <div class="text-3xl font-black text-[#064E3B] font-heading">
+                    <div class="text-3xl font-black text-[#0A1128] font-heading">
                         Bs. <span x-text="currentOrder?.cod_amount"></span>
                     </div>
                 </div>
@@ -108,8 +108,8 @@
                     <label class="cursor-pointer">
                         <input type="radio" x-model="paymentMethod" value="cash" class="sr-only">
                         <div class="border-2 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-2 transition"
-                             :class="paymentMethod === 'cash' ? 'border-[#059669] bg-red-50' : 'border-slate-200'">
-                            <i class="fa-solid fa-money-bill-wave text-sm" :class="paymentMethod === 'cash' ? 'text-[#064E3B]' : 'text-slate-400'"></i>
+                             :class="paymentMethod === 'cash' ? 'border-[#00A884] bg-red-50' : 'border-slate-200'">
+                            <i class="fa-solid fa-money-bill-wave text-sm" :class="paymentMethod === 'cash' ? 'text-[#0A1128]' : 'text-slate-400'"></i>
                             <div>
                                 <div class="text-xs font-bold text-slate-800">Efectivo</div>
                                 <div class="text-[10px] text-slate-400">BOB / USD</div>
@@ -154,7 +154,7 @@
 
             <!-- Binance Pay Cripto QR -->
             <div x-show="paymentMethod === 'binance'" x-cloak
-                 class="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center space-y-3">
+                 class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center space-y-3">
                 <div class="text-xs font-bold text-amber-800 uppercase tracking-wide flex items-center justify-center gap-2">
                     <i class="fa-brands fa-bitcoin text-amber-500"></i>
                     <span>Binance Pay (Cripto USDT)</span>
@@ -179,7 +179,7 @@
                 <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">
                     Foto de Evidencia de Entrega
                 </label>
-                <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-[#10B981] transition cursor-pointer"
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-emerald-500 transition cursor-pointer"
                      @click="$refs.photoInput.click()">
                     <input type="file" accept="image/*" capture="environment" x-ref="photoInput"
                            @change="previewPhoto($event)" class="hidden">
@@ -199,7 +199,7 @@
             <div>
                 <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Observaciones (opcional)</label>
                 <input type="text" x-model="notes" placeholder="Ej: Entregado a familiar, dejado en portería..."
-                       class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-[#10B981]">
+                       class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 focus:outline-none focus:border-emerald-500">
             </div>
         </div>
 
@@ -211,7 +211,7 @@
                 <span x-show="!confirming">Entrega Exitosa</span>
                 <span x-show="confirming" x-cloak>Guardando...</span>
             </button>
-            <button @click="reportNovedad()" class="bg-amber-50 border border-amber-200 text-amber-700 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-amber-100 transition">
+            <button @click="reportNovedad()" class="bg-emerald-50 border border-emerald-200 text-amber-700 py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-amber-100 transition">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 Reportar Novedad
             </button>
@@ -223,7 +223,7 @@
     <div x-show="!currentOrder" class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
         <i class="fa-solid fa-barcode text-4xl text-slate-300"></i>
         <div class="text-slate-500 text-sm font-semibold">Ingresa un número de guía para cargar el pedido</div>
-        <button @click="loadDemoOrder()" class="text-xs text-[#064E3B] font-bold hover:underline">
+        <button @click="loadDemoOrder()" class="text-xs text-[#0A1128] font-bold hover:underline">
             Cargar pedido de demo →
         </button>
     </div>
@@ -232,7 +232,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-route text-[#10B981]"></i>
+                <i class="fa-solid fa-route text-[#00A884]"></i>
                 Hoja de Ruta de Hoy
             </h3>
             <span class="text-xs font-bold text-slate-400">8 pedidos</span>

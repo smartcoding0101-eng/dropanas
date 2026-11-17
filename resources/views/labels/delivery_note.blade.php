@@ -37,7 +37,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid #064E3B;
+            border-bottom: 2px solid #0A1128;
             padding-bottom: 20px;
             margin-bottom: 24px;
         }
@@ -49,13 +49,13 @@
         .brand {
             font-size: 26px;
             font-weight: 800;
-            color: #064E3B;
+            color: #0A1128;
             letter-spacing: -0.5px;
         }
         .badge-country {
             display: inline-block;
             background: #fef2f2;
-            color: #064E3B;
+            color: #0A1128;
             border: 1px solid #fecaca;
             font-size: 11px;
             font-weight: 700;
@@ -76,7 +76,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 15px;
             font-weight: 700;
-            color: #059669;
+            color: #00A884;
             margin-top: 4px;
         }
         .doc-date {
@@ -171,11 +171,11 @@
             border-top: 2px solid #cbd5e1;
             font-size: 16px;
             font-weight: 800;
-            color: #064E3B;
+            color: #0A1128;
         }
         .totals-row.final .amount {
             font-family: 'JetBrains Mono', monospace;
-            color: #059669;
+            color: #00A884;
         }
         .signatures {
             display: grid;
@@ -222,7 +222,7 @@
             align-items: center;
         }
         .btn-print {
-            background: #059669;
+            background: #00A884;
             color: white;
             font-weight: 700;
             padding: 10px 20px;
@@ -338,10 +338,10 @@
                 </div>
                 <div class="card-content">
                     <strong>{{ $order->carrier->name ?? 'DEX Bolivia Express' }}</strong>
-                    <p><strong>Guía / Tracking:</strong> <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #064E3B;">{{ $order->tracking_number ?? 'S/T' }}</span></p>
+                    <p><strong>Guía / Tracking:</strong> <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #0A1128;">{{ $order->tracking_number ?? 'S/T' }}</span></p>
                     <p><strong>Método de Cobro:</strong> Pago Contra Entrega (Efectivo / QR Simple)</p>
                     <p><strong>Tienda / Dropshipper:</strong> {{ $order->dropshipper->name ?? 'Comercio Asociado' }}</p>
-                    <p><strong>Estado Operativo:</strong> <span style="text-transform: uppercase; font-weight: 700; color: #059669;">{{ $order->status }}</span></p>
+                    <p><strong>Estado Operativo:</strong> <span style="text-transform: uppercase; font-weight: 700; color: #00A884;">{{ $order->status }}</span></p>
                 </div>
             </div>
         </div>

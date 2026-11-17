@@ -68,10 +68,10 @@
         </div>
 
         <!-- Pedidos En Camino -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-amber-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#00A884] hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span class="text-[#00A884] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
             </div>
@@ -96,10 +96,10 @@
         </div>
 
         <!-- Ganancia Acumulada -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-amber-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#00A884] hover:shadow-md transition">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span class="text-[#00A884] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
-                <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center">
                     <i class="fa-solid fa-coins"></i>
                 </div>
             </div>
@@ -229,7 +229,7 @@
                                         <i class="fa-solid fa-box mr-1.5"></i> Entregado
                                     </span>
                                 @elseif($order->status === 'dispatched')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-amber-800">
                                         <i class="fa-solid fa-truck-fast mr-1.5 text-[#00A884]"></i> Despachado
                                     </span>
                                 @elseif($order->status === 'confirmed')
@@ -473,7 +473,7 @@
 
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="auto_dispatch" x-model="integrationForm.auto_dispatch"
-                        class="rounded border-slate-300 text-slate-900 focus:ring-[#064E3B]">
+                        class="rounded border-slate-300 text-slate-900 focus:ring-[#00A884]">
                     <label for="auto_dispatch" class="text-xs text-slate-700 cursor-pointer">
                         Despachar automáticamente con DEX Bolivia Express
                     </label>

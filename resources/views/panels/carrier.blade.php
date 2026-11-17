@@ -8,7 +8,7 @@
     <!-- Toast Notification -->
     <div x-show="toast.show" x-cloak
         class="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold flex items-center gap-3 transition"
-        :class="toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-[#064E3B] text-white'">
+        :class="toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-[#0A1128] text-white'">
         <i class="fa-solid" :class="toast.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'"></i>
         <span x-text="toast.message"></span>
     </div>
@@ -18,17 +18,17 @@
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-xs font-bold text-[#10B981] uppercase tracking-wider">Módulo de Última Milla & Call Center</span>
+                <span class="text-xs font-bold text-[#00A884] uppercase tracking-wider">Módulo de Última Milla & Call Center</span>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#064E3B]">DEX Bolivia Express — Ruta COD</h1>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128]">DEX Bolivia Express — Ruta COD</h1>
             <p class="text-slate-500 text-xs sm:text-sm">
                 Gestión de paquetes en calle, confirmación de entregas en efectivo/QR y resolución inmediata de novedades.
             </p>
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-2">
-                <i class="fa-solid fa-motorcycle text-[#10B981]"></i>
+            <span class="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-amber-900 text-xs font-bold flex items-center gap-2">
+                <i class="fa-solid fa-motorcycle text-[#00A884]"></i>
                 <span>Agente: {{ $carrierUser->name ?? 'Repartidor Central' }}</span>
             </span>
         </div>
@@ -36,9 +36,9 @@
 
     <!-- 4 Métricas de Despacho (Fireworks 60/30/10) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="white-card p-5 rounded-2xl border-l-4 border-[#064E3B]">
+        <div class="white-card p-5 rounded-2xl border-l-4 border-slate-800">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</div>
-            <div class="text-2xl font-black text-[#064E3B] mt-1">{{ $stats['in_route'] }}</div>
+            <div class="text-2xl font-black text-[#0A1128] mt-1">{{ $stats['in_route'] }}</div>
             <div class="text-[11px] text-slate-400 mt-1">Paquetes para entregar</div>
         </div>
 
@@ -48,15 +48,15 @@
             <div class="text-[11px] text-slate-400 mt-1">Con recaudación efectiva</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-[#10B981]">
+        <div class="white-card p-5 rounded-2xl border-l-4 border-emerald-500">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Novedades Activas</div>
-            <div class="text-2xl font-black text-[#10B981] mt-1">{{ $stats['novedades_active'] }}</div>
+            <div class="text-2xl font-black text-[#00A884] mt-1">{{ $stats['novedades_active'] }}</div>
             <div class="text-[11px] text-amber-700 font-semibold mt-1">Requieren gestión WhatsApp</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-[#059669]">
+        <div class="white-card p-5 rounded-2xl border-l-4 border-[#00A884]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Por Recaudar COD</div>
-            <div class="text-2xl font-black text-[#059669] mt-1 font-mono">
+            <div class="text-2xl font-black text-[#00A884] mt-1 font-mono">
                 Bs. {{ number_format($stats['cod_to_collect_bob'], 2) }}
             </div>
             <div class="text-[11px] text-slate-400 mt-1 font-mono">Total asignado en calle</div>
@@ -67,7 +67,7 @@
     <div class="white-card rounded-2xl overflow-hidden shadow-sm">
         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h2 class="text-lg font-bold text-[#064E3B]">Hoja de Ruta y Gestión de Entregas</h2>
+                <h2 class="text-lg font-bold text-[#0A1128]">Hoja de Ruta y Gestión de Entregas</h2>
                 <p class="text-xs text-slate-500">Haz clic en "Entregado" para recaudar o en "Reportar Novedad" si el cliente no responde.</p>
             </div>
             <span class="text-xs font-bold px-3 py-1 bg-slate-100 text-slate-700 rounded-lg">
@@ -92,7 +92,7 @@
                     @forelse($ordersInRoute as $order)
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="py-3.5 px-4">
-                                <div class="font-bold text-[#064E3B]">{{ $order->order_number }}</div>
+                                <div class="font-bold text-[#0A1128]">{{ $order->order_number }}</div>
                                 <div class="text-[10px] text-slate-400 font-mono">{{ $order->tracking_number ?? 'DEX-PENDIENTE' }}</div>
                             </td>
 
@@ -110,13 +110,13 @@
 
                             <td class="py-3.5 px-4 max-w-xs">
                                 <div class="font-semibold text-slate-800 truncate">{{ $order->shipping_address }}</div>
-                                <div class="text-[10px] text-slate-500">{{ $order->shipping_city }}, <strong class="text-[#064E3B]">{{ $order->shipping_department }}</strong></div>
+                                <div class="text-[10px] text-slate-500">{{ $order->shipping_city }}, <strong class="text-[#0A1128]">{{ $order->shipping_department }}</strong></div>
                                 @if($order->shipping_reference)
                                     <div class="text-[10px] text-amber-700 italic truncate">Ref: {{ $order->shipping_reference }}</div>
                                 @endif
                             </td>
 
-                            <td class="py-3.5 px-4 font-mono font-bold text-[#059669] text-sm">
+                            <td class="py-3.5 px-4 font-mono font-bold text-[#00A884] text-sm">
                                 Bs. {{ number_format($order->total_amount_bob, 2) }}
                             </td>
 
@@ -178,7 +178,7 @@
                         <i class="fa-solid fa-phone-volume"></i>
                     </span>
                     <div>
-                        <h3 class="font-bold text-[#064E3B] text-base">Registrar Novedad de Entrega</h3>
+                        <h3 class="font-bold text-[#0A1128] text-base">Registrar Novedad de Entrega</h3>
                         <p class="text-xs text-slate-500" x-text="'Pedido: ' + modalNovedad.orderNumber"></p>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Motivo de la Novedad:</label>
                     <select x-model="modalNovedad.reason" required
-                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#10B981]">
+                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-emerald-500">
                         <option value="cliente_ausente">Cliente ausente en domicilio</option>
                         <option value="telefono_apagado">Teléfono apagado / Sin señal</option>
                         <option value="direccion_incompleta">Dirección o referencia incompleta</option>
@@ -203,13 +203,13 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Reprogramar Fecha de Entrega (opcional):</label>
                     <input type="date" x-model="modalNovedad.rescheduledDate"
-                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#10B981]">
+                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-emerald-500">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Observaciones / Notas del Courier:</label>
                     <textarea x-model="modalNovedad.notes" rows="3" placeholder="Ej: Se tocó el timbre, atendió familiar indicando que vuelve a las 18:00..."
-                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-[#10B981]"></textarea>
+                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs focus:bg-white focus:outline-none focus:border-emerald-500"></textarea>
                 </div>
 
                 <!-- Botón WhatsApp Rápido -->

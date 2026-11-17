@@ -532,7 +532,7 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
@@ -616,7 +616,7 @@
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-dolly"></i>
                     </div>
                     <div>

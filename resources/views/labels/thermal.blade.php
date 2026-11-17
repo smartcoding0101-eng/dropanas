@@ -111,7 +111,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            background: #064E3B;
+            background: #0A1128;
             color: #fff;
             padding: 8px 16px;
             font-size: 12px;

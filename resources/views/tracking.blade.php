@@ -8,10 +8,10 @@
 
     <!-- Hero -->
     <div class="text-center space-y-3">
-        <div class="w-16 h-16 rounded-2xl bg-[#064E3B] flex items-center justify-center text-white text-2xl mx-auto shadow-lg">
+        <div class="w-16 h-16 rounded-2xl bg-[#0A1128] flex items-center justify-center text-white text-2xl mx-auto shadow-lg">
             <i class="fa-solid fa-truck-fast"></i>
         </div>
-        <h1 class="text-3xl font-black text-[#064E3B] font-heading">Rastrear Pedido COD</h1>
+        <h1 class="text-3xl font-black text-[#0A1128] font-heading">Rastrear Pedido COD</h1>
         <p class="text-slate-500 text-sm">Sin necesidad de crear una cuenta. Solo necesitas el código de guía.</p>
     </div>
 
@@ -22,7 +22,7 @@
                 <i class="fa-solid fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 <input type="text" x-model="guideNumber"
                        placeholder="Ej: DRP-2026-001234"
-                       class="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3.5 text-sm font-mono bg-slate-50 focus:outline-none focus:border-[#10B981] focus:bg-white transition"
+                       class="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3.5 text-sm font-mono bg-slate-50 focus:outline-none focus:border-emerald-500 focus:bg-white transition"
                        @keydown.enter="search()">
             </div>
             <button @click="search()" :disabled="loading"
@@ -33,7 +33,7 @@
             </button>
         </div>
         <div class="text-center">
-            <button @click="loadDemo()" class="text-xs text-slate-400 hover:text-[#064E3B] hover:underline transition">
+            <button @click="loadDemo()" class="text-xs text-slate-400 hover:text-[#0A1128] hover:underline transition">
                 Ver ejemplo con guía de demo →
             </button>
         </div>
@@ -54,7 +54,7 @@
             <div class="flex items-start justify-between gap-3 mb-4">
                 <div>
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Número de Guía</div>
-                    <div class="font-mono font-black text-[#064E3B] text-lg" x-text="result?.guide_number"></div>
+                    <div class="font-mono font-black text-[#0A1128] text-lg" x-text="result?.guide_number"></div>
                 </div>
                 <div class="px-3 py-1.5 rounded-full text-xs font-bold border"
                      :class="{
@@ -82,7 +82,7 @@
                 </div>
                 <div>
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Monto COD</div>
-                    <div class="font-black text-[#064E3B] text-base">Bs. <span x-text="result?.cod_amount"></span></div>
+                    <div class="font-black text-[#0A1128] text-base">Bs. <span x-text="result?.cod_amount"></span></div>
                 </div>
                 <div>
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Intentos de Entrega</div>
@@ -96,7 +96,7 @@
         <!-- Timeline de estados -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
             <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-timeline text-[#10B981]"></i>
+                <i class="fa-solid fa-timeline text-[#00A884]"></i>
                 Historial del Pedido
             </h3>
             <div class="space-y-0">
@@ -105,7 +105,7 @@
                         <!-- Línea y punto -->
                         <div class="flex flex-col items-center">
                             <div class="w-3.5 h-3.5 rounded-full shrink-0 mt-0.5 border-2"
-                                 :class="idx === 0 ? 'bg-[#064E3B] border-[#064E3B]' : 'bg-white border-slate-300'">
+                                 :class="idx === 0 ? 'bg-[#0A1128] border-slate-800' : 'bg-white border-slate-300'">
                             </div>
                             <div class="w-0.5 flex-1 mt-1" :class="idx < result.events.length - 1 ? 'bg-slate-200' : 'bg-transparent'"></div>
                         </div>

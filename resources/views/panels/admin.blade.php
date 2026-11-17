@@ -53,10 +53,10 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         <!-- Total Recaudación BOB -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-amber-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#00A884] hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-[#00A884] uppercase tracking-wider">Volumen Total (BOB)</span>
-                <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center text-xs">
+                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-chart-line"></i>
                 </div>
             </div>
@@ -104,10 +104,10 @@
         </div>
 
         <!-- Pagos Pendientes por Conciliar -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-amber-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4 hover:border-[#00A884] hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-[#00A884] uppercase tracking-wider">Recaudación Pendiente</span>
-                <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center text-xs">
+                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
             </div>
@@ -187,7 +187,7 @@
                 <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4 w-10 text-center">
-                            <input type="checkbox" @change="toggleSelectAll($event)" class="rounded border-slate-300 text-[#00A884] focus:ring-[#059669]">
+                            <input type="checkbox" @change="toggleSelectAll($event)" class="rounded border-slate-300 text-[#00A884] focus:ring-[#00A884]">
                         </th>
                         <th class="py-3.5 px-5">ID Pedido</th>
                         <th class="py-3.5 px-5">Cliente</th>
@@ -202,7 +202,7 @@
                         <tr class="hover:bg-slate-50/80 transition" id="order-row-{{ $order->id }}">
                             <td class="py-4 px-4 text-center">
                                 <input type="checkbox" value="{{ $order->id }}" x-model="selectedOrders"
-                                    class="rounded border-slate-300 text-[#00A884] focus:ring-[#059669]">
+                                    class="rounded border-slate-300 text-[#00A884] focus:ring-[#00A884]">
                             </td>
                             <td class="py-4 px-5 font-mono font-bold text-slate-900">
                                 #{{ $order->order_number }}
@@ -277,7 +277,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center font-bold text-sm">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center font-bold text-sm">
                     <i class="fa-solid fa-truck-ramp-box"></i>
                 </div>
                 <div>
@@ -506,7 +506,7 @@
         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#00A884] border border-amber-200 flex items-center justify-center text-xs">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#00A884] border border-emerald-200 flex items-center justify-center text-xs">
                         <i class="fa-solid fa-users"></i>
                     </div>
                     <div>

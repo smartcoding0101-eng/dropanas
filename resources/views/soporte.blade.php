@@ -7,11 +7,11 @@
 
     <!-- Hero Soporte -->
     <div class="text-center space-y-4">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#064E3B]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-xs font-bold text-[#0A1128]">
             <i class="fa-solid fa-headset"></i>
             <span>Centro de Soporte Bolidrop Bolivia</span>
         </div>
-        <h1 class="text-4xl font-black text-[#064E3B] font-heading">¿En qué podemos ayudarte?</h1>
+        <h1 class="text-4xl font-black text-[#0A1128] font-heading">¿En qué podemos ayudarte?</h1>
         <p class="text-slate-500 text-base max-w-xl mx-auto">
             Nuestro equipo está disponible de Lunes a Sábado de <strong>8:00 AM a 6:00 PM</strong> (hora Bolivia).
             Tiempo de respuesta promedio: <strong class="text-emerald-600">menos de 2 horas</strong>.
@@ -35,8 +35,8 @@
         </a>
 
         <a href="{{ url('/contactenos') }}"
-           class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:border-amber-400 transition shadow-sm group">
-            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-[#10B981] text-xl group-hover:scale-110 transition">
+           class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 hover:border-[#00A884] transition shadow-sm group">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-[#00A884] text-xl group-hover:scale-110 transition">
                 <i class="fa-solid fa-envelope"></i>
             </div>
             <div>
@@ -49,7 +49,7 @@
         </a>
 
         <div class="interactive-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col items-center text-center gap-3 shadow-sm">
-            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#064E3B] text-xl">
+            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#0A1128] text-xl">
                 <i class="fa-solid fa-phone"></i>
             </div>
             <div>
@@ -76,7 +76,7 @@
                 ['icon'=>'fa-user-shield','color'=>'slate','label'=>'Mi Cuenta','sub'=>'Acceso, contraseña y datos'],
                 ['icon'=>'fa-building-columns','color'=>'red','label'=>'Liquidaciones','sub'=>'Pagos bancarios y comisiones'],
             ] as $cat)
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:border-[#10B981] transition cursor-pointer interactive-card shadow-sm">
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 text-center hover:border-emerald-500 transition cursor-pointer interactive-card shadow-sm">
                 <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center mx-auto mb-2 text-slate-600">
                     <i class="fa-solid {{ $cat['icon'] }}"></i>
                 </div>
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Seguimiento de pedido rápido -->
-    <div class="bg-gradient-to-r from-[#064E3B]/5 to-[#10B981]/5 border border-red-100 rounded-2xl p-6">
+    <div class="bg-gradient-to-r from-[#0A1128]/5 to-[#00A884]/10 border border-emerald-100 rounded-2xl p-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
             <div class="flex-1">
                 <h3 class="font-bold text-slate-800 text-base">📦 Rastrear un pedido sin iniciar sesión</h3>
@@ -96,7 +96,7 @@
             </div>
             <div class="flex gap-2 w-full sm:w-auto">
                 <input type="text" placeholder="Ej: DRP-2026-001234"
-                    class="flex-1 sm:w-56 border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-[#10B981]">
+                    class="flex-1 sm:w-56 border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:border-emerald-500">
                 <a href="{{ url('/tracking') }}" class="btn-scarlet px-5 py-2.5 rounded-xl text-white text-sm font-bold whitespace-nowrap">
                     Rastrear
                 </a>
@@ -139,7 +139,7 @@
                         class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50 transition gap-4">
                     <span class="font-semibold text-slate-800 text-sm">{{ $faq['q'] }}</span>
                     <i class="fa-solid fa-chevron-down text-slate-400 transition-transform shrink-0"
-                       :class="openFaq === {{ $i }} ? 'rotate-180 text-[#064E3B]' : ''"></i>
+                       :class="openFaq === {{ $i }} ? 'rotate-180 text-[#0A1128]' : ''"></i>
                 </button>
                 <div x-show="openFaq === {{ $i }}" x-collapse class="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100">
                     <div class="pt-4">{!! $faq['a'] !!}</div>
@@ -150,12 +150,12 @@
     </div>
 
     <!-- CTA final -->
-    <div class="bg-[#064E3B] rounded-2xl p-8 text-center text-white space-y-4">
+    <div class="bg-[#0A1128] rounded-2xl p-8 text-center text-white space-y-4">
         <h3 class="text-xl font-black font-heading">¿No encontraste lo que buscabas?</h3>
         <p class="text-white/80 text-sm">Nuestro equipo de soporte está listo para ayudarte. Escríbenos y te respondemos en menos de 2 horas.</p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
             <a href="https://wa.me/59170000000?text=Hola%20Bolidrop%2C%20necesito%20ayuda%20con..." target="_blank"
-               class="bg-white text-[#064E3B] px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-50 transition">
+               class="bg-white text-[#0A1128] px-6 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-50 transition">
                 <i class="fa-brands fa-whatsapp text-emerald-600"></i>
                 Contactar por WhatsApp
             </a>
