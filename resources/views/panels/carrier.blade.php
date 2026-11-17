@@ -13,21 +13,17 @@
         <span x-text="toast.message"></span>
     </div>
 
-    <!-- Header Panel -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-xs font-bold text-[#00A884] uppercase tracking-wider">Módulo de Última Milla & Call Center</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128]">DEX Bolivia Express — Ruta COD</h1>
-            <p class="text-slate-500 text-xs sm:text-sm">
-                Gestión de paquetes en calle, confirmación de entregas en efectivo/QR y resolución inmediata de novedades.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <span class="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-amber-900 text-xs font-bold flex items-center gap-2">
+    <x-page-header
+        title="DEX Bolivia Express — Ruta COD"
+        subtitle="Gestión de paquetes en calle, confirmación de entregas en efectivo/QR y resolución inmediata de novedades."
+        icon="fa-solid fa-truck-fast"
+        badge="Módulo de Última Milla & Call Center">
+        <x-slot:actions>
+            <span class="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold flex items-center gap-2 backdrop-blur-sm">
+                <i class="fa-solid fa-route text-emerald-300"></i> Red Activa 9/9 Deptos
+            </span>
+        </x-slot:actions>
+    </x-page-header>
                 <i class="fa-solid fa-motorcycle text-[#00A884]"></i>
                 <span>Agente: {{ $carrierUser->name ?? 'Repartidor Central' }}</span>
             </span>

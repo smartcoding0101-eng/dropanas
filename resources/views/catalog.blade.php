@@ -3,31 +3,19 @@
 @section('title', 'Megabodega Mayorista | Catálogo de Productos Bolivia')
 
 @section('content')
-<div class="space-y-8 bg-[#FFFFFF]">
+<div class="space-y-8">
 
-    <!-- Header del Catálogo -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
-        <div>
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-[#0A1128] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
-                    Megabodega Central
-                </span>
-                <span class="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-location-dot text-[#00A884]"></i> Stock físico en Santa Cruz & El Alto
-                </span>
-            </div>
-            <h1 class="text-3xl font-extrabold text-[#0A1128] font-heading">
-                Catálogo Mayorista de Productos COD
-            </h1>
-            <p class="text-slate-500 text-sm mt-1 max-w-2xl">
-                Productos verificados con inventario físico para promocionar y despachar con recaudación contra entrega.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <a href="{{ url('/checkout-demo') }}" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-amber-200"></i> Simular Pedido COD
+    <x-page-header
+        title="Catálogo Mayorista de Productos COD"
+        subtitle="Productos verificados con inventario físico en Santa Cruz & El Alto para promocionar y despachar con recaudación contra entrega."
+        icon="fa-solid fa-boxes-stacked"
+        badge="Megabodega Central">
+        <x-slot:actions>
+            <a href="{{ url('/checkout-demo') }}" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-bolt"></i> Simular Pedido COD
             </a>
+        </x-slot:actions>
+    </x-page-header>
         </div>
     </div>
 

@@ -5,25 +5,21 @@
 @section('content')
 <div class="space-y-6 pb-10" x-data="fulfillmentPanel()">
 
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-[#0A1128] to-[#00A884] rounded-2xl p-6 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center text-2xl">
-                <i class="fa-solid fa-store"></i>
+    <x-page-header
+        title="Panel de Fulfillment"
+        subtitle="Tú vendes — Bolidrop almacena, empaca y entrega en toda Bolivia."
+        icon="fa-solid fa-store"
+        badge="Fulfillment e-Commerce">
+        <x-slot:actions>
+            <div class="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-xs text-white backdrop-blur-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-semibold">Almacenaje Bs 0 activo</span>
             </div>
-            <div>
-                <h1 class="text-xl font-black font-heading">Panel de Fulfillment</h1>
-                <p class="text-white/70 text-sm">Tú vendes — Bolidrop almacena, empaca y entrega</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="font-semibold">Almacenaje $0 activo</span>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
-    <!-- KPIs -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <!-- KPIs (SB Admin Pro Overlap) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 -mt-14 relative z-10">
         @foreach([
             ['label'=>'Pedidos Este Mes','value'=>'142','icon'=>'fa-boxes-stacked','color'=>'red','sub'=>'↑ 23% vs mes anterior'],
             ['label'=>'Entregados','value'=>'121','icon'=>'fa-circle-check','color'=>'emerald','sub'=>'85.2% tasa de entrega'],

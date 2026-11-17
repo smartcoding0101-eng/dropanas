@@ -3,26 +3,17 @@
 @section('title', 'Checkout COD + QR Bolivia | Bolidrop')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#FFFFFF]" x-data="checkoutDemo()">
+<div class="space-y-8" x-data="checkoutDemo()">
 
-    <!-- Header -->
-    <div class="mb-8 border-b border-slate-200 pb-6">
-        <div class="flex items-center gap-2 mb-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[#0A1128] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
-                Demo en Vivo
-            </span>
-            <span class="text-xs text-slate-500 font-medium">Flujo real — sin pagos reales</span>
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
-            Checkout Contra Entrega (COD) + QR Simple Bolivia
-        </h1>
-        <p class="text-slate-500 text-sm mt-1">
-            Simula el flujo completo: selecciona producto → datos del cliente → elige transportadora → método de pago → genera QR o guía.
-        </p>
-    </div>
+    <x-page-header
+        title="Checkout Contra Entrega (COD) + QR Simple Bolivia"
+        subtitle="Simula el flujo completo: selecciona producto → datos del cliente → transportadora → método de pago → genera QR o guía."
+        icon="fa-solid fa-cart-shopping"
+        badge="Demo en Vivo • Flujo Real">
+    </x-page-header>
 
-    <!-- Layout 2 columnas -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Layout 2 columnas (SB Admin Pro Overlap) -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 -mt-12 relative z-10">
 
         <!-- Formulario principal (2/3) -->
         <div class="lg:col-span-2 space-y-6">
