@@ -42,19 +42,24 @@
                 </div>
             </div>
 
-            <div>
+            <div x-data="{ showPassword: false }">
                 <div class="flex items-center justify-between mb-1.5">
                     <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                         Contraseña
                     </label>
                 </div>
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <i class="fa-solid fa-lock text-sm"></i>
                     </span>
-                    <input type="password" name="password" id="password" required
+                    <input :type="showPassword ? 'text' : 'password'" name="password" id="password" required
                         placeholder="••••••••"
-                        class="w-full pl-10 pr-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-[#0061f2]/20 transition">
+                        class="w-full pl-10 pr-11 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-[#0061f2] focus:ring-2 focus:ring-[#0061f2]/20 transition">
+                    <button type="button" @click="showPassword = !showPassword"
+                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-[#0061f2] focus:outline-none transition"
+                        :title="showPassword ? 'Ocultar contraseña' : 'Ver contraseña'">
+                        <i class="fa-regular text-sm" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
                 </div>
             </div>
 

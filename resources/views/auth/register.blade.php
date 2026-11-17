@@ -113,17 +113,31 @@
             </div>
 
             <!-- Contraseñas -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ showPass: false, showConfirm: false }">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Contraseña (Mínimo 8 caracteres)</label>
-                    <input type="password" name="password" required placeholder="••••••••"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500">
+                    <div class="relative">
+                        <input :type="showPass ? 'text' : 'password'" name="password" required placeholder="••••••••"
+                            class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-[#0061f2]">
+                        <button type="button" @click="showPass = !showPass"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-[#0061f2] focus:outline-none transition"
+                            :title="showPass ? 'Ocultar contraseña' : 'Ver contraseña'">
+                            <i class="fa-regular text-sm" :class="showPass ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Confirmar Contraseña</label>
-                    <input type="password" name="password_confirmation" required placeholder="••••••••"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-emerald-500">
+                    <div class="relative">
+                        <input :type="showConfirm ? 'text' : 'password'" name="password_confirmation" required placeholder="••••••••"
+                            class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-sm focus:bg-white focus:outline-none focus:border-[#0061f2]">
+                        <button type="button" @click="showConfirm = !showConfirm"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-[#0061f2] focus:outline-none transition"
+                            :title="showConfirm ? 'Ocultar contraseña' : 'Ver contraseña'">
+                            <i class="fa-regular text-sm" :class="showConfirm ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
