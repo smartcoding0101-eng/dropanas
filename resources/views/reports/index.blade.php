@@ -37,14 +37,14 @@
         .period-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,.35); }
 
         /* ── Layout ── */
-        .page { max-width: 1400px; margin: 0 auto; padding: 28px 24px 48px; }
+        .page { max-width: 1400px; margin: 0 auto; padding: 28px 0 48px; }
         .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
         .page-title { font-size: 1.5rem; font-weight: 800; }
         .page-title span { color: var(--primary); }
         .page-subtitle { color: var(--text-muted); font-size: .85rem; margin-top: 2px; }
 
         /* ── KPI Cards ── */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .kpi-card {
             background: var(--surface); border: 1px solid var(--border);
             border-radius: var(--radius); padding: 20px 22px;
@@ -120,13 +120,13 @@
 
         /* ── Dept Map ── */
         .dept-list { display: flex; flex-direction: column; gap: 10px; }
-        .dept-row { display: flex; align-items: center; gap: 10px; }
-        .dept-name { font-size: .8rem; font-weight: 500; width: 110px; flex-shrink: 0; }
-        .dept-count { font-size: .75rem; color: var(--text-muted); width: 36px; text-align: right; flex-shrink: 0; }
-        .dept-bob { font-size: .75rem; color: var(--primary); font-weight: 600; width: 80px; text-align: right; flex-shrink: 0; }
+        .dept-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .dept-name { font-size: .78rem; font-weight: 500; width: 105px; flex-shrink: 0; }
+        .dept-count { font-size: .75rem; color: var(--text-muted); width: 32px; text-align: right; flex-shrink: 0; }
+        .dept-bob { font-size: .75rem; color: var(--primary); font-weight: 600; min-width: 72px; text-align: right; flex-shrink: 0; }
 
         /* ── Wallet summary ── */
-        .wallet-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+        .wallet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
         .wallet-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
         .wallet-box .wl { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 6px; }
         .wallet-box .wv { font-size: 1.15rem; font-weight: 700; }

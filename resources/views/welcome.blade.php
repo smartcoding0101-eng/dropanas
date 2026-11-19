@@ -50,17 +50,17 @@
                     </div>
 
                     <!-- Métricas Destacadas en Tarjetas Compactas con Contadores Animados -->
-                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/15">
+                    <div class="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-4 border-t border-white/15">
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
-                            <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">9 / 9</div>
+                            <div class="text-lg sm:text-2xl font-extrabold text-white font-heading">9 / 9</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Deptos. Cobertura</div>
                         </div>
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
-                            <div class="text-xl sm:text-2xl font-extrabold text-[#38BDF8] font-mono" data-countup>{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
+                            <div class="text-lg sm:text-2xl font-extrabold text-[#38BDF8] font-mono" data-countup>{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Tasa Oficial BCB</div>
                         </div>
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
-                            <div class="text-xl sm:text-2xl font-extrabold text-[#10B981] font-heading" data-countup>24 hrs</div>
+                            <div class="text-lg sm:text-2xl font-extrabold text-[#10B981] font-heading" data-countup>24 hrs</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Retiros a Billetera</div>
                         </div>
                     </div>
@@ -370,16 +370,16 @@
             </div>
 
             <!-- Conversor Rápido a Bolivianos (BOB) -->
-            <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-100 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 text-xs">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-Money-bill-transfer text-[#0061f2] text-base"></i>
-                    <span class="font-bold text-[#212832]">Calculadora Rápida de Divisas a Bolivianos (BOB):</span>
+                    <i class="fa-solid fa-money-bill-transfer text-[#4F46E5] text-base"></i>
+                    <span class="font-bold text-[#0F172A]">Calculadora Rápida de Divisas a Bolivianos (BOB):</span>
                 </div>
-                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto">
                     <input type="number" x-model.number="amount" min="1"
-                        class="w-28 bg-white border border-slate-200 rounded-lg px-3 py-2 font-mono font-bold text-[#212832] focus:outline-none focus:border-[#0061f2]">
+                        class="w-full sm:w-28 bg-white border border-slate-200 rounded-lg px-3 py-2 font-mono font-bold text-[#0F172A] focus:outline-none focus:border-[#4F46E5]">
                     <select x-model="selectedCurrency"
-                        class="bg-white border border-slate-200 rounded-lg px-3 py-2 font-bold text-[#212832] focus:outline-none focus:border-[#0061f2]">
+                        class="w-full sm:w-auto bg-white border border-slate-200 rounded-lg px-3 py-2 font-bold text-[#0F172A] focus:outline-none focus:border-[#4F46E5]">
                         <option value="USD_REF">USD (Dólar Referencial BCB)</option>
                         <option value="USD_OFI">USD (Dólar Oficial 6.96)</option>
                         <option value="USDT">USDT (Binance P2P)</option>
@@ -387,8 +387,8 @@
                         <option value="CNY">CNY (Yuan Chino)</option>
                         <option value="BRL">BRL (Real Brasileño)</option>
                     </select>
-                    <span class="font-bold text-[#69707a]">=</span>
-                    <div class="px-4 py-2 rounded-lg bg-[#0061f2] text-white font-mono font-extrabold text-sm">
+                    <span class="hidden sm:inline font-bold text-[#64748B]">=</span>
+                    <div class="px-4 py-2 rounded-lg bg-[#4F46E5] text-white font-mono font-extrabold text-sm text-center">
                         Bs <span x-text="(amount * rates[selectedCurrency]).toLocaleString('es-BO', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
                     </div>
                 </div>
@@ -565,18 +565,18 @@
                 </div>
 
                 <!-- Resultado mensual prominente -->
-                <div class="rounded-2xl p-7 page-header-sb text-white shadow-lg space-y-4">
+                <div class="rounded-2xl p-5 sm:p-7 page-header-sb text-white shadow-lg space-y-4">
                     <div class="text-xs font-bold uppercase tracking-widest text-white/80">Proyección Mensual</div>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div class="space-y-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                        <div class="space-y-1 bg-white/10 sm:bg-transparent p-3 sm:p-0 rounded-xl">
                             <div class="text-2xl sm:text-3xl font-extrabold font-mono text-white" x-text="'Bs ' + monthlyProfit.toLocaleString('es-BO', {minimumFractionDigits:0, maximumFractionDigits:0})"></div>
                             <div class="text-[10px] text-white/80 uppercase font-bold">Ganancias Netas</div>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 bg-white/10 sm:bg-transparent p-3 sm:p-0 rounded-xl">
                             <div class="text-2xl sm:text-3xl font-extrabold font-mono text-white" x-text="profitMarginPct + '%'"></div>
                             <div class="text-[10px] text-white/80 uppercase font-bold">Margen</div>
                         </div>
-                        <div class="space-y-1">
+                        <div class="space-y-1 bg-white/10 sm:bg-transparent p-3 sm:p-0 rounded-xl">
                             <div class="text-2xl sm:text-3xl font-extrabold font-mono text-white" x-text="'Bs ' + annualProfit.toLocaleString('es-BO', {minimumFractionDigits:0, maximumFractionDigits:0})"></div>
                             <div class="text-[10px] text-white/80 uppercase font-bold">Proyección Anual</div>
                         </div>

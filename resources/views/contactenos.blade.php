@@ -110,7 +110,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">¿Cómo quieres usar Bolidrop? *</label>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         @foreach([
                             ['value'=>'dropshipper','icon'=>'fa-store','label'=>'Dropshipper','sub'=>'Venta sin stock'],
                             ['value'=>'provider','icon'=>'fa-warehouse','label'=>'Proveedor','sub'=>'Abastecimiento'],

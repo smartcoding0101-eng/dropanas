@@ -40,7 +40,7 @@
     @endif
 
     <!-- 1. Tarjetas de Métricas Globales -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         <!-- Stock Físico -->
         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
@@ -381,7 +381,7 @@
                 </div>
 
                 <!-- Cantidad Variación -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block font-bold text-slate-700 mb-1">Variación Cantidad *</label>
                         <input type="number" name="quantity_delta" required step="1" placeholder="Ej: 5 o -3"

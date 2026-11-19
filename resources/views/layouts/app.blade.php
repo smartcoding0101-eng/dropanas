@@ -459,6 +459,51 @@
             }
         }
 
+        /* ===================================================================== */
+        /* 9. OMNI-SCREEN RESPONSIVE ARCHITECTURE (320px Mobile -> 4K/8K SmartTV)*/
+        /* ===================================================================== */
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        /* Smooth horizontal scroll for wide data tables on Mobile & Tablet */
+        .overflow-x-auto {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        }
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.4);
+            border-radius: 9999px;
+        }
+
+        /* Small Mobile Viewports (320px - 480px) */
+        @media (max-width: 480px) {
+            .page-header-sb {
+                padding-top: 1.5rem !important;
+                padding-bottom: 4.25rem !important;
+            }
+            .page-header-sb h1 {
+                font-size: 1.35rem !important;
+                line-height: 1.25 !important;
+            }
+        }
+
+        /* Ultra-Wide Monitors & 4K Smart TVs (2560px+) */
+        @media (min-width: 2200px) {
+            html {
+                font-size: 18px;
+            }
+            .max-w-7xl {
+                max-width: 92rem !important;
+            }
+        }
+
         [x-cloak] { display: none !important; }
     </style>
 </head>
@@ -467,35 +512,41 @@
     <!-- ===================================================================== -->
     <!-- STRIPE & LINEAR EXECUTIVE TOPNAV (Fixed Full-Width Frosted Navbar)    -->
     <!-- ===================================================================== -->
-    <nav class="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between gap-4 shadow-[0_2px_15px_-3px_rgba(15,23,42,0.06)]">
+    <nav class="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 shadow-[0_2px_15px_-3px_rgba(15,23,42,0.06)]">
         
         <!-- Left: Sidenav Toggle + Brand + Search -->
-        <div class="flex items-center gap-3 sm:gap-5">
+        <div class="flex items-center gap-2 sm:gap-5 min-w-0">
             @if(Auth::check() && !request()->is('/'))
-            <button @click="sidenavOpen = !sidenavOpen; mobileMenuOpen = !mobileMenuOpen"
-                class="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500 hover:text-[#0F172A] flex items-center justify-center transition focus:outline-none"
+            <button @click="
+                if (window.innerWidth < 768) {
+                    mobileMenuOpen = !mobileMenuOpen;
+                } else {
+                    sidenavOpen = !sidenavOpen;
+                }
+            "
+                class="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500 hover:text-[#0F172A] flex items-center justify-center transition focus:outline-none shrink-0"
                 title="Alternar Menú Lateral">
-                <i class="fa-solid fa-bars text-sm"></i>
+                <i class="fa-solid text-sm" :class="mobileMenuOpen ? 'fa-xmark' : 'fa-bars'"></i>
             </button>
             @endif
 
             <!-- Brand Logo with Nano Banana -->
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
-                <div class="relative w-9 h-9 rounded-lg bg-indigo-50 p-0.5 flex items-center justify-center border border-indigo-200/80 shadow-xs">
+            <a href="{{ url('/') }}" class="flex items-center gap-2 sm:gap-2.5 group shrink-0">
+                <div class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-indigo-50 p-0.5 flex items-center justify-center border border-indigo-200/80 shadow-xs">
                     <img src="{{ asset('images/nano_banana.jpg') }}" alt="Nano Banana" class="w-full h-full object-cover rounded-md">
                     <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#10B981] rounded-full border-2 border-white"></span>
                 </div>
                 <div class="leading-none">
-                    <span class="text-base font-extrabold tracking-tight text-[#0F172A] group-hover:text-[#4F46E5] transition">Bolidrop</span>
-                    <span class="text-[9px] font-bold text-[#4F46E5] uppercase tracking-widest block">Bolivia PRO</span>
+                    <span class="text-sm sm:text-base font-extrabold tracking-tight text-[#0F172A] group-hover:text-[#4F46E5] transition">Bolidrop</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-[#4F46E5] uppercase tracking-widest block">Bolivia PRO</span>
                 </div>
             </a>
 
             @if(Auth::check() && !request()->is('/'))
             <!-- Global Search Input (Solo en Paneles Internos) -->
-            <form action="{{ url('/tracking') }}" method="GET" class="hidden md:flex items-center relative ml-2">
+            <form action="{{ url('/tracking') }}" method="GET" class="hidden lg:flex items-center relative ml-2">
                 <input type="text" name="guide" placeholder="Buscar guía, pedido o SKU..."
-                    class="bg-[#F1F5F9] border border-slate-200/70 text-[#0F172A] placeholder-[#64748B] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition w-64">
+                    class="bg-[#F1F5F9] border border-slate-200/70 text-[#0F172A] placeholder-[#64748B] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition w-56 xl:w-64">
                 <button type="submit" class="absolute right-3 text-[#64748B] hover:text-[#4F46E5] transition">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </button>
@@ -504,7 +555,7 @@
         </div>
 
         <!-- Right: Cotizaciones del Boliviano (BOB), Divisas & Auth Buttons -->
-        <div class="flex items-center gap-2.5 sm:gap-3" x-data="{ ratesOpen: false }">
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0" x-data="{ ratesOpen: false }">
             @php
                 $sellRate = (float) ($bcbOfficialRate ?? 11.70);
                 $buyRate  = max(6.86, round($sellRate - 0.10, 2));
@@ -517,13 +568,14 @@
             <!-- Ticker de Tipo de Cambio en el Navbar con Desplegable de Monedas -->
             <div class="relative">
                 <button @click="ratesOpen = !ratesOpen" @click.away="ratesOpen = false"
-                    class="flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-lg bg-[#F1F5F9] hover:bg-indigo-50/70 border border-slate-200/80 text-[#0F172A] text-xs transition cursor-pointer"
+                    class="flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-3 py-1.5 rounded-lg bg-[#F1F5F9] hover:bg-indigo-50/70 border border-slate-200/80 text-[#0F172A] text-[11px] sm:text-xs transition cursor-pointer"
                     title="Ver todas las cotizaciones del Boliviano (BOB)">
-                    <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[#64748B] font-semibold">USD/BOB:</span>
+                    <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#10B981] animate-pulse shrink-0"></span>
+                    <div class="flex items-center gap-1">
+                        <span class="hidden sm:inline text-[#64748B] font-semibold">USD/BOB:</span>
+                        <span class="sm:hidden text-[#64748B] font-semibold">BCB:</span>
                         <span class="hidden md:inline text-[11px] text-[#64748B]">C: <strong class="font-mono text-[#0F172A]">{{ number_format($buyRate, 2) }}</strong></span>
-                        <span class="text-[11px] text-[#64748B]">V: <strong class="font-mono text-[#4F46E5] font-bold">{{ number_format($sellRate, 2) }} Bs</strong></span>
+                        <span class="text-[11px] text-[#64748B]"><span class="hidden sm:inline">V: </span><strong class="font-mono text-[#4F46E5] font-bold">{{ number_format($sellRate, 2) }} Bs</strong></span>
                     </div>
                     <span class="hidden lg:inline text-slate-300">|</span>
                     <div class="hidden lg:flex items-center gap-1 text-[11px]">
@@ -535,13 +587,13 @@
                         <span class="text-[#64748B] font-semibold">EUR:</span>
                         <strong class="font-mono text-[#4F46E5] font-bold">{{ number_format($eurRate, 2) }} Bs</strong>
                     </div>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-[#64748B] ml-0.5"></i>
+                    <i class="fa-solid fa-chevron-down text-[9px] sm:text-[10px] text-[#64748B] ml-0.5"></i>
                 </button>
 
                 <!-- Dropdown Detallado de Monedas frente al Boliviano (BOB) -->
                 <div x-show="ratesOpen" x-cloak
                     x-transition
-                    class="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
+                    class="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                         <div>
                             <div class="font-extrabold text-[#0F172A] text-xs">Tipo de Cambio — Bolivia (BOB)</div>
@@ -646,12 +698,12 @@
                     </button>
                 </div>
             @else
-                <div class="flex items-center gap-2 text-xs">
-                    <a href="{{ route('login') }}" class="font-bold text-[#0F172A] hover:text-[#4F46E5] px-4 py-2 rounded-lg border border-slate-200 hover:border-[#4F46E5] hover:bg-indigo-50/40 transition">
+                <div class="flex items-center gap-1.5 sm:gap-2 text-xs">
+                    <a href="{{ route('login') }}" class="font-bold text-[#0F172A] hover:text-[#4F46E5] px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-slate-200 hover:border-[#4F46E5] hover:bg-indigo-50/40 transition whitespace-nowrap">
                         Ingresar
                     </a>
-                    <a href="{{ route('register') }}" class="btn-scarlet px-4 py-2 rounded-lg font-bold shadow-xs">
-                        Registrarse →
+                    <a href="{{ route('register') }}" class="btn-scarlet px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold shadow-xs whitespace-nowrap">
+                        Registrarse <span class="hidden sm:inline">→</span>
                     </a>
                 </div>
             @endif
@@ -661,14 +713,39 @@
     <!-- ===================================================================== -->
     <!-- SB ADMIN PRO LAYOUT SIDENAV + CONTENT WRAPPER                         -->
     <!-- ===================================================================== -->
-    <div id="layoutSidenav" class="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)]">
+    <div id="layoutSidenav" class="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)] relative">
 
         @if(Auth::check() && !request()->is('/'))
-        <!-- SIDENAV LIGHT (SB Admin Pro Left Navigation - Hidden on Public Landing) -->
-        <aside :class="sidenavOpen ? (mobileMenuOpen ? 'flex' : 'hidden md:flex') : 'hidden'"
-            class="sidenav-light w-full md:w-64 md:sticky md:top-16 md:h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto">
+        <!-- Mobile Backdrop Overlay (< 768px) -->
+        <div x-show="mobileMenuOpen" x-cloak
+             @click="mobileMenuOpen = false"
+             x-transition:enter="transition-opacity ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 top-16 bg-[#0F172A]/60 backdrop-blur-xs z-30 md:hidden"></div>
+
+        <!-- SIDENAV (Responsive Off-Canvas Drawer on Mobile / Sticky Sidebar on Tablet, Desktop & 4K TV) -->
+        <aside :class="[
+                mobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full hidden md:translate-x-0',
+                sidenavOpen ? 'md:flex' : 'md:hidden'
+            ]"
+            class="sidenav-light fixed md:sticky top-16 left-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
             
             <div class="py-2">
+                <!-- Buscador Rápido Visible en Móvil y Tablet (< 1024px) -->
+                <div class="px-4 pt-2 pb-3 lg:hidden">
+                    <form action="{{ url('/tracking') }}" method="GET" class="relative">
+                        <input type="text" name="guide" placeholder="Buscar guía o pedido..."
+                            class="w-full bg-white/10 border border-white/15 text-white placeholder-slate-400 rounded-lg pl-3 pr-8 py-2 text-xs focus:outline-none focus:border-[#38BDF8]">
+                        <button type="submit" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-[#38BDF8]">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </form>
+                </div>
+
                 <!-- Sidenav Menu -->
                 <nav class="space-y-0.5">
 

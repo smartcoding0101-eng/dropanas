@@ -26,7 +26,7 @@
         .page-title span { color: var(--primary); }
 
         /* ── KPI Cards ── */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .kpi-card {
             background: var(--surface); border: 1px solid var(--border);
             border-radius: var(--radius); padding: 20px 24px;
@@ -49,17 +49,18 @@
         /* ── Filters ── */
         .filters-bar {
             background: var(--surface); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 16px 20px;
-            display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+            border-radius: var(--radius); padding: 14px 16px;
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
             margin-bottom: 20px;
         }
-        .filter-group { display: flex; flex-direction: column; gap: 4px; }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1 1 140px; min-width: 0; }
         .filter-group label { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
         .filter-group select,
         .filter-group input  {
+            width: 100%;
             background: var(--surface2); border: 1px solid var(--border);
-            color: var(--text); border-radius: 8px; padding: 8px 12px;
-            font-size: .875rem; font-family: inherit;
+            color: var(--text); border-radius: 8px; padding: 8px 10px;
+            font-size: .82rem; font-family: inherit;
         }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 9px; font-size: .875rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; text-decoration: none; }
         .btn-primary { background: var(--primary); color: #fff; }

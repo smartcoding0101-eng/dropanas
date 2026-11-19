@@ -27,7 +27,7 @@
     </x-page-header>
 
     <!-- 4 Métricas de Despacho (Stripe & Linear Executive Overlap) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#0F172A]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</div>
             <div class="text-2xl font-black text-[#0F172A] mt-1" data-countup>{{ $stats['in_route'] }}</div>

@@ -18,8 +18,8 @@
         </x-slot:actions>
     </x-page-header>
 
-    <!-- KPIs (SB Admin Pro Overlap) -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 !-mt-14 relative z-10">
+    <!-- KPIs (Stripe & Linear Executive Overlap) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         @foreach([
             ['label'=>'Pedidos Este Mes','value'=>'142','icon'=>'fa-boxes-stacked','color'=>'red','sub'=>'↑ 23% vs mes anterior'],
             ['label'=>'Entregados','value'=>'121','icon'=>'fa-circle-check','color'=>'emerald','sub'=>'85.2% tasa de entrega'],

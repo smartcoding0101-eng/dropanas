@@ -5,29 +5,17 @@
 @section('content')
 <div class="space-y-6">
 
-    <!-- Header con Badges Bolivia -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
-        <div>
-            <div class="flex items-center gap-2 mb-1.5">
-                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                    <i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i> WhatsApp Business API Bolivia (+591)
-                </span>
-                <span class="text-xs text-slate-500 font-medium">Automatización Transaccional COD</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0A1128] font-heading">
-                Centro de Notificaciones WhatsApp
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
-                Auditoría en tiempo real de mensajes de confirmación de pedido, aviso de despacho DEX y rescate ante novedades.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <span class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5 animate-pulse"></span> Gateway Activo: Meta Cloud API (+591)
+    <x-page-header
+        title="Centro de Notificaciones WhatsApp (+591)"
+        subtitle="Auditoría en tiempo real de mensajes de confirmación de pedido, aviso de despacho DEX y rescate ante novedades."
+        icon="fa-brands fa-whatsapp"
+        badge="WhatsApp Business API Bolivia • Automatización COD">
+        <x-slot:actions>
+            <span class="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-xs font-semibold text-white shadow-xs backdrop-blur-xs">
+                <span class="w-2 h-2 rounded-full bg-[#10B981] inline-block mr-1.5 animate-pulse"></span> Gateway Activo: Meta Cloud API (+591)
             </span>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-page-header>
 
     <!-- Alertas Flash -->
     @if(session('success'))
@@ -40,7 +28,7 @@
     @endif
 
     <!-- Tarjetas de Plantillas Activas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         @foreach($templates as $key => $tpl)
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 hover:border-emerald-400 transition">
                 <div class="flex items-center justify-between">

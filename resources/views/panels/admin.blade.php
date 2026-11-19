@@ -201,18 +201,18 @@
             </div>
 
             <!-- Métricas Dinámicas del Período Seleccionado -->
-            <div class="grid grid-cols-3 gap-3 bg-[#F8FAFC] p-3.5 rounded-xl border border-slate-200/60">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-[#F8FAFC] p-3.5 rounded-xl border border-slate-200/60">
                 <div>
                     <span class="text-[10px] font-bold uppercase text-slate-400 block" x-text="chartData[timeframe].label"></span>
-                    <span class="text-lg sm:text-xl font-extrabold text-[#0F172A] font-mono" x-text="chartData[timeframe].total"></span>
+                    <span class="text-base sm:text-xl font-extrabold text-[#0F172A] font-mono" x-text="chartData[timeframe].total"></span>
                 </div>
                 <div>
                     <span class="text-[10px] font-bold uppercase text-slate-400 block">Crecimiento Neto</span>
-                    <span class="text-lg sm:text-xl font-extrabold text-[#10B981] font-mono" x-text="chartData[timeframe].growth"></span>
+                    <span class="text-base sm:text-xl font-extrabold text-[#10B981] font-mono" x-text="chartData[timeframe].growth"></span>
                 </div>
                 <div>
                     <span class="text-[10px] font-bold uppercase text-slate-400 block">Volumen Despachado</span>
-                    <span class="text-lg sm:text-xl font-extrabold text-[#4F46E5] font-heading" x-text="chartData[timeframe].orders"></span>
+                    <span class="text-base sm:text-xl font-extrabold text-[#4F46E5] font-heading" x-text="chartData[timeframe].orders"></span>
                 </div>
             </div>
 

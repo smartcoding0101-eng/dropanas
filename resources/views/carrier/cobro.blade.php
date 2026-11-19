@@ -100,7 +100,7 @@
             <!-- Método de pago -->
             <div>
                 <div class="text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">Método de Cobro</div>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <label class="cursor-pointer">
                         <input type="radio" x-model="paymentMethod" value="cash" class="sr-only">
                         <div class="border-2 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-2 transition"
@@ -200,7 +200,7 @@
         </div>
 
         <!-- Botones de acción -->
-        <div class="border-t border-slate-100 p-4 grid grid-cols-2 gap-3">
+        <div class="border-t border-slate-100 p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button @click="confirmDelivery()" :disabled="confirming"
                     class="btn-scarlet py-3.5 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-60">
                 <i class="fa-solid fa-circle-check"></i>
