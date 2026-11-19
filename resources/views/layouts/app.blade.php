@@ -85,25 +85,54 @@
             background-image: linear-gradient(135deg, #0061f2 0%, rgba(105, 0, 199, 0.85) 100%);
         }
 
-        /* SB Admin Pro Sidenav Celeste-Azul Armonizado con el Sistema (#0061f2 -> #6900c7) */
+        /* Sidebar Principal #3435DD con Textos Blancos y Efectos Interactivos */
         .sidenav-light {
-            background: linear-gradient(180deg, #e6f0ff 0%, #d8e6ff 55%, #e4dffc 100%);
-            color: #212832;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 97, 242, 0.10);
-            border-right: 1px solid #c7dbfc;
+            background-color: #3435DD;
+            background-image: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.14) 0%, transparent 45%),
+                              linear-gradient(180deg, #3435DD 0%, #2829B8 100%);
+            color: #ffffff;
+            box-shadow: 4px 0 24px rgba(52, 53, 221, 0.25);
+            border-right: 1px solid rgba(255, 255, 255, 0.14);
         }
         .sidenav-light .text-\[\#a7aeb8\] {
-            color: #0061f2 !important;
-            opacity: 0.85;
+            color: rgba(255, 255, 255, 0.65) !important;
         }
-        .sidenav-light a.bg-blue-50\/70 {
-            background: #ffffff !important;
-            color: #0061f2 !important;
-            box-shadow: 0 4px 12px rgba(0, 97, 242, 0.14);
+        .sidenav-light a {
+            position: relative;
+            color: rgba(255, 255, 255, 0.88) !important;
+            margin: 2px 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                        background-color 0.2s ease,
+                        box-shadow 0.22s ease,
+                        color 0.18s ease !important;
         }
+        .sidenav-light a i {
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+        }
+        /* Efecto Hover en Ítems del Menú */
         .sidenav-light a:hover:not(.bg-blue-50\/70) {
-            background-color: rgba(255, 255, 255, 0.70) !important;
-            color: #0061f2 !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+        }
+        .sidenav-light a:hover i {
+            color: #38bdf8 !important;
+            transform: scale(1.18) rotate(-4deg);
+        }
+        /* Efecto Ítem Activo en el Menú */
+        .sidenav-light a.bg-blue-50\/70 {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
+            color: #ffffff !important;
+            border-right: 4px solid #00e5a3 !important;
+            box-shadow: 0 6px 16px rgba(15, 16, 86, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+        }
+        .sidenav-light a.bg-blue-50\/70 i {
+            color: #00e5a3 !important;
+            transform: scale(1.12);
         }
 
         /* SB Admin Pro Card Shadow Elevation */
@@ -508,7 +537,7 @@
                     {{-- ======================================================== --}}
                     {{-- ADDONS / HERRAMIENTAS GLOBALES                           --}}
                     {{-- ======================================================== --}}
-                    <div class="pt-3 mt-3 border-t border-[#c7dbfc]">
+                    <div class="pt-3 mt-3 border-t border-white/15">
                         <div class="px-5 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Addons & Soporte
                         </div>
@@ -528,14 +557,14 @@
                 </nav>
             </div>
 
-            <!-- SB Admin Pro Sidenav Footer (Armonizado con el Sistema) -->
-            <div class="bg-gradient-to-r from-[#0061f2]/10 to-[#6900c7]/10 border-t border-[#c7dbfc] px-5 py-3.5">
+            <!-- SB Admin Pro Sidenav Footer (#3435DD Dark Indigo Glass) -->
+            <div class="bg-black/20 border-t border-white/15 px-5 py-3.5 backdrop-blur-sm">
                 <div class="flex items-center gap-2 mb-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#00ac69] animate-pulse"></span>
-                    <span class="text-[10px] font-extrabold text-[#00ac69] uppercase tracking-wider">Nano Banana Sync</span>
+                    <span class="w-2 h-2 rounded-full bg-[#00e5a3] animate-pulse"></span>
+                    <span class="text-[10px] font-extrabold text-[#00e5a3] uppercase tracking-wider">Nano Banana Sync</span>
                 </div>
-                <div class="text-[11px] text-[#0061f2] font-medium">Conectado como:</div>
-                <div class="text-xs font-bold text-[#212832] truncate">{{ Auth::user()->name }}</div>
+                <div class="text-[11px] text-white/70 font-medium">Conectado como:</div>
+                <div class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
             </div>
 
         </aside>
