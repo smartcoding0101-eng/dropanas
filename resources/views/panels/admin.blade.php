@@ -39,8 +39,16 @@
     <!-- TARJETAS DE MÉTRICAS (Stripe & Linear Executive Overlap) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 !-mt-14 relative z-10">
         
-        <!-- Total Recaudación BOB -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4 interactive-card">
+        <!-- Total Recaudación BOB (Interactive Sparkline with Hover Readout) -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4 interactive-card"
+             x-data="{ activeBar: null, bars: [
+                { day: 'Lun', amount: 'Bs 3,820', h: 'h-4', bg: 'bg-[#4F46E5]/40' },
+                { day: 'Mar', amount: 'Bs 5,140', h: 'h-6', bg: 'bg-[#4F46E5]/55' },
+                { day: 'Mié', amount: 'Bs 4,690', h: 'h-5', bg: 'bg-[#4F46E5]/45' },
+                { day: 'Jue', amount: 'Bs 6,410', h: 'h-7', bg: 'bg-[#4F46E5]/75' },
+                { day: 'Vie', amount: 'Bs 7,250', h: 'h-8', bg: 'bg-[#4F46E5]/90' },
+                { day: 'Hoy', amount: 'Bs 8,490', h: 'h-9', bg: 'bg-[#4F46E5]' }
+             ] }">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-[#4F46E5] uppercase tracking-wider">Volumen Total (BOB)</span>
                 <div class="w-8 h-8 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-200/80 flex items-center justify-center text-xs">
@@ -48,22 +56,26 @@
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#0F172A] font-heading">
+                <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
                     Bs {{ number_format($stats['total_volume_bob'] ?? 32450.00, 2) }}
                 </div>
-                <div class="text-[11px] text-[#10B981] font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    <span>+8.5% respecto a la semana pasada</span>
+                <div class="text-[11px] font-semibold flex items-center justify-between">
+                    <span class="text-[#10B981] flex items-center gap-1" x-show="!activeBar">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>+8.5% vs semana pasada</span>
+                    </span>
+                    <span class="text-[#4F46E5] font-mono font-bold" x-show="activeBar" x-cloak
+                          x-text="activeBar ? (activeBar.day + ': ' + activeBar.amount) : ''"></span>
                 </div>
             </div>
             <!-- Gráfica interactiva animada en Electric Indigo -->
             <div class="h-10 w-full bg-slate-50/90 rounded-lg flex items-end px-1.5 pb-1 gap-1.5 border border-slate-100">
-                <div class="w-1/6 bg-[#4F46E5]/35 rounded-t h-4 sparkline-bar cursor-pointer" title="Lun: Bs 3,820"></div>
-                <div class="w-1/6 bg-[#4F46E5]/55 rounded-t h-6 sparkline-bar cursor-pointer" title="Mar: Bs 5,140"></div>
-                <div class="w-1/6 bg-[#4F46E5]/45 rounded-t h-5 sparkline-bar cursor-pointer" title="Mié: Bs 4,690"></div>
-                <div class="w-1/6 bg-[#4F46E5]/75 rounded-t h-7 sparkline-bar cursor-pointer" title="Jue: Bs 6,410"></div>
-                <div class="w-1/6 bg-[#4F46E5]/90 rounded-t h-8 sparkline-bar cursor-pointer" title="Vie: Bs 7,250"></div>
-                <div class="w-1/6 bg-[#4F46E5] rounded-t h-9 sparkline-bar cursor-pointer" title="Hoy: Bs 8,490"></div>
+                <template x-for="(b, idx) in bars" :key="idx">
+                    <div class="w-1/6 rounded-t sparkline-bar cursor-pointer"
+                         :class="[b.h, b.bg]"
+                         @mouseenter="activeBar = b"
+                         @mouseleave="activeBar = null"></div>
+                </template>
             </div>
         </div>
 
@@ -76,7 +88,7 @@
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#0F172A] font-heading">
+                <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
                     {{ $stats['total_orders'] ?? 157 }}
                 </div>
                 <div class="text-[11px] text-[#10B981] font-semibold flex items-center gap-1">
@@ -86,7 +98,10 @@
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center">
                 <span>Despachos activos:</span>
-                <strong class="text-[#0F172A]">42 órdenes en ruta</strong>
+                <strong class="text-[#0F172A] flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping"></span>
+                    <span>42 órdenes en ruta</span>
+                </strong>
             </div>
         </div>
 
@@ -99,7 +114,7 @@
                 </div>
             </div>
             <div class="space-y-1">
-                <div class="text-3xl font-extrabold text-[#4F46E5] font-heading font-mono">
+                <div class="text-3xl font-extrabold text-[#4F46E5] font-heading font-mono" data-countup>
                     Bs 18,310.00
                 </div>
                 <div class="text-[11px] text-slate-500">
@@ -122,7 +137,7 @@
             </div>
             <div class="flex items-center justify-between">
                 <div class="space-y-1">
-                    <div class="text-3xl font-extrabold text-[#0F172A] font-heading">
+                    <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
                         94%
                     </div>
                     <div class="text-[11px] text-slate-500">Entregas a tiempo</div>
@@ -130,7 +145,7 @@
                 <!-- Anillo de progreso animado en Esmeralda -->
                 <div class="relative w-14 h-14 rounded-full border-4 border-indigo-100 flex items-center justify-center group">
                     <div class="absolute inset-0 rounded-full border-4 border-[#10B981] border-t-transparent -rotate-45 progress-ring-animated"></div>
-                    <span class="text-[11px] font-bold text-[#0F172A] group-hover:scale-110 transition-transform">94%</span>
+                    <span class="text-[11px] font-bold text-[#0F172A] group-hover:scale-110 transition-transform" data-countup>94%</span>
                 </div>
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px]">
@@ -139,6 +154,162 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- NUEVO MONITOR INTERACTIVO DE FLUJO COD & RADAR LOGÍSTICO EN TIEMPO REAL -->
+    <!-- ===================================================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6"
+         x-data="{
+            timeframe: '7d',
+            activeHub: 'SCZ',
+            chartData: {
+                '7d':  { label: 'Últimos 7 Días', total: 'Bs 32,450.00', growth: '+14.2%', orders: '157 órdenes', points: [38, 52, 47, 68, 74, 86, 95], days: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] },
+                '30d': { label: 'Últimos 30 Días', total: 'Bs 128,940.00', growth: '+22.8%', orders: '614 órdenes', points: [44, 58, 63, 71, 82, 89, 98], days: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Actual', 'Proy.'] },
+                '90d': { label: 'Trimestre Q4', total: 'Bs 364,200.00', growth: '+34.5%', orders: '1,840 órdenes', points: [50, 62, 74, 79, 88, 93, 100], days: ['Sep Q1', 'Sep Q2', 'Oct Q1', 'Oct Q2', 'Nov Q1', 'Nov Q2', 'Hoy'] }
+            },
+            hubs: {
+                'SCZ': { name: 'Hub Santa Cruz (Megabodega Central)', rate: '96%', inRoute: 24, delivered: 89,SLA: '18h promedio', cod: 'Bs 14,820.00' },
+                'LPZ': { name: 'Hub La Paz & El Alto', rate: '93%', inRoute: 11, delivered: 36, SLA: '24h promedio', cod: 'Bs 9,410.00' },
+                'CBA': { name: 'Hub Cochabamba (Valle Central)', rate: '94%', inRoute: 7, delivered: 22, SLA: '22h promedio', cod: 'Bs 8,220.00' }
+            }
+         }">
+
+        <!-- Panel Izquierdo (7 cols): Curva Interactiva de Recaudación con Selector 7D / 30D / 90D -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#4F46E5] bg-indigo-50 px-2.5 py-0.5 rounded-full mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#4F46E5] animate-ping"></span>
+                        <span>Telemetría Financiera Interactiva</span>
+                    </div>
+                    <h3 class="text-base font-extrabold text-[#0F172A] font-heading">Curva de Recaudación COD & Liquidación QR</h3>
+                </div>
+
+                <!-- Botones Interactivos de Período -->
+                <div class="inline-flex items-center bg-[#F1F5F9] p-1 rounded-xl border border-slate-200/70 self-start sm:self-auto">
+                    <button @click="timeframe = '7d'"
+                        :class="timeframe === '7d' ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-3 py-1 rounded-lg text-[11px] font-bold transition">7 Días</button>
+                    <button @click="timeframe = '30d'"
+                        :class="timeframe === '30d' ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-3 py-1 rounded-lg text-[11px] font-bold transition">30 Días</button>
+                    <button @click="timeframe = '90d'"
+                        :class="timeframe === '90d' ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-3 py-1 rounded-lg text-[11px] font-bold transition">Trimestre</button>
+                </div>
+            </div>
+
+            <!-- Métricas Dinámicas del Período Seleccionado -->
+            <div class="grid grid-cols-3 gap-3 bg-[#F8FAFC] p-3.5 rounded-xl border border-slate-200/60">
+                <div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block" x-text="chartData[timeframe].label"></span>
+                    <span class="text-lg sm:text-xl font-extrabold text-[#0F172A] font-mono" x-text="chartData[timeframe].total"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Crecimiento Neto</span>
+                    <span class="text-lg sm:text-xl font-extrabold text-[#10B981] font-mono" x-text="chartData[timeframe].growth"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Volumen Despachado</span>
+                    <span class="text-lg sm:text-xl font-extrabold text-[#4F46E5] font-heading" x-text="chartData[timeframe].orders"></span>
+                </div>
+            </div>
+
+            <!-- Gráfico de Barras / Área Reactivo con Hover Individual -->
+            <div class="pt-2">
+                <div class="h-36 flex items-end justify-between gap-2.5 px-2 pt-6 pb-2 bg-gradient-to-b from-indigo-50/40 to-transparent rounded-xl border border-slate-100">
+                    <template x-for="(val, i) in chartData[timeframe].points" :key="timeframe + '-' + i">
+                        <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group cursor-pointer">
+                            <span class="text-[10px] font-mono font-bold text-[#4F46E5] opacity-0 group-hover:opacity-100 transition-opacity -translate-y-1"
+                                  x-text="val + '%'"></span>
+                            <div class="w-full max-w-[38px] rounded-t-lg bg-gradient-to-t from-[#312E81] via-[#4F46E5] to-[#38BDF8] transition-all duration-500 group-hover:brightness-110 group-hover:shadow-[0_0_14px_rgba(56,189,248,0.55)]"
+                                 :style="'height: ' + val + '%'"></div>
+                            <span class="text-[10px] font-bold text-slate-500 group-hover:text-[#0F172A]"
+                                  x-text="chartData[timeframe].days[i]"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Derecho (5 cols): Radar Logístico Interactivo por Megabodega (SCZ / LPZ / CBA) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#10B981] bg-emerald-50 px-2.5 py-0.5 rounded-full mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping"></span>
+                        <span>Radar DEX 9/9 Deptos</span>
+                    </div>
+                    <h3 class="text-base font-extrabold text-[#0F172A] font-heading">Estado de Megabodegas en Vivo</h3>
+                </div>
+                <div class="flex items-center gap-1 bg-[#F1F5F9] p-1 rounded-xl border border-slate-200/70">
+                    <button @click="activeHub = 'SCZ'"
+                        :class="activeHub === 'SCZ' ? 'bg-[#0F172A] text-white shadow-xs' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition">SCZ</button>
+                    <button @click="activeHub = 'LPZ'"
+                        :class="activeHub === 'LPZ' ? 'bg-[#0F172A] text-white shadow-xs' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition">LPZ</button>
+                    <button @click="activeHub = 'CBA'"
+                        :class="activeHub === 'CBA' ? 'bg-[#0F172A] text-white shadow-xs' : 'text-slate-600 hover:text-[#0F172A]'"
+                        class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition">CBA</button>
+                </div>
+            </div>
+
+            <!-- Tarjeta Dinámica del Hub Seleccionado -->
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#312E81] text-white space-y-3 shadow-md">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-[#38BDF8]">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </span>
+                        <div>
+                            <div class="text-xs font-extrabold text-white" x-text="hubs[activeHub].name"></div>
+                            <div class="text-[10px] text-indigo-200" x-text="'SLA Entrega: ' + hubs[activeHub].SLA"></div>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] font-mono font-extrabold text-xs"
+                          x-text="hubs[activeHub].rate"></span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
+                    <div class="bg-white/5 rounded-lg p-2">
+                        <div class="text-[10px] text-indigo-200">En Reparto</div>
+                        <div class="text-sm font-extrabold font-mono text-[#38BDF8]" x-text="hubs[activeHub].inRoute + ' guías'"></div>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-2">
+                        <div class="text-[10px] text-indigo-200">Entregados</div>
+                        <div class="text-sm font-extrabold font-mono text-[#10B981]" x-text="hubs[activeHub].delivered"></div>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-2">
+                        <div class="text-[10px] text-indigo-200">Recaudo COD</div>
+                        <div class="text-xs font-extrabold font-mono text-white" x-text="hubs[activeHub].cod"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barras de Progreso Animadas por Corredor Logístico -->
+            <div class="space-y-2.5 text-xs">
+                <div class="space-y-1">
+                    <div class="flex justify-between font-semibold">
+                        <span class="text-slate-600">Eje Troncal (SCZ • LPZ • CBA)</span>
+                        <span class="font-mono font-bold text-[#4F46E5]">96% Efectividad</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-[#4F46E5] to-[#38BDF8] rounded-full transition-all duration-700" style="width: 96%"></div>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between font-semibold">
+                        <span class="text-slate-600">Sur & Valles (TJA • CHU • POT • ORU)</span>
+                        <span class="font-mono font-bold text-[#10B981]">91% Efectividad</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-[#10B981] to-[#38BDF8] rounded-full transition-all duration-700" style="width: 91%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- TABLA DE PEDIDOS RECIENTES CON GESTIÓN DE ESTADO & GENERACIÓN DE MANIFIESTOS -->

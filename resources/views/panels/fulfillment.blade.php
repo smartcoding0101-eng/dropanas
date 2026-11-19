@@ -33,7 +33,7 @@
                     <i class="fa-solid {{ $kpi['icon'] }} text-sm text-slate-400"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-slate-900 font-heading">{{ $kpi['value'] }}</div>
+            <div class="text-2xl font-black text-slate-900 font-heading" data-countup>{{ $kpi['value'] }}</div>
             <div class="text-[11px] text-emerald-600 font-medium mt-1">{{ $kpi['sub'] }}</div>
         </div>
         @endforeach

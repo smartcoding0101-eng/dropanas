@@ -49,49 +49,49 @@
                     <i class="fa-solid fa-cart-shopping"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-slate-900 font-heading">
+            <div class="text-3xl font-extrabold text-slate-900 font-heading" data-countup>
                 {{ $stats['total_orders'] }}
             </div>
             <div class="text-[11px] text-slate-500">Histórico de órdenes registradas</div>
         </div>
 
         <!-- Pedidos En Camino -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#0061f2] hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 interactive-card">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#0061f2] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center">
+                <span class="text-[#4F46E5] font-bold uppercase tracking-wider">En Camino / Pendientes</span>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-200 flex items-center justify-center">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-[#0061f2] font-heading font-mono">
+            <div class="text-3xl font-extrabold text-[#4F46E5] font-heading font-mono" data-countup>
                 {{ $stats['pending_orders'] }}
             </div>
             <div class="text-[11px] text-amber-600 font-medium">Por recaudar en destino COD</div>
         </div>
 
         <!-- Pedidos Liquidados -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-emerald-400 hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 interactive-card">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
                 <span class="text-emerald-700 font-bold uppercase tracking-wider">Entregados & Liquidados</span>
                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center">
                     <i class="fa-solid fa-check-double"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-emerald-600 font-heading">
+            <div class="text-3xl font-extrabold text-emerald-600 font-heading" data-countup>
                 {{ $stats['settled_orders'] }}
             </div>
             <div class="text-[11px] text-emerald-600 font-medium">Fondos acreditados con éxito</div>
         </div>
 
         <!-- Ganancia Acumulada -->
-        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 hover:border-[#0061f2] hover:shadow-md transition">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3 interactive-card">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-[#0061f2] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
-                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center">
+                <span class="text-[#4F46E5] font-bold uppercase tracking-wider">Ganancia Neta Total</span>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-200 flex items-center justify-center">
                     <i class="fa-solid fa-coins"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-slate-900 font-heading font-mono">
+            <div class="text-3xl font-extrabold text-slate-900 font-heading font-mono" data-countup>
                 Bs {{ number_format($stats['total_profit'], 2) }}
             </div>
             <div class="text-[11px] text-slate-500">Tu beneficio líquido en BOB</div>

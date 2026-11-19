@@ -49,26 +49,36 @@
                         </a>
                     </div>
 
-                    <!-- Métricas Destacadas en Tarjetas Compactas -->
+                    <!-- Métricas Destacadas en Tarjetas Compactas con Contadores Animados -->
                     <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/15">
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
                             <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">9 / 9</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Deptos. Cobertura</div>
                         </div>
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
-                            <div class="text-xl sm:text-2xl font-extrabold text-[#38BDF8] font-mono">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
+                            <div class="text-xl sm:text-2xl font-extrabold text-[#38BDF8] font-mono" data-countup>{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Tasa Oficial BCB</div>
                         </div>
                         <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
-                            <div class="text-xl sm:text-2xl font-extrabold text-[#10B981] font-heading">24 hrs</div>
+                            <div class="text-xl sm:text-2xl font-extrabold text-[#10B981] font-heading" data-countup>24 hrs</div>
                             <div class="text-[11px] text-indigo-100/80 font-medium">Retiros a Billetera</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Tarjeta Blanca Interactiva Flotante -->
+                <!-- Columna Derecha: Tarjeta Blanca Interactiva Flotante con Feed COD en Vivo -->
                 <div class="lg:col-span-5">
-                    <div class="hero-floating-card bg-white text-[#0F172A] rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4">
+                    <div class="hero-floating-card interactive-card bg-white text-[#0F172A] rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4"
+                         x-data="{
+                            feedIdx: 0,
+                            liveOrders: [
+                                { guide: 'DEX-SCZ-8841', city: 'Santa Cruz', amount: 'Bs 240.00', status: 'Cobrado vía QR Simple', color: 'text-[#10B981]' },
+                                { guide: 'DEX-LPZ-3920', city: 'La Paz (Sopocachi)', amount: 'Bs 310.00', status: 'Entregado en Efectivo', color: 'text-[#4F46E5]' },
+                                { guide: 'DEX-CBA-5104', city: 'Cochabamba', amount: 'Bs 185.00', status: 'Liquidado a Billetera', color: 'text-[#10B981]' },
+                                { guide: 'DEX-ALT-7712', city: 'El Alto', amount: 'Bs 420.00', status: 'En Reparto Última Milla', color: 'text-amber-600' }
+                            ],
+                            init() { setInterval(() => { this.feedIdx = (this.feedIdx + 1) % this.liveOrders.length }, 3200); }
+                         }">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
                             <div class="flex items-center gap-3">
                                 <div class="w-11 h-11 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-100 flex items-center justify-center font-bold text-lg">
@@ -81,9 +91,22 @@
                                     </span>
                                 </div>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-[#10B981] border border-emerald-200 uppercase">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-[#10B981] border border-emerald-200 uppercase flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping"></span>
                                 Red COD Activa
                             </span>
+                        </div>
+
+                        <!-- Live Rotating Activity Ticker inside Hero Card -->
+                        <div class="p-3 rounded-xl bg-gradient-to-r from-[#0F172A] to-[#1E1B4B] text-white text-xs flex items-center justify-between shadow-sm">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-ping"></span>
+                                <div>
+                                    <div class="font-mono font-bold text-[11px] text-[#38BDF8]" x-text="liveOrders[feedIdx].guide + ' • ' + liveOrders[feedIdx].city"></div>
+                                    <div class="text-[10px] text-indigo-100" x-text="liveOrders[feedIdx].status"></div>
+                                </div>
+                            </div>
+                            <span class="font-mono font-extrabold text-xs px-2 py-0.5 rounded bg-white/10 text-[#10B981]" x-text="liveOrders[feedIdx].amount"></span>
                         </div>
 
                         <div class="space-y-2 text-xs">

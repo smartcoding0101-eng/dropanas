@@ -26,29 +26,29 @@
         </x-slot:actions>
     </x-page-header>
 
-    <!-- 4 Métricas de Despacho (SB Admin Pro Overlap) -->
+    <!-- 4 Métricas de Despacho (Stripe & Linear Executive Overlap) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
-        <div class="white-card p-5 rounded-2xl border-l-4 border-slate-800">
+        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#0F172A]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</div>
-            <div class="text-2xl font-black text-[#212832] mt-1">{{ $stats['in_route'] }}</div>
+            <div class="text-2xl font-black text-[#0F172A] mt-1" data-countup>{{ $stats['in_route'] }}</div>
             <div class="text-[11px] text-slate-400 mt-1">Paquetes para entregar</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-emerald-500">
+        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#10B981]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entregados</div>
-            <div class="text-2xl font-black text-emerald-600 mt-1">{{ $stats['delivered_today'] }}</div>
+            <div class="text-2xl font-black text-[#10B981] mt-1" data-countup>{{ $stats['delivered_today'] }}</div>
             <div class="text-[11px] text-slate-400 mt-1">Con recaudación efectiva</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-emerald-500">
+        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-amber-500">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Novedades Activas</div>
-            <div class="text-2xl font-black text-[#0061f2] mt-1">{{ $stats['novedades_active'] }}</div>
+            <div class="text-2xl font-black text-[#4F46E5] mt-1" data-countup>{{ $stats['novedades_active'] }}</div>
             <div class="text-[11px] text-amber-700 font-semibold mt-1">Requieren gestión WhatsApp</div>
         </div>
 
-        <div class="white-card p-5 rounded-2xl border-l-4 border-[#0061f2]">
+        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#4F46E5]">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Por Recaudar COD</div>
-            <div class="text-2xl font-black text-[#0061f2] mt-1 font-mono">
+            <div class="text-2xl font-black text-[#4F46E5] mt-1 font-mono" data-countup>
                 Bs. {{ number_format($stats['cod_to_collect_bob'], 2) }}
             </div>
             <div class="text-[11px] text-slate-400 mt-1 font-mono">Total asignado en calle</div>

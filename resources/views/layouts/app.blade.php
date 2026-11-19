@@ -206,7 +206,7 @@
         }
 
         /* ===================================================================== */
-        /* PREMIUM UI/UX MOTION & INTERACTIVE CHOREOGRAPHY ENGINE                */
+        /* PREMIUM UI/UX MOTION & INTERACTIVE CHOREOGRAPHY ENGINE V2             */
         /* Skills: ui-motion-transitions, ui-ux-pro-max, frontend-design-eng     */
         /* ===================================================================== */
 
@@ -218,7 +218,7 @@
         }
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50%      { transform: translateY(-6px) rotate(0.5deg); }
+            50%      { transform: translateY(-7px) rotate(0.4deg); }
         }
         @keyframes textShimmer {
             0%   { background-position: 0% 50%; }
@@ -226,12 +226,16 @@
             100% { background-position: 0% 50%; }
         }
         @keyframes fadeUpSpring {
-            from { opacity: 0; transform: translateY(18px) scale(0.985); }
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes barGrowUp {
             from { transform: scaleY(0); }
             to   { transform: scaleY(1); }
+        }
+        @keyframes barEqualizer {
+            0%, 100% { transform: scaleY(1); }
+            50%      { transform: scaleY(0.84); }
         }
         @keyframes ringSweep {
             from { transform: rotate(-180deg); opacity: 0; }
@@ -239,12 +243,43 @@
         }
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45); }
-            50%      { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+            50%      { box-shadow: 0 0 0 9px rgba(56, 189, 248, 0); }
+        }
+        @keyframes gridScan {
+            0%   { transform: translateY(-100%); opacity: 0; }
+            45%  { opacity: 0.45; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+        @keyframes borderBeamRotate {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .page-header-sb {
             background-size: 200% 200%;
-            animation: auroraShift 14s ease infinite;
+            animation: auroraShift 12s ease infinite;
+        }
+        /* Interactive Perspective Grid Overlay inside Heroes */
+        .page-header-sb::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+            mask-image: radial-gradient(ellipse at 50% 45%, black 35%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at 50% 45%, black 35%, transparent 80%);
+            pointer-events: none;
+        }
+        .page-header-sb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(550px circle at var(--hero-x, 70%) var(--hero-y, 30%), rgba(56, 189, 248, 0.22), transparent 55%);
+            pointer-events: none;
+            transition: opacity 0.25s ease;
         }
 
         /* 2. Gradient Shimmer Text & Hero Typography Balance */
@@ -253,46 +288,94 @@
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: textShimmer 6s linear infinite;
+            animation: textShimmer 5s linear infinite;
         }
         .hero-floating-card {
-            animation: floatSlow 6s ease-in-out infinite;
+            animation: floatSlow 5.5s ease-in-out infinite;
             will-change: transform;
         }
 
-        /* 3. Staggered Entrance Choreography for Panels & Grids */
+        /* 3. Staggered Entrance & Scroll-Reveal Choreography */
         .grid > div,
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
         .white-card {
-            animation: fadeUpSpring 0.52s var(--ease-spring) both;
+            animation: fadeUpSpring 0.55s var(--ease-spring) both;
         }
         .grid > div:nth-child(1) { animation-delay: 0.04s; }
-        .grid > div:nth-child(2) { animation-delay: 0.09s; }
-        .grid > div:nth-child(3) { animation-delay: 0.14s; }
-        .grid > div:nth-child(4) { animation-delay: 0.19s; }
-        .grid > div:nth-child(5) { animation-delay: 0.24s; }
-        .grid > div:nth-child(6) { animation-delay: 0.29s; }
+        .grid > div:nth-child(2) { animation-delay: 0.10s; }
+        .grid > div:nth-child(3) { animation-delay: 0.16s; }
+        .grid > div:nth-child(4) { animation-delay: 0.22s; }
+        .grid > div:nth-child(5) { animation-delay: 0.28s; }
+        .grid > div:nth-child(6) { animation-delay: 0.34s; }
 
-        /* 4. Interactive Card Spotlight & Tactile Micro-Interactions (<240ms) */
+        /* 4. Interactive 3D Spotlight & Border Glow on Cards */
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
-        .white-card {
+        .white-card,
+        .kpi-card,
+        .card {
             position: relative;
-            transition: transform 0.24s var(--ease-spring),
+            overflow: hidden;
+            transition: transform 0.22s var(--ease-spring),
                         box-shadow 0.24s var(--ease-spring),
                         border-color 0.2s ease;
             will-change: transform;
         }
+        /* Cursor-following radial spotlight inside every card */
+        .bg-white.rounded-2xl::before,
+        .bg-white.rounded-3xl::before,
+        .white-card::before,
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+                rgba(79, 70, 229, 0.085),
+                rgba(56, 189, 248, 0.04) 40%,
+                transparent 70%
+            );
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-white.rounded-2xl:hover::before,
+        .bg-white.rounded-3xl:hover::before,
+        .white-card:hover::before,
+        .kpi-card:hover::after {
+            opacity: 1;
+        }
+        /* Top animated gradient beam on card hover */
+        .bg-white.rounded-2xl::after,
+        .white-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4F46E5, #38BDF8, #10B981, #4F46E5);
+            background-size: 200% 100%;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            animation: borderBeamRotate 4s linear infinite;
+            pointer-events: none;
+        }
+        .bg-white.rounded-2xl:hover::after,
+        .white-card:hover::after {
+            opacity: 1;
+        }
         .bg-white.rounded-2xl:hover,
         .bg-white.rounded-3xl:hover,
         .white-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 32px -6px rgba(15, 23, 42, 0.10), 0 4px 12px -2px rgba(79, 70, 229, 0.08);
-            border-color: rgba(79, 70, 229, 0.35);
+            transform: translateY(-4px);
+            box-shadow: 0 18px 36px -8px rgba(15, 23, 42, 0.12), 0 6px 16px -3px rgba(79, 70, 229, 0.12);
+            border-color: rgba(79, 70, 229, 0.42);
         }
 
-        /* 5. Button Shine Sweep & Active Press Physics */
+        /* 5. Button Shine Sweep, Ripple & Active Press Physics */
         .btn-scarlet,
         .btn-amber {
             position: relative;
@@ -306,7 +389,7 @@
             left: -120%;
             width: 60%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.30), transparent);
             transform: skewX(-20deg);
             transition: left 0.55s var(--ease-spring);
             pointer-events: none;
@@ -316,42 +399,54 @@
         }
         .btn-scarlet:active,
         .btn-amber:active {
-            transform: translateY(0) scale(0.97) !important;
+            transform: translateY(0) scale(0.96) !important;
         }
 
-        /* 6. Table Row Micro-Slide & Left Accent Highlight */
+        /* 6. Table Row Micro-Slide & Left Electric Indigo Bar */
         tbody tr {
-            transition: background-color 0.18s ease, transform 0.2s var(--ease-spring);
+            position: relative;
+            transition: background-color 0.18s ease, transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
         }
         tbody tr:hover {
-            background-color: rgba(79, 70, 229, 0.035) !important;
+            background-color: rgba(79, 70, 229, 0.045) !important;
+            box-shadow: inset 3px 0 0 #4F46E5;
         }
 
-        /* 7. Animated Mini-Charts & Sparkline Bars in Panels */
+        /* 7. Live Equalizer Sparkline Bars & Floating Tooltip */
         .sparkline-bar {
+            position: relative;
             transform-origin: bottom;
-            animation: barGrowUp 0.75s var(--ease-spring) both;
+            animation: barGrowUp 0.75s var(--ease-spring) both, barEqualizer 3.2s ease-in-out infinite;
             transition: transform 0.2s var(--ease-spring), background-color 0.2s ease, filter 0.2s ease;
         }
-        .sparkline-bar:nth-child(1) { animation-delay: 0.10s; }
-        .sparkline-bar:nth-child(2) { animation-delay: 0.16s; }
-        .sparkline-bar:nth-child(3) { animation-delay: 0.22s; }
-        .sparkline-bar:nth-child(4) { animation-delay: 0.28s; }
-        .sparkline-bar:nth-child(5) { animation-delay: 0.34s; }
-        .sparkline-bar:nth-child(6) { animation-delay: 0.40s; }
+        .sparkline-bar:nth-child(1) { animation-delay: 0.10s, 0.8s; }
+        .sparkline-bar:nth-child(2) { animation-delay: 0.16s, 1.2s; }
+        .sparkline-bar:nth-child(3) { animation-delay: 0.22s, 1.6s; }
+        .sparkline-bar:nth-child(4) { animation-delay: 0.28s, 2.0s; }
+        .sparkline-bar:nth-child(5) { animation-delay: 0.34s, 2.4s; }
+        .sparkline-bar:nth-child(6) { animation-delay: 0.40s, 2.8s; }
         .sparkline-bar:hover {
-            transform: scaleY(1.12);
+            animation-play-state: paused;
+            transform: scaleY(1.16) !important;
             background-color: #38BDF8 !important;
-            filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75));
         }
 
         .progress-ring-animated {
-            animation: ringSweep 0.9s var(--ease-spring) both;
+            animation: ringSweep 1.1s var(--ease-spring) both;
             animation-delay: 0.25s;
         }
 
         .badge-pulse-glow {
             animation: pulseGlow 2.4s infinite;
+        }
+
+        /* Live Telemetry Ticker Pill */
+        .telemetry-pill {
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(56, 189, 248, 0.30);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
         }
 
         /* 8. Accessibility: Respect Vestibular Motion Preferences (WCAG 2.1 AA) */
@@ -779,6 +874,112 @@
 
         </div>
     </div>
+
+    <!-- ===================================================================== -->
+    <!-- GLOBAL INTERACTIVE CHOREOGRAPHY ENGINE (Cursor Spotlight, 3D Tilt,     -->
+    <!-- Animated Number Counters & Hero Parallax)                             -->
+    <!-- ===================================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            // 1. Cursor-Following Spotlight & 3D Tilt on Cards
+            const interactiveCards = document.querySelectorAll('.bg-white.rounded-2xl, .bg-white.rounded-3xl, .white-card, .kpi-card');
+            interactiveCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+
+                    if (card.classList.contains('interactive-card') || card.classList.contains('kpi-card')) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -2.2;
+                        const rotateY = ((x - centerX) / centerX) * 2.2;
+                        card.style.transform = `perspective(900px) translateY(-4px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    if (card.classList.contains('interactive-card') || card.classList.contains('kpi-card')) {
+                        card.style.transform = '';
+                    }
+                });
+            });
+
+            // 2. Hero Interactive Cursor Light Follower
+            const heroes = document.querySelectorAll('.page-header-sb');
+            heroes.forEach(hero => {
+                hero.addEventListener('mousemove', (e) => {
+                    const rect = hero.getBoundingClientRect();
+                    const xPct = (((e.clientX - rect.left) / rect.width) * 100).toFixed(1);
+                    const yPct = (((e.clientY - rect.top) / rect.height) * 100).toFixed(1);
+                    hero.style.setProperty('--hero-x', `${xPct}%`);
+                    hero.style.setProperty('--hero-y', `${yPct}%`);
+                });
+            });
+
+            // 3. Smooth Spring Count-Up Animation for KPI Numbers
+            const countTargets = document.querySelectorAll('[data-countup], .kpi-value');
+            const animateCounter = (el) => {
+                if (el.dataset.counted === 'true') return;
+                el.dataset.counted = 'true';
+                const rawText = (el.dataset.targetText || el.textContent).trim();
+                el.dataset.targetText = rawText;
+
+                // Match prefix (e.g. "Bs ", "+Bs "), numeric body, and suffix (e.g. "%", " uds")
+                const match = rawText.match(/^([^\d-]*)(-?[\d,]+(?:\.\d+)?)(.*)$/);
+                if (!match) return;
+
+                const prefix = match[1];
+                const numStr = match[2].replace(/,/g, '');
+                const suffix = match[3];
+                const targetVal = parseFloat(numStr);
+                if (isNaN(targetVal) || targetVal === 0) return;
+
+                const decimals = (numStr.split('.')[1] || '').length;
+                const hasCommas = match[2].includes(',');
+                const duration = 1050;
+                const startTime = performance.now();
+
+                const formatNum = (val) => {
+                    const fixed = val.toFixed(decimals);
+                    if (!hasCommas) return fixed;
+                    const parts = fixed.split('.');
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    return parts.join('.');
+                };
+
+                const step = (now) => {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    // Spring easeOutExpo curve
+                    const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    const current = targetVal * eased;
+                    el.textContent = `${prefix}${formatNum(current)}${suffix}`;
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        el.textContent = rawText;
+                    }
+                };
+                requestAnimationFrame(step);
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            countTargets.forEach(el => observer.observe(el));
+        });
+    </script>
 
     @stack('scripts')
 </body>

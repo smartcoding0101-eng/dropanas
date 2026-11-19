@@ -40,11 +40,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         
         <!-- Ingresos por liquidaciones (#4F46E5 Electric Indigo) -->
-        <div class="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#4F46E5] rounded-2xl p-5 text-white shadow-sm space-y-2 border border-indigo-400/20">
+        <div class="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#4F46E5] rounded-2xl p-5 text-white shadow-sm space-y-2 border border-indigo-400/20 interactive-card">
             <div class="flex items-center gap-2 text-indigo-200 text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-sack-dollar text-[#38BDF8]"></i> Ingresos Liquidados
             </div>
-            <div class="text-3xl font-extrabold font-mono">
+            <div class="text-3xl font-extrabold font-mono" data-countup>
                 Bs {{ number_format($stats['total_revenue'], 2) }}
             </div>
             <div class="text-indigo-200/90 text-[11px] font-medium">Costos cobrados por ventas COD</div>
@@ -55,7 +55,7 @@
             <div class="flex items-center gap-2 text-[#4F46E5] text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-wallet text-[#4F46E5]"></i> Saldo Billetera
             </div>
-            <div class="text-2xl font-extrabold font-mono text-[#10B981]">
+            <div class="text-2xl font-extrabold font-mono text-[#10B981]" data-countup>
                 Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}
             </div>
             <div class="text-slate-500 text-[11px]">Disponible para retiro inmediato</div>
@@ -66,7 +66,7 @@
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-cubes-stacked text-[#4F46E5]"></i> Stock Físico Disponible
             </div>
-            <div class="text-2xl font-extrabold font-mono text-[#0F172A]">{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
+            <div class="text-2xl font-extrabold font-mono text-[#0F172A]" data-countup>{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['active_products'] }} productos activos en catálogo</div>
         </div>
 
@@ -75,7 +75,7 @@
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-cart-flatbed text-[#4F46E5]"></i> Pedidos & Despachos
             </div>
-            <div class="text-2xl font-extrabold text-[#0F172A] font-heading">{{ $stats['total_sales'] ?? 0 }} pedidos</div>
+            <div class="text-2xl font-extrabold text-[#0F172A] font-heading" data-countup>{{ $stats['total_sales'] ?? 0 }} pedidos</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['pending_orders'] ?? 0 }} en proceso / {{ $stats['delivered_orders'] ?? 0 }} entregados</div>
         </div>
     </div>
