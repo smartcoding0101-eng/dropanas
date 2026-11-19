@@ -462,7 +462,7 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]" x-data="{ sidenavOpen: true, mobileMenuOpen: false }">
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]" x-data="{ sidenavOpen: true, mobileMenuOpen: false, logoutModalOpen: false }" @keydown.escape.window="logoutModalOpen = false">
 
     <!-- ===================================================================== -->
     <!-- STRIPE & LINEAR EXECUTIVE TOPNAV (Fixed Full-Width Frosted Navbar)    -->
@@ -605,14 +605,32 @@
                 </div>
             </div>
 
-            @if(Auth::check() && !request()->is('/'))
+            @if(Auth::check())
+                @if(!request()->is('/'))
                 <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#10B981] border border-emerald-200/70 text-xs font-bold">
                     <i class="fa-solid fa-truck-fast"></i>
                     <span>DEX 9/9</span>
                 </div>
+                @endif
 
                 <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <div class="flex items-center gap-2.5">
+                    @php
+                        $dashboardUrl = match(Auth::user()->role) {
+                            'tenant_admin' => url('/panel/admin'),
+                            'dropshipper' => url('/panel/dropshipper'),
+                            'provider' => url('/panel/proveedor'),
+                            'carrier', 'carrier_agent' => url('/panel/carrier'),
+                            'fulfillment_client' => url('/panel/fulfillment'),
+                            default => url('/panel/admin'),
+                        };
+                    @endphp
+                    @if(request()->is('/'))
+                        <a href="{{ $dashboardUrl }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-[#4F46E5] hover:bg-indigo-100 border border-indigo-200/80 text-xs font-bold transition">
+                            <i class="fa-solid fa-gauge-high text-[11px]"></i>
+                            <span>Mi Panel</span>
+                        </a>
+                    @endif
                     <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0F172A] via-[#312E81] to-[#4F46E5] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
@@ -620,12 +638,12 @@
                         <div class="text-xs font-bold text-[#0F172A] leading-tight">{{ Auth::user()->name }}</div>
                         <div class="text-[10px] text-[#4F46E5] font-bold uppercase tracking-wider">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" class="inline ml-1">
-                        @csrf
-                        <button type="submit" title="Cerrar Sesión" class="w-8 h-8 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition">
-                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
-                        </button>
-                    </form>
+                    <!-- Botón Salida que activa la Tarjeta Tailwind de Advertencia antes de salir -->
+                    <button type="button" @click="logoutModalOpen = true" title="Salir del Sistema"
+                        class="ml-1 px-2.5 py-1.5 rounded-lg bg-rose-50/80 hover:bg-rose-100 text-rose-600 border border-rose-200/80 flex items-center gap-1.5 text-xs font-bold transition cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        <span class="hidden md:inline">Salir</span>
+                    </button>
                 </div>
             @else
                 <div class="flex items-center gap-2 text-xs">
@@ -832,9 +850,16 @@
 
             <!-- Stripe & Linear Executive Sidenav Footer (#0F172A Midnight Slate Glass) -->
             <div class="bg-[#090D16]/75 border-t border-white/10 px-6 py-4 backdrop-blur-sm">
-                <div class="flex items-center gap-2 mb-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
-                    <span class="text-[10px] font-extrabold text-[#38BDF8] uppercase tracking-wider">Nano Banana Sync</span>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
+                        <span class="text-[10px] font-extrabold text-[#38BDF8] uppercase tracking-wider">Nano Banana Sync</span>
+                    </div>
+                    <button type="button" @click="logoutModalOpen = true" title="Salir del Sistema"
+                        class="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 transition cursor-pointer">
+                        <i class="fa-solid fa-power-off text-[10px]"></i>
+                        <span>Salir</span>
+                    </button>
                 </div>
                 <div class="text-[11px] text-slate-400 font-medium">Conectado como:</div>
                 <div class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
@@ -874,6 +899,87 @@
 
         </div>
     </div>
+
+    @if(Auth::check())
+    <!-- ===================================================================== -->
+    <!-- TARJETA TAILWIND DE ADVERTENCIA ANTES DE SALIR DEL SISTEMA            -->
+    <!-- ===================================================================== -->
+    <div x-show="logoutModalOpen" x-cloak
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0F172A]/65 backdrop-blur-sm"
+         role="dialog" aria-modal="true" aria-labelledby="logout-modal-title"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        <div @click.away="logoutModalOpen = false"
+             x-show="logoutModalOpen"
+             x-transition:enter="transition ease-out duration-250"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+             class="relative w-full max-w-md bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden">
+
+            <!-- Franja Superior de Advertencia (Amber / Rose Gradient) -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-amber-500 via-rose-500 to-[#4F46E5]"></div>
+
+            <div class="p-6 sm:p-7 space-y-5">
+                <!-- Encabezado con Icono de Advertencia -->
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-600 flex items-center justify-center text-xl shadow-xs shrink-0">
+                            <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+                        </div>
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                                Advertencia de Seguridad
+                            </span>
+                            <h3 id="logout-modal-title" class="text-lg font-extrabold text-[#0F172A] font-heading mt-1">
+                                ¿Deseas salir del sistema?
+                            </h3>
+                        </div>
+                    </div>
+                    <button type="button" @click="logoutModalOpen = false"
+                            class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Cuerpo de la Tarjeta de Advertencia -->
+                <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/70 space-y-2 text-xs">
+                    <div class="font-bold text-amber-950 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-600"></i>
+                        <span>Sesión activa: {{ Auth::user()->name }}</span>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">
+                        Estás a punto de cerrar tu sesión en <strong class="text-[#0F172A]">Bolidrop Bolivia</strong>. Si tienes manifiestos DEX, pedidos COD o transferencias de Kardex sin guardar, asegúrate de haberlos confirmado antes de salir.
+                    </p>
+                </div>
+
+                <!-- Botones de Acción (Cancelar / Confirmar Salida) -->
+                <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                    <button type="button" @click="logoutModalOpen = false"
+                            class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[#0F172A] font-bold text-xs transition cursor-pointer">
+                        Permanecer en el Sistema
+                    </button>
+
+                    <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto">
+                        @csrf
+                        <button type="submit"
+                                class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-bold text-xs shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition cursor-pointer">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            <span>Sí, Cerrar Sesión</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- ===================================================================== -->
     <!-- GLOBAL INTERACTIVE CHOREOGRAPHY ENGINE (Cursor Spotlight, 3D Tilt,     -->
