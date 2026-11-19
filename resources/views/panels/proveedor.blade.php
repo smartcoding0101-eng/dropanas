@@ -36,46 +36,46 @@
         </button>
     </div>
 
-    <!-- Tarjetas de estadísticas (SB Admin Pro Overlap) -->
+    <!-- Tarjetas de estadísticas (Stripe & Linear Executive Overlap) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
         
-        <!-- Ingresos por liquidaciones (#10B981 Naranja Fuego) -->
-        <div class="bg-gradient-to-br from-[#0061f2] to-[#6900c7] rounded-2xl p-5 text-white shadow-sm space-y-2">
-            <div class="flex items-center gap-2 text-amber-100 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-sack-dollar text-white"></i> Ingresos Liquidados
+        <!-- Ingresos por liquidaciones (#4F46E5 Electric Indigo) -->
+        <div class="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#4F46E5] rounded-2xl p-5 text-white shadow-sm space-y-2 border border-indigo-400/20">
+            <div class="flex items-center gap-2 text-indigo-200 text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-sack-dollar text-[#38BDF8]"></i> Ingresos Liquidados
             </div>
             <div class="text-3xl font-extrabold font-mono">
                 Bs {{ number_format($stats['total_revenue'], 2) }}
             </div>
-            <div class="text-amber-100/95 text-[11px] font-medium">Costos cobrados por ventas COD</div>
+            <div class="text-indigo-200/90 text-[11px] font-medium">Costos cobrados por ventas COD</div>
         </div>
 
         <!-- Saldo billetera (#FFFFFF) -->
-        <div class=" rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
-            <div class="flex items-center gap-2 text-[#0061f2] text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-wallet text-[#0061f2]"></i> Saldo Billetera
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card">
+            <div class="flex items-center gap-2 text-[#4F46E5] text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-wallet text-[#4F46E5]"></i> Saldo Billetera
             </div>
-            <div class="text-2xl font-extrabold font-mono text-emerald-600">
+            <div class="text-2xl font-extrabold font-mono text-[#10B981]">
                 Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}
             </div>
             <div class="text-slate-500 text-[11px]">Disponible para retiro inmediato</div>
         </div>
 
         <!-- Stock Total Físico (#FFFFFF) -->
-        <div class=" rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card">
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-cubes-stacked text-[#0061f2]"></i> Stock Físico Disponible
+                <i class="fa-solid fa-cubes-stacked text-[#4F46E5]"></i> Stock Físico Disponible
             </div>
-            <div class="text-2xl font-extrabold font-mono text-slate-900">{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
+            <div class="text-2xl font-extrabold font-mono text-[#0F172A]">{{ number_format($stats['total_stock'] ?? 0) }} uds</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['active_products'] }} productos activos en catálogo</div>
         </div>
 
         <!-- Ventas y Pedidos (#FFFFFF) -->
-        <div class=" rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card">
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-cart-flatbed text-[#0061f2]"></i> Pedidos & Despachos
+                <i class="fa-solid fa-cart-flatbed text-[#4F46E5]"></i> Pedidos & Despachos
             </div>
-            <div class="text-2xl font-extrabold text-slate-900 font-heading">{{ $stats['total_sales'] ?? 0 }} pedidos</div>
+            <div class="text-2xl font-extrabold text-[#0F172A] font-heading">{{ $stats['total_sales'] ?? 0 }} pedidos</div>
             <div class="text-slate-500 text-[11px]">{{ $stats['pending_orders'] ?? 0 }} en proceso / {{ $stats['delivered_orders'] ?? 0 }} entregados</div>
         </div>
     </div>
@@ -83,7 +83,7 @@
     <!-- Bodegas con Inventario (#FFFFFF) con ancla #inventario -->
     <div id="inventario" class="space-y-6">
         @if($warehouses->isNotEmpty())
-        <div class=" rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-solid fa-warehouse text-[#0061f2]"></i>
@@ -149,7 +149,7 @@
         @endif
 
         <!-- Sección de Alertas y Reabastecimiento de Inventario (#alertas) -->
-        <div id="alertas" class=" rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div id="alertas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-[#0061f2] flex items-center justify-center font-bold text-base">
@@ -231,7 +231,7 @@
         </div>
 
         <!-- Historial y Trazabilidad Kardex de Movimientos de Inventario del Proveedor -->
-        <div class=" rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-solid fa-clipboard-list text-[#0061f2]"></i>
@@ -316,7 +316,7 @@
         </div>
 
         <!-- Ventas y Pedidos Relacionados con el Proveedor -->
-        <div class=" rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-solid fa-cart-shopping text-[#0061f2]"></i>
@@ -381,15 +381,23 @@
                                         <i class="fa-solid fa-circle-check"></i> Liquidado
                                     </span>
                                 @elseif($order->status === 'delivered')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
                                         <i class="fa-solid fa-box-open"></i> Entregado
                                     </span>
                                 @elseif(in_array($order->status, ['in_transit', 'dispatched']))
                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                        <i class="fa-solid fa-truck-fast"></i> En Ruta
+                                        <i class="fa-solid fa-truck-fast"></i> En Ruta DEX
+                                    </span>
+                                @elseif($order->status === 'confirmed')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                        <i class="fa-solid fa-check"></i> Confirmado
+                                    </span>
+                                @elseif($order->status === 'pending_confirmation')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                        <i class="fa-solid fa-clock"></i> Pendiente Confirmación
                                     </span>
                                 @elseif($order->status === 'cancelled')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
                                         <i class="fa-solid fa-xmark"></i> Cancelado
                                     </span>
                                 @else
@@ -413,7 +421,7 @@
     </div>
 
     <!-- Productos del Proveedor (#FFFFFF) -->
-    <div class=" rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-boxes-stacked text-[#0061f2]"></i>

@@ -5,17 +5,17 @@
 @section('content')
 <div class="max-w-2xl mx-auto my-6">
     <div class="text-center mb-6">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 mb-2">
-            <span class="w-2 h-2 rounded-full bg-[#0061f2]"></span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-[#4F46E5] border border-indigo-200 mb-2">
+            <span class="w-2 h-2 rounded-full bg-[#4F46E5]"></span>
             Únete al Ecosistema E-commerce COD N°1 de Bolivia
         </span>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#212832]">Crear Nueva Cuenta</h1>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">Crear Nueva Cuenta</h1>
         <p class="text-slate-500 text-sm mt-1">Vende sin inventario propio o distribuye tus productos en toda Bolivia.</p>
     </div>
 
     <div class="white-card rounded-2xl p-6 sm:p-8 shadow-lg border border-slate-200">
         @if ($errors->any())
-            <div class="mb-5 bg-red-50 border border-red-200 rounded-xl p-3.5 text-xs text-red-700 space-y-1">
+            <div class="mb-5 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-rose-700 space-y-1">
                 @foreach ($errors->all() as $error)
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-circle-exclamation"></i>
@@ -30,13 +30,13 @@
 
             <!-- Selector de Perfil -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label class="block text-xs font-bold text-[#0F172A] uppercase tracking-wider mb-2">
                     Tipo de Cuenta / Rol en la Plataforma
                 </label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <label class="p-3.5 rounded-xl border-2 cursor-pointer transition flex items-start gap-3"
-                        :class="role === 'dropshipper' ? 'border-slate-800 bg-red-50/40 text-[#212832]' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'">
-                        <input type="radio" name="role" value="dropshipper" x-model="role" class="mt-1 text-[#212832] focus:ring-[#0061f2]">
+                        :class="role === 'dropshipper' ? 'border-[#4F46E5] bg-indigo-50/40 text-[#0F172A]' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'">
+                        <input type="radio" name="role" value="dropshipper" x-model="role" class="mt-1 text-[#4F46E5] focus:ring-[#4F46E5]">
                         <div>
                             <div class="font-bold text-sm">Dropshipper / Tienda</div>
                             <div class="text-[11px] text-slate-500 mt-0.5">Vendo productos de la megabodega y cobro ganancias contra entrega.</div>
@@ -44,8 +44,8 @@
                     </label>
 
                     <label class="p-3.5 rounded-xl border-2 cursor-pointer transition flex items-start gap-3"
-                        :class="role === 'provider' ? 'border-slate-800 bg-red-50/40 text-[#212832]' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'">
-                        <input type="radio" name="role" value="provider" x-model="role" class="mt-1 text-[#212832] focus:ring-[#0061f2]">
+                        :class="role === 'provider' ? 'border-[#4F46E5] bg-indigo-50/40 text-[#0F172A]' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'">
+                        <input type="radio" name="role" value="provider" x-model="role" class="mt-1 text-[#4F46E5] focus:ring-[#4F46E5]">
                         <div>
                             <div class="font-bold text-sm">Proveedor Mayorista</div>
                             <div class="text-[11px] text-slate-500 mt-0.5">Tengo stock físico en Bolivia y quiero distribuirlo a cientos de vendedores.</div>

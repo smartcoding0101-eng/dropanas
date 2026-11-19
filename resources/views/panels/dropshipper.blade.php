@@ -213,20 +213,32 @@
                                         <i class="fa-solid fa-check-double mr-1.5"></i> Liquidado
                                     </span>
                                 @elseif($order->status === 'delivered')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 border border-blue-200 text-blue-700">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 border border-sky-200 text-sky-700">
                                         <i class="fa-solid fa-box mr-1.5"></i> Entregado
                                     </span>
-                                @elseif($order->status === 'dispatched')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 border border-emerald-200 text-amber-800">
-                                        <i class="fa-solid fa-truck-fast mr-1.5 text-[#0061f2]"></i> Despachado
+                                @elseif(in_array($order->status, ['dispatched', 'in_transit']))
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-800">
+                                        <i class="fa-solid fa-truck-fast mr-1.5 text-amber-600"></i> En Tránsito DEX
                                     </span>
                                 @elseif($order->status === 'confirmed')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 border border-red-200 text-slate-900">
-                                        <i class="fa-solid fa-check mr-1.5 text-[#0061f2]"></i> Confirmado
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 border border-indigo-200 text-indigo-800">
+                                        <i class="fa-solid fa-check mr-1.5 text-[#4F46E5]"></i> Confirmado
+                                    </span>
+                                @elseif($order->status === 'pending_confirmation')
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-800">
+                                        <i class="fa-solid fa-clock mr-1.5 text-amber-600"></i> Pendiente Confirmación
+                                    </span>
+                                @elseif($order->status === 'failed_delivery')
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-800">
+                                        <i class="fa-solid fa-triangle-exclamation mr-1.5 text-rose-600"></i> Entrega Fallida
+                                    </span>
+                                @elseif($order->status === 'cancelled')
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 border border-slate-200 text-slate-600">
+                                        <i class="fa-solid fa-ban mr-1.5"></i> Cancelado
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
-                                        {{ $order->status }}
+                                        {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                                     </span>
                                 @endif
                             </td>

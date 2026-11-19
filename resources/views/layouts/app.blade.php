@@ -19,21 +19,21 @@
                 extend: {
                     colors: {
                         sb: {
-                            primary: '#0061f2',
-                            primaryHover: '#0052cc',
-                            secondary: '#6900c7',
-                            teal: '#00ac69',
-                            cyan: '#00cfd5',
-                            amber: '#f4a100',
-                            danger: '#e81500',
-                            canvas: '#f2f6fc',
-                            dark: '#212832',
-                            muted: '#69707a',
+                            primary: '#4F46E5',
+                            primaryHover: '#4338CA',
+                            secondary: '#312E81',
+                            teal: '#10B981',
+                            cyan: '#38BDF8',
+                            amber: '#F59E0B',
+                            danger: '#F43F5E',
+                            canvas: '#F8FAFC',
+                            dark: '#0F172A',
+                            muted: '#64748B',
                         },
                         fireworks: {
-                            scarlet: '#0061f2',
-                            amber: '#00ac69',
-                            carmine: '#212832',
+                            scarlet: '#4F46E5',
+                            amber: '#10B981',
+                            carmine: '#0F172A',
                         }
                     },
                     fontFamily: {
@@ -54,19 +54,19 @@
 
     <style>
         :root {
-            --sb-primary: #0061f2;
-            --sb-secondary: #6900c7;
-            --sb-teal: #00ac69;
-            --sb-canvas: #f2f6fc;
-            --sb-dark: #212832;
-            --sb-card-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.12);
+            --sb-primary: #4F46E5;
+            --sb-secondary: #312E81;
+            --sb-teal: #10B981;
+            --sb-canvas: #F8FAFC;
+            --sb-dark: #0F172A;
+            --sb-card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
             --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            background-color: #f2f6fc;
-            color: #212832;
+            background-color: #F8FAFC;
+            color: #0F172A;
             overflow-x: hidden;
         }
 
@@ -79,28 +79,47 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* SB Admin Pro Signature Gradient Header */
+        /* Stripe & Linear Executive Signature Gradient Header (#1E1B4B -> #312E81 -> #4F46E5) */
         .page-header-sb {
-            background-color: #0061f2;
-            background-image: linear-gradient(135deg, #0061f2 0%, rgba(105, 0, 199, 0.85) 100%);
+            background-color: #1E1B4B;
+            background-image: radial-gradient(circle at 85% 15%, rgba(56, 189, 248, 0.22) 0%, transparent 45%),
+                              linear-gradient(135deg, #0F172A 0%, #1E1B4B 38%, #312E81 74%, #4F46E5 100%);
         }
 
-        /* Sidebar Principal #3435DD con Textos Blancos y Efectos Interactivos */
+        /* Diseño 1: Sidebar Midnight Slate (#0F172A -> #1E293B) & Electric Indigo (#4F46E5) */
         .sidenav-light {
-            background-color: #3435DD;
-            background-image: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.14) 0%, transparent 45%),
-                              linear-gradient(180deg, #3435DD 0%, #2829B8 100%);
-            color: #ffffff;
-            box-shadow: 4px 0 24px rgba(52, 53, 221, 0.25);
-            border-right: 1px solid rgba(255, 255, 255, 0.14);
+            background-color: #0F172A;
+            background-image: radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.24) 0%, transparent 50%),
+                              linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+            color: #FFFFFF;
+            box-shadow: 4px 0 24px rgba(15, 23, 42, 0.35);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
         }
+        /* Scrollbar Ultraligero Integrado (Sin franja gris/blanca nativa) */
+        .sidenav-light::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidenav-light::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidenav-light::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.25);
+            border-radius: 9999px;
+        }
+        .sidenav-light:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.45);
+        }
+
         .sidenav-light .text-\[\#a7aeb8\] {
-            color: rgba(255, 255, 255, 0.65) !important;
+            color: #94A3B8 !important;
+            letter-spacing: 0.08em;
         }
         .sidenav-light a {
             position: relative;
-            color: rgba(255, 255, 255, 0.88) !important;
-            margin: 2px 10px;
+            color: #CBD5E1 !important;
+            margin: 3px 12px;
             border-radius: 10px;
             overflow: hidden;
             transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
@@ -109,40 +128,40 @@
                         color 0.18s ease !important;
         }
         .sidenav-light a i {
-            color: rgba(255, 255, 255, 0.85) !important;
+            color: #94A3B8 !important;
             transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
         }
-        /* Efecto Hover en Ítems del Menú */
+        /* Efecto Hover en Ítems del Menú (Midnight Slate Glass) */
         .sidenav-light a:hover:not(.bg-blue-50\/70) {
-            background: rgba(255, 255, 255, 0.15) !important;
-            color: #ffffff !important;
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #FFFFFF !important;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.10);
         }
         .sidenav-light a:hover i {
-            color: #38bdf8 !important;
-            transform: scale(1.18) rotate(-4deg);
+            color: #38BDF8 !important;
+            transform: scale(1.16) rotate(-4deg);
         }
-        /* Efecto Ítem Activo en el Menú */
+        /* Efecto Ítem Activo en el Menú (Cápsula Electric Indigo #4F46E5 + Cian #38BDF8) */
         .sidenav-light a.bg-blue-50\/70 {
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
-            color: #ffffff !important;
-            border-right: 4px solid #00e5a3 !important;
-            box-shadow: 0 6px 16px rgba(15, 16, 86, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+            background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%) !important;
+            color: #FFFFFF !important;
+            border-right: 3px solid #38BDF8 !important;
+            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.28);
         }
         .sidenav-light a.bg-blue-50\/70 i {
-            color: #00e5a3 !important;
+            color: #38BDF8 !important;
             transform: scale(1.12);
         }
 
-        /* SB Admin Pro Card Shadow Elevation */
+        /* Stripe & Linear Executive Card Shadow Elevation */
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
         .bg-white.rounded-xl,
         .white-card,
         .sb-card {
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.10);
-            border-color: rgba(33, 40, 50, 0.08);
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
+            border-color: #E2E8F0;
         }
 
         .interactive-card {
@@ -152,33 +171,33 @@
         }
         .interactive-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0.5rem 2rem 0 rgba(33, 40, 50, 0.16);
-            border-color: rgba(0, 97, 242, 0.35);
+            box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12);
+            border-color: rgba(79, 70, 229, 0.40);
         }
 
-        /* SB Admin Pro Primary Button (#0061f2) */
+        /* Stripe & Linear Primary Button (#4F46E5 Electric Indigo) */
         .btn-scarlet {
-            background-color: #0061f2;
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
             color: #FFFFFF;
             transition: transform 0.18s var(--ease-spring),
                         background-color 0.15s ease,
                         box-shadow 0.18s ease;
         }
         .btn-scarlet:hover {
-            background-color: #0052cc;
+            background: linear-gradient(135deg, #4338CA 0%, #3730A3 100%);
             transform: translateY(-1px);
-            box-shadow: 0 0.35rem 1rem rgba(0, 97, 242, 0.30);
+            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.45);
         }
 
-        /* SB Admin Pro Teal/Success Button (#00ac69) */
+        /* Emerald Success Button (#10B981) */
         .btn-amber {
-            background-color: #00ac69;
+            background-color: #10B981;
             color: #FFFFFF;
             transition: transform 0.18s var(--ease-spring),
                         background-color 0.15s ease;
         }
         .btn-amber:hover {
-            background-color: #008f57;
+            background-color: #059669;
             transform: translateY(-1px);
         }
 
@@ -189,18 +208,18 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-[#0061f2] selection:text-white bg-[#f2f6fc]" x-data="{ sidenavOpen: true, mobileMenuOpen: false }">
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]" x-data="{ sidenavOpen: true, mobileMenuOpen: false }">
 
     <!-- ===================================================================== -->
-    <!-- SB ADMIN PRO TOPNAV (Fixed Full-Width White Navbar at Top)            -->
+    <!-- STRIPE & LINEAR EXECUTIVE TOPNAV (Fixed Full-Width Frosted Navbar)    -->
     <!-- ===================================================================== -->
-    <nav class="sticky top-0 z-50 h-16 bg-white border-b border-[#e0e5ec] px-4 sm:px-6 flex items-center justify-between gap-4 shadow-[0_0.15rem_1.75rem_0_rgba(33,40,50,0.08)]">
+    <nav class="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between gap-4 shadow-[0_2px_15px_-3px_rgba(15,23,42,0.06)]">
         
         <!-- Left: Sidenav Toggle + Brand + Search -->
         <div class="flex items-center gap-3 sm:gap-5">
             @if(Auth::check() && !request()->is('/'))
             <button @click="sidenavOpen = !sidenavOpen; mobileMenuOpen = !mobileMenuOpen"
-                class="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500 hover:text-[#212832] flex items-center justify-center transition focus:outline-none"
+                class="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500 hover:text-[#0F172A] flex items-center justify-center transition focus:outline-none"
                 title="Alternar Menú Lateral">
                 <i class="fa-solid fa-bars text-sm"></i>
             </button>
@@ -208,22 +227,22 @@
 
             <!-- Brand Logo with Nano Banana -->
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
-                <div class="relative w-9 h-9 rounded-lg bg-blue-50 p-0.5 flex items-center justify-center border border-blue-200">
+                <div class="relative w-9 h-9 rounded-lg bg-indigo-50 p-0.5 flex items-center justify-center border border-indigo-200/80 shadow-xs">
                     <img src="{{ asset('images/nano_banana.jpg') }}" alt="Nano Banana" class="w-full h-full object-cover rounded-md">
-                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#00ac69] rounded-full border-2 border-white"></span>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#10B981] rounded-full border-2 border-white"></span>
                 </div>
                 <div class="leading-none">
-                    <span class="text-base font-extrabold tracking-tight text-[#212832] group-hover:text-[#0061f2] transition">Bolidrop</span>
-                    <span class="text-[9px] font-bold text-[#0061f2] uppercase tracking-widest block">Bolivia PRO</span>
+                    <span class="text-base font-extrabold tracking-tight text-[#0F172A] group-hover:text-[#4F46E5] transition">Bolidrop</span>
+                    <span class="text-[9px] font-bold text-[#4F46E5] uppercase tracking-widest block">Bolivia PRO</span>
                 </div>
             </a>
 
             @if(Auth::check() && !request()->is('/'))
-            <!-- SB Admin Pro Global Search Input (Solo en Paneles Internos) -->
+            <!-- Global Search Input (Solo en Paneles Internos) -->
             <form action="{{ url('/tracking') }}" method="GET" class="hidden md:flex items-center relative ml-2">
                 <input type="text" name="guide" placeholder="Buscar guía, pedido o SKU..."
-                    class="bg-[#eef2f8] border border-transparent text-[#212832] placeholder-[#69707a] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#0061f2] focus:ring-2 focus:ring-[#0061f2]/15 transition w-64">
-                <button type="submit" class="absolute right-3 text-[#69707a] hover:text-[#0061f2] transition">
+                    class="bg-[#F1F5F9] border border-slate-200/70 text-[#0F172A] placeholder-[#64748B] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition w-64">
+                <button type="submit" class="absolute right-3 text-[#64748B] hover:text-[#4F46E5] transition">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </button>
             </form>
@@ -244,25 +263,25 @@
             <!-- Ticker de Tipo de Cambio en el Navbar con Desplegable de Monedas -->
             <div class="relative">
                 <button @click="ratesOpen = !ratesOpen" @click.away="ratesOpen = false"
-                    class="flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-lg bg-[#eef2f8] hover:bg-blue-50/80 border border-slate-200/80 text-[#212832] text-xs transition cursor-pointer"
+                    class="flex items-center gap-2 sm:gap-3 px-3 py-1.5 rounded-lg bg-[#F1F5F9] hover:bg-indigo-50/70 border border-slate-200/80 text-[#0F172A] text-xs transition cursor-pointer"
                     title="Ver todas las cotizaciones del Boliviano (BOB)">
-                    <span class="w-2 h-2 rounded-full bg-[#00ac69] animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
                     <div class="flex items-center gap-1.5">
-                        <span class="text-[#69707a] font-semibold">USD/BOB:</span>
-                        <span class="hidden md:inline text-[11px] text-[#69707a]">C: <strong class="font-mono text-[#212832]">{{ number_format($buyRate, 2) }}</strong></span>
-                        <span class="text-[11px] text-[#69707a]">V: <strong class="font-mono text-[#0061f2] font-bold">{{ number_format($sellRate, 2) }} Bs</strong></span>
+                        <span class="text-[#64748B] font-semibold">USD/BOB:</span>
+                        <span class="hidden md:inline text-[11px] text-[#64748B]">C: <strong class="font-mono text-[#0F172A]">{{ number_format($buyRate, 2) }}</strong></span>
+                        <span class="text-[11px] text-[#64748B]">V: <strong class="font-mono text-[#4F46E5] font-bold">{{ number_format($sellRate, 2) }} Bs</strong></span>
                     </div>
                     <span class="hidden lg:inline text-slate-300">|</span>
                     <div class="hidden lg:flex items-center gap-1 text-[11px]">
-                        <span class="text-[#69707a] font-semibold">USDT:</span>
-                        <strong class="font-mono text-[#00ac69] font-bold">{{ number_format($usdtRate, 2) }} Bs</strong>
+                        <span class="text-[#64748B] font-semibold">USDT:</span>
+                        <strong class="font-mono text-[#10B981] font-bold">{{ number_format($usdtRate, 2) }} Bs</strong>
                     </div>
                     <span class="hidden xl:inline text-slate-300">|</span>
                     <div class="hidden xl:flex items-center gap-1 text-[11px]">
-                        <span class="text-[#69707a] font-semibold">EUR:</span>
-                        <strong class="font-mono text-[#6900c7] font-bold">{{ number_format($eurRate, 2) }} Bs</strong>
+                        <span class="text-[#64748B] font-semibold">EUR:</span>
+                        <strong class="font-mono text-[#4F46E5] font-bold">{{ number_format($eurRate, 2) }} Bs</strong>
                     </div>
-                    <i class="fa-solid fa-chevron-down text-[10px] text-[#69707a] ml-0.5"></i>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-[#64748B] ml-0.5"></i>
                 </button>
 
                 <!-- Dropdown Detallado de Monedas frente al Boliviano (BOB) -->
@@ -271,61 +290,61 @@
                     class="absolute right-0 mt-2 w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                         <div>
-                            <div class="font-extrabold text-[#212832] text-xs">Tipo de Cambio — Bolivia (BOB)</div>
-                            <div class="text-[10px] text-[#69707a]">Cotizaciones referenciales e importación</div>
+                            <div class="font-extrabold text-[#0F172A] text-xs">Tipo de Cambio — Bolivia (BOB)</div>
+                            <div class="text-[10px] text-[#64748B]">Cotizaciones referenciales e importación</div>
                         </div>
-                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#00ac69] font-bold text-[10px]">En Vivo</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#10B981] font-bold text-[10px]">En Vivo</span>
                     </div>
 
                     <div class="space-y-2">
-                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#F8FAFC]">
                             <div>
-                                <div class="font-bold text-[#212832]">🇺🇸 Dólar BCB Referencial</div>
-                                <div class="text-[10px] text-[#69707a]">Comercio Exterior / Importación</div>
+                                <div class="font-bold text-[#0F172A]">🇺🇸 Dólar BCB Referencial</div>
+                                <div class="text-[10px] text-[#64748B]">Comercio Exterior / Importación</div>
                             </div>
                             <div class="text-right font-mono">
-                                <div class="text-[10px] text-[#69707a]">Compra: <strong>{{ number_format($buyRate, 2) }} Bs</strong></div>
-                                <div class="text-xs font-bold text-[#0061f2]">Venta: {{ number_format($sellRate, 2) }} Bs</div>
+                                <div class="text-[10px] text-[#64748B]">Compra: <strong>{{ number_format($buyRate, 2) }} Bs</strong></div>
+                                <div class="text-xs font-bold text-[#4F46E5]">Venta: {{ number_format($sellRate, 2) }} Bs</div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#F8FAFC]">
                             <div>
-                                <div class="font-bold text-[#212832]">🇧🇴 Dólar Oficial BCB</div>
-                                <div class="text-[10px] text-[#69707a]">Tasa Fija Bancaria</div>
+                                <div class="font-bold text-[#0F172A]">🇧🇴 Dólar Oficial BCB</div>
+                                <div class="text-[10px] text-[#64748B]">Tasa Fija Bancaria</div>
                             </div>
                             <div class="text-right font-mono">
-                                <div class="text-[10px] text-[#69707a]">Compra: <strong>6.86 Bs</strong></div>
-                                <div class="text-xs font-bold text-[#212832]">Venta: 6.96 Bs</div>
+                                <div class="text-[10px] text-[#64748B]">Compra: <strong>6.86 Bs</strong></div>
+                                <div class="text-xs font-bold text-[#0F172A]">Venta: 6.96 Bs</div>
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#f2f6fc]">
+                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#F8FAFC]">
                             <div>
-                                <div class="font-bold text-[#212832]">₮ USDT (Binance P2P)</div>
-                                <div class="text-[10px] text-[#69707a]">Liquidación Cripto / QR Simple</div>
+                                <div class="font-bold text-[#0F172A]">₮ USDT (Binance P2P)</div>
+                                <div class="text-[10px] text-[#64748B]">Liquidación Cripto / QR Simple</div>
                             </div>
                             <div class="text-right font-mono">
-                                <div class="text-xs font-bold text-[#00ac69]">{{ number_format($usdtRate, 2) }} Bs</div>
+                                <div class="text-xs font-bold text-[#10B981]">{{ number_format($usdtRate, 2) }} Bs</div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 pt-1">
                             <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                <span class="font-semibold text-[#69707a]">🇪🇺 EUR:</span>
-                                <strong class="font-mono text-[#212832]">{{ number_format($eurRate, 2) }} Bs</strong>
+                                <span class="font-semibold text-[#64748B]">🇪🇺 EUR:</span>
+                                <strong class="font-mono text-[#0F172A]">{{ number_format($eurRate, 2) }} Bs</strong>
                             </div>
                             <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                <span class="font-semibold text-[#69707a]">🇨🇳 CNY:</span>
-                                <strong class="font-mono text-[#212832]">{{ number_format($cnyRate, 2) }} Bs</strong>
+                                <span class="font-semibold text-[#64748B]">🇨🇳 CNY:</span>
+                                <strong class="font-mono text-[#0F172A]">{{ number_format($cnyRate, 2) }} Bs</strong>
                             </div>
                             <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                <span class="font-semibold text-[#69707a]">🇧🇷 BRL:</span>
-                                <strong class="font-mono text-[#212832]">{{ number_format($brlRate, 2) }} Bs</strong>
+                                <span class="font-semibold text-[#64748B]">🇧🇷 BRL:</span>
+                                <strong class="font-mono text-[#0F172A]">{{ number_format($brlRate, 2) }} Bs</strong>
                             </div>
                             <div class="p-2 rounded-lg border border-slate-200/80 flex items-center justify-between">
-                                <span class="font-semibold text-[#69707a]">🇵🇪 PEN:</span>
-                                <strong class="font-mono text-[#212832]">{{ number_format($sellRate * 0.27, 2) }} Bs</strong>
+                                <span class="font-semibold text-[#64748B]">🇵🇪 PEN:</span>
+                                <strong class="font-mono text-[#0F172A]">{{ number_format($sellRate * 0.27, 2) }} Bs</strong>
                             </div>
                         </div>
                     </div>
@@ -333,30 +352,30 @@
             </div>
 
             @if(Auth::check() && !request()->is('/'))
-                <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#00ac69] border border-emerald-200/70 text-xs font-bold">
+                <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#10B981] border border-emerald-200/70 text-xs font-bold">
                     <i class="fa-solid fa-truck-fast"></i>
                     <span>DEX 9/9</span>
                 </div>
 
                 <div class="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0061f2] to-[#6900c7] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0F172A] via-[#312E81] to-[#4F46E5] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
-                        <div class="text-xs font-bold text-[#212832] leading-tight">{{ Auth::user()->name }}</div>
-                        <div class="text-[10px] text-[#0061f2] font-bold uppercase tracking-wider">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
+                        <div class="text-xs font-bold text-[#0F172A] leading-tight">{{ Auth::user()->name }}</div>
+                        <div class="text-[10px] text-[#4F46E5] font-bold uppercase tracking-wider">{{ str_replace('_', ' ', Auth::user()->role) }}</div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}" class="inline ml-1">
                         @csrf
-                        <button type="submit" title="Cerrar Sesión" class="w-8 h-8 rounded-full hover:bg-red-50 text-slate-400 hover:text-red-600 flex items-center justify-center transition">
+                        <button type="submit" title="Cerrar Sesión" class="w-8 h-8 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition">
                             <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                         </button>
                     </form>
                 </div>
             @else
                 <div class="flex items-center gap-2 text-xs">
-                    <a href="{{ route('login') }}" class="font-bold text-[#212832] hover:text-[#0061f2] px-4 py-2 rounded-lg border border-slate-200 hover:border-[#0061f2] hover:bg-blue-50/40 transition">
+                    <a href="{{ route('login') }}" class="font-bold text-[#0F172A] hover:text-[#4F46E5] px-4 py-2 rounded-lg border border-slate-200 hover:border-[#4F46E5] hover:bg-indigo-50/40 transition">
                         Ingresar
                     </a>
                     <a href="{{ route('register') }}" class="btn-scarlet px-4 py-2 rounded-lg font-bold shadow-xs">
@@ -385,7 +404,7 @@
                     {{-- ADMINISTRADOR (tenant_admin)                     --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'tenant_admin')
-                        <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="px-6 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Core / Dashboards
                         </div>
                         <a href="{{ url('/panel/admin') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
@@ -401,7 +420,7 @@
                             <span>Crear Pedido COD</span>
                         </a>
 
-                        <div class="px-5 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Finanzas & Conciliación
                         </div>
                         <a href="{{ url('/settlements') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('settlements*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
@@ -413,7 +432,7 @@
                             <span>Reportes & Analytics</span>
                         </a>
 
-                        <div class="px-5 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Logística & Operaciones
                         </div>
                         <a href="{{ route('admin.kardex.index') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
@@ -537,33 +556,33 @@
                     {{-- ======================================================== --}}
                     {{-- ADDONS / HERRAMIENTAS GLOBALES                           --}}
                     {{-- ======================================================== --}}
-                    <div class="pt-3 mt-3 border-t border-white/15">
-                        <div class="px-5 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                    <div class="pt-3 mt-3 border-t border-white/10">
+                        <div class="px-6 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Addons & Soporte
                         </div>
-                        <a href="{{ url('/tracking') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2 text-[13px] {{ request()->is('tracking*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
-                            <i class="fa-solid fa-magnifying-glass-location w-4 text-center {{ request()->is('tracking*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                        <a href="{{ url('/tracking') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('tracking*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-magnifying-glass-location w-4 text-center {{ request()->is('tracking*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Rastrear Guía</span>
                         </a>
-                        <a href="{{ url('/contactenos') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
-                            <i class="fa-solid fa-map-location-dot w-4 text-center {{ request()->is('contactenos*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                        <a href="{{ url('/contactenos') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-map-location-dot w-4 text-center {{ request()->is('contactenos*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Sedes & Almacenes</span>
                         </a>
-                        <a href="{{ url('/soporte') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2 text-[13px] {{ request()->is('soporte*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
-                            <i class="fa-solid fa-headset w-4 text-center {{ request()->is('soporte*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                        <a href="{{ url('/soporte') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('soporte*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-headset w-4 text-center {{ request()->is('soporte*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Centro de Soporte</span>
                         </a>
                     </div>
                 </nav>
             </div>
 
-            <!-- SB Admin Pro Sidenav Footer (#3435DD Dark Indigo Glass) -->
-            <div class="bg-black/20 border-t border-white/15 px-5 py-3.5 backdrop-blur-sm">
+            <!-- Stripe & Linear Executive Sidenav Footer (#0F172A Midnight Slate Glass) -->
+            <div class="bg-[#090D16]/75 border-t border-white/10 px-6 py-4 backdrop-blur-sm">
                 <div class="flex items-center gap-2 mb-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#00e5a3] animate-pulse"></span>
-                    <span class="text-[10px] font-extrabold text-[#00e5a3] uppercase tracking-wider">Nano Banana Sync</span>
+                    <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
+                    <span class="text-[10px] font-extrabold text-[#38BDF8] uppercase tracking-wider">Nano Banana Sync</span>
                 </div>
-                <div class="text-[11px] text-white/70 font-medium">Conectado como:</div>
+                <div class="text-[11px] text-slate-400 font-medium">Conectado como:</div>
                 <div class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
             </div>
 
@@ -571,30 +590,30 @@
         @endif
 
         <!-- ===================================================================== -->
-        <!-- MAIN CONTENT AREA (#f2f6fc SB Admin Pro Canvas)                       -->
+        <!-- MAIN CONTENT AREA (#F8FAFC Alabaster Canvas)                          -->
         <!-- ===================================================================== -->
-        <div id="layoutSidenav_content" class="flex-grow flex flex-col min-w-0 bg-[#f2f6fc]">
+        <div id="layoutSidenav_content" class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]">
             
             <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow">
                 @yield('content')
             </main>
 
-            <!-- SB ADMIN PRO FOOTER -->
-            <footer class="bg-white border-t border-[#e0e5ec] px-6 sm:px-10 py-6 text-xs text-[#69707a]">
+            <!-- STRIPE & LINEAR EXECUTIVE FOOTER -->
+            <footer class="bg-white border-t border-slate-200/80 px-6 sm:px-10 py-6 text-xs text-[#64748B]">
                 <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-2">
-                        <span>Copyright &copy; <strong class="text-[#212832]">Bolidrop Bolivia</strong> {{ date('Y') }}</span>
+                        <span>Copyright &copy; <strong class="text-[#0F172A]">Bolidrop Bolivia</strong> {{ date('Y') }}</span>
                         <span>•</span>
                         <span class="text-[11px]">DEX Bolivia Express & QR Simple (9/9 Deptos)</span>
                     </div>
                     <div class="flex items-center space-x-4 text-[11px] font-medium">
-                        <a href="{{ url('/catalogo') }}" class="hover:text-[#0061f2] transition">Megabodega</a>
+                        <a href="{{ url('/catalogo') }}" class="hover:text-[#4F46E5] transition">Megabodega</a>
                         <span>&middot;</span>
-                        <a href="{{ url('/tracking') }}" class="hover:text-[#0061f2] transition">Rastreo de Guías</a>
+                        <a href="{{ url('/tracking') }}" class="hover:text-[#4F46E5] transition">Rastreo de Guías</a>
                         <span>&middot;</span>
-                        <a href="{{ url('/soporte') }}" class="hover:text-[#0061f2] transition">Soporte</a>
+                        <a href="{{ url('/soporte') }}" class="hover:text-[#4F46E5] transition">Soporte</a>
                         <span>&middot;</span>
-                        <a href="{{ url('/contactenos') }}" class="hover:text-[#0061f2] transition">Almacenes</a>
+                        <a href="{{ url('/contactenos') }}" class="hover:text-[#4F46E5] transition">Almacenes</a>
                     </div>
                 </div>
             </footer>
