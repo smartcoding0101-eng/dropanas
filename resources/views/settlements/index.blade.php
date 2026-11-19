@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquidaciones Bancarias — Bolidrop Bolivia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@extends('layouts.app')
+
+@section('title', 'Liquidaciones Bancarias — Bolidrop Bolivia')
+
+@section('content')
     <style>
         :root {
             --primary:   #0061f2;
@@ -15,17 +13,14 @@
             --border:    #e0e5ec;
             --text:      #212832;
             --text-muted:#69707a;
-            --success:   #22C55E;
-            --warning:   #EAB308;
+            --success:   #00ac69;
+            --warning:   #f4a100;
             --danger:    #EF4444;
             --info:      #3B82F6;
             --radius:    14px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
         /* ── Layout ── */
-        .page { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+        .page { max-width: 1280px; margin: 0 auto; padding: 0 0 32px; }
         .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
         .page-title { font-size: 1.5rem; font-weight: 700; }
         .page-title span { color: var(--primary); }
@@ -131,21 +126,21 @@
         .bank-card .bank-amount { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
         .bank-emoji { font-size: 1.8rem; }
     </style>
-</head>
-<body>
 
-<div class="page">
-
-    {{-- Header --}}
-    <div class="page-header">
-        <div>
-            <div class="page-title">🏦 Liquidaciones <span>Bancarias Bolivia</span></div>
-            <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;">Gestión de pagos y retiros por banco — Bs. BOB</div>
-        </div>
-        <button class="btn btn-primary" onclick="document.getElementById('modalNewBatch').classList.add('open')" id="btn-new-batch">
+<x-page-header
+    title="Liquidaciones Bancarias Bolivia"
+    subtitle="Gestión de pagos y retiros ACH por banco en Bolivianos (BOB)"
+    icon="fa-solid fa-building-columns"
+    badge="Finanzas & Conciliación Bancaria">
+    <x-slot:actions>
+        <button class="px-5 py-2.5 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white font-bold text-xs shadow-md transition"
+                onclick="document.getElementById('modalNewBatch').classList.add('open')" id="btn-new-batch">
             + Nuevo Lote
         </button>
-    </div>
+    </x-slot:actions>
+</x-page-header>
+
+<div class="page !-mt-14 relative z-10">
 
     {{-- Flash Messages --}}
     @if(session('success'))
@@ -436,8 +431,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     });
 });
 </script>
-</body>
-</html>
+@endsection
 
 
 

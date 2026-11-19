@@ -1,25 +1,19 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reportes & Analytics — Bolidrop Bolivia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+@extends('layouts.app')
+
+@section('title', 'Reportes & Analytics — Bolidrop Bolivia')
+
+@section('content')
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --primary:#0061f2; --primary-dark:#0052cc; --primary-faint:rgba(244,180,0,.08);
+            --primary:#0061f2; --primary-dark:#0052cc; --primary-faint:rgba(0,97,242,.08);
             --bg:#f2f6fc; --surface:#ffffff; --surface2:#eef2f8; --surface3:#e0e5ec;
             --border:#e0e5ec; --border2:#cbd5e1;
             --text:#212832; --text-muted:#69707a; --text-dim:#8b929a;
-            --success:#22C55E; --warning:#EAB308; --danger:#EF4444; --info:#3B82F6;
+            --success:#00ac69; --warning:#f4a100; --danger:#EF4444; --info:#3B82F6;
             --purple:#8B5CF6; --pink:#EC4899; --teal:#14B8A6;
             --radius:16px; --radius-sm:10px;
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
-        a { text-decoration: none; color: inherit; }
-
         /* ── Scrollbar ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--surface); }
@@ -162,46 +156,23 @@
         /* ── Period selector form ── */
         .period-form { display: inline-flex; }
     </style>
-</head>
-<body>
 
-{{-- Top Nav --}}
-<nav class="topnav">
-    <div class="nav-brand">
-        <span class="logo">🍌</span>
-        <span>Bolidrop <span style="color:var(--primary)">Analytics</span></span>
-    </div>
-    <div class="nav-links">
-        <a href="{{ route('panel.admin') }}" class="nav-link">← Admin</a>
-        <a href="{{ route('settlements.index') }}" class="nav-link">Liquidaciones</a>
-        <a href="{{ route('reports.index') }}" class="nav-link active">Reportes</a>
-    </div>
-    <div class="period-selector">
-        @foreach($periods as $key => $label)
-            <button class="period-btn {{ $period === $key ? 'active' : '' }}"
-                    onclick="changePeriod('{{ $key }}')">{{ $label }}</button>
-        @endforeach
-    </div>
-</nav>
-
-<div class="page">
-
-    {{-- Header --}}
-    <div class="page-header">
-        <div>
-            <div class="page-title">📊 Reportes & <span>Analytics</span></div>
-            <div class="page-subtitle">
-                <span class="live-dot"></span>
-                Datos en vivo · Período: {{ $periods[$period] }}
-                · Última actualización: {{ now()->format('H:i:s') }}
-            </div>
+<x-page-header
+    title="Reportes & Analytics"
+    :subtitle="'Datos en vivo · Período: ' . $periods[$period] . ' · Actualizado: ' . now()->format('H:i:s')"
+    icon="fa-solid fa-chart-line"
+    badge="Inteligencia de Negocios Bolidrop">
+    <x-slot:actions>
+        <div class="period-selector">
+            @foreach($periods as $key => $label)
+                <button class="period-btn {{ $period === $key ? 'active' : '' }}"
+                        onclick="changePeriod('{{ $key }}')">{{ $label }}</button>
+            @endforeach
         </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-            <a href="{{ route('settlements.index') }}" style="padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:.8rem;color:var(--text-muted);">
-                🏦 Liquidaciones
-            </a>
-        </div>
-    </div>
+    </x-slot:actions>
+</x-page-header>
+
+<div class="page !-mt-14 relative z-10">
 
     {{-- ═══════════ KPI Cards ═══════════ --}}
     <div class="kpi-grid">
@@ -696,9 +667,7 @@ setInterval(async () => {
     } catch(e) { /* silencioso */ }
 }, 60000);
 </script>
-
-</body>
-</html>
+@endsection
 
 
 

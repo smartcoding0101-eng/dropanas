@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lote {{ $batch->batch_number }} — Bolidrop Bolivia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+@extends('layouts.app')
+
+@section('title', 'Lote ' . $batch->batch_number . ' — Bolidrop Bolivia')
+
+@section('content')
     <style>
         :root {
             --primary:#0061f2; --primary-dark:#0052cc;
             --bg:#f2f6fc; --surface:#ffffff; --surface2:#eef2f8;
-            --border:rgba(255,255,255,0.08); --text:#E8E9F0; --text-muted:#69707a;
-            --success:#22C55E; --warning:#EAB308; --danger:#EF4444; --info:#3B82F6;
+            --border:#e0e5ec; --text:#212832; --text-muted:#69707a;
+            --success:#00ac69; --warning:#f4a100; --danger:#EF4444; --info:#3B82F6;
             --radius:14px;
         }
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
-        .page { max-width:1100px; margin:0 auto; padding:32px 24px; }
+        .page { max-width:1100px; margin:0 auto; padding:0 0 32px; }
 
         /* Header */
         .back-btn { display:inline-flex; align-items:center; gap:6px; color:var(--text-muted); text-decoration:none; font-size:.875rem; margin-bottom:24px; transition:color .2s; }
@@ -100,8 +96,7 @@
         .close-modal { position:absolute; top:16px; right:16px; background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; }
         .alert-error { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:.875rem; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.3); color:#FCA5A5; }
     </style>
-</head>
-<body>
+
 <div class="page">
 
     <a href="{{ route('settlements.index') }}" class="back-btn">← Volver a Liquidaciones</a>
@@ -352,8 +347,7 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
     o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
 </script>
-</body>
-</html>
+@endsection
 
 
 
