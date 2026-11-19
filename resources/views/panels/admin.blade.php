@@ -56,14 +56,14 @@
                     <span>+8.5% respecto a la semana pasada</span>
                 </div>
             </div>
-            <!-- Gráfica simulada en Electric Indigo -->
-            <div class="h-9 w-full bg-slate-50 rounded-lg flex items-end px-1 gap-1 border border-slate-100">
-                <div class="w-1/6 bg-[#4F46E5]/35 rounded-t h-4"></div>
-                <div class="w-1/6 bg-[#4F46E5]/55 rounded-t h-6"></div>
-                <div class="w-1/6 bg-[#4F46E5]/45 rounded-t h-5"></div>
-                <div class="w-1/6 bg-[#4F46E5]/75 rounded-t h-7"></div>
-                <div class="w-1/6 bg-[#4F46E5]/90 rounded-t h-8"></div>
-                <div class="w-1/6 bg-[#4F46E5] rounded-t h-9"></div>
+            <!-- Gráfica interactiva animada en Electric Indigo -->
+            <div class="h-10 w-full bg-slate-50/90 rounded-lg flex items-end px-1.5 pb-1 gap-1.5 border border-slate-100">
+                <div class="w-1/6 bg-[#4F46E5]/35 rounded-t h-4 sparkline-bar cursor-pointer" title="Lun: Bs 3,820"></div>
+                <div class="w-1/6 bg-[#4F46E5]/55 rounded-t h-6 sparkline-bar cursor-pointer" title="Mar: Bs 5,140"></div>
+                <div class="w-1/6 bg-[#4F46E5]/45 rounded-t h-5 sparkline-bar cursor-pointer" title="Mié: Bs 4,690"></div>
+                <div class="w-1/6 bg-[#4F46E5]/75 rounded-t h-7 sparkline-bar cursor-pointer" title="Jue: Bs 6,410"></div>
+                <div class="w-1/6 bg-[#4F46E5]/90 rounded-t h-8 sparkline-bar cursor-pointer" title="Vie: Bs 7,250"></div>
+                <div class="w-1/6 bg-[#4F46E5] rounded-t h-9 sparkline-bar cursor-pointer" title="Hoy: Bs 8,490"></div>
             </div>
         </div>
 
@@ -127,10 +127,10 @@
                     </div>
                     <div class="text-[11px] text-slate-500">Entregas a tiempo</div>
                 </div>
-                <!-- Anillo de progreso en Esmeralda -->
-                <div class="relative w-14 h-14 rounded-full border-4 border-indigo-100 flex items-center justify-center">
-                    <div class="absolute inset-0 rounded-full border-4 border-[#10B981] border-t-transparent -rotate-45"></div>
-                    <span class="text-[11px] font-bold text-[#0F172A]">94%</span>
+                <!-- Anillo de progreso animado en Esmeralda -->
+                <div class="relative w-14 h-14 rounded-full border-4 border-indigo-100 flex items-center justify-center group">
+                    <div class="absolute inset-0 rounded-full border-4 border-[#10B981] border-t-transparent -rotate-45 progress-ring-animated"></div>
+                    <span class="text-[11px] font-bold text-[#0F172A] group-hover:scale-110 transition-transform">94%</span>
                 </div>
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px]">

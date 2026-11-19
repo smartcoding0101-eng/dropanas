@@ -6,11 +6,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --primary:#0061f2; --primary-dark:#0052cc; --primary-faint:rgba(0,97,242,.08);
-            --bg:#f2f6fc; --surface:#ffffff; --surface2:#eef2f8; --surface3:#e0e5ec;
-            --border:#e0e5ec; --border2:#cbd5e1;
-            --text:#212832; --text-muted:#69707a; --text-dim:#8b929a;
-            --success:#00ac69; --warning:#f4a100; --danger:#EF4444; --info:#3B82F6;
+            --primary:#4F46E5; --primary-dark:#4338CA; --primary-faint:rgba(79,70,229,.08);
+            --bg:#F8FAFC; --surface:#ffffff; --surface2:#F1F5F9; --surface3:#E2E8F0;
+            --border:#E2E8F0; --border2:#CBD5E1;
+            --text:#0F172A; --text-muted:#64748B; --text-dim:#94A3B8;
+            --success:#10B981; --warning:#F59E0B; --danger:#F43F5E; --info:#38BDF8;
             --purple:#8B5CF6; --pink:#EC4899; --teal:#14B8A6;
             --radius:16px; --radius-sm:10px;
         }
@@ -34,7 +34,7 @@
         .nav-link:hover, .nav-link.active { background: var(--primary-faint); color: var(--primary); }
         .period-selector { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; }
         .period-btn { padding: 5px 12px; border-radius: 7px; font-size: .75rem; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all .2s; }
-        .period-btn.active { background: var(--primary); color: #000; }
+        .period-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,.35); }
 
         /* ── Layout ── */
         .page { max-width: 1400px; margin: 0 auto; padding: 28px 24px 48px; }
@@ -528,18 +528,18 @@ const labels = series.map(d => {
     return `${day}/${m}`;
 });
 
-// ── Paletas de colores ──────────────────────────────────────────
-const GOLD   = '#F4B400';
-const GREEN  = '#22C55E';
-const BLUE   = '#3B82F6';
-const RED    = '#EF4444';
+// ── Paletas de colores (Stripe & Linear Executive) ──────────────
+const GOLD   = '#4F46E5';
+const GREEN  = '#10B981';
+const BLUE   = '#38BDF8';
+const RED    = '#F43F5E';
 const PURPLE = '#8B5CF6';
 const TEAL   = '#14B8A6';
-const ORANGE = '#F97316';
+const ORANGE = '#F59E0B';
 const PINK   = '#EC4899';
 
-Chart.defaults.color = '#94A3B8';
-Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#64748B';
+Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
 Chart.defaults.font.size   = 11;
 
 // ── 1. Gráfico de Línea — serie diaria ──────────────────────────
@@ -552,7 +552,7 @@ new Chart(document.getElementById('lineChart'), {
                 label: 'Pedidos',
                 data: series.map(d => d.orders_count),
                 borderColor: GOLD,
-                backgroundColor: 'rgba(244,180,0,.08)',
+                backgroundColor: 'rgba(79,70,229,.10)',
                 fill: true, tension: .4, pointRadius: 0,
                 pointHoverRadius: 5, pointHoverBackgroundColor: GOLD,
                 yAxisID: 'y',
@@ -561,7 +561,7 @@ new Chart(document.getElementById('lineChart'), {
                 label: 'Volumen (Bs.)',
                 data: series.map(d => parseFloat(d.volume_bob)),
                 borderColor: GREEN,
-                backgroundColor: 'rgba(34,197,94,.06)',
+                backgroundColor: 'rgba(16,185,129,.08)',
                 fill: true, tension: .4, pointRadius: 0,
                 pointHoverRadius: 5, pointHoverBackgroundColor: GREEN,
                 yAxisID: 'y1',
@@ -570,11 +570,12 @@ new Chart(document.getElementById('lineChart'), {
     },
     options: {
         responsive: true, maintainAspectRatio: false,
+        animation: { duration: 1100, easing: 'easeOutQuart' },
         interaction: { mode: 'index', intersect: false },
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: '#1F2937', borderColor: 'rgba(255,255,255,.1)',
+                backgroundColor: '#0F172A', borderColor: 'rgba(79,70,229,.35)',
                 borderWidth: 1, padding: 12,
                 callbacks: {
                     label: ctx => ctx.datasetIndex === 0
@@ -584,8 +585,8 @@ new Chart(document.getElementById('lineChart'), {
             }
         },
         scales: {
-            x: { grid: { color: 'rgba(255,255,255,.04)' }, ticks: { maxTicksLimit: 10 } },
-            y:  { position: 'left',  grid: { color: 'rgba(255,255,255,.04)' }, beginAtZero: true },
+            x: { grid: { color: 'rgba(15,23,42,.05)' }, ticks: { maxTicksLimit: 10 } },
+            y:  { position: 'left',  grid: { color: 'rgba(15,23,42,.05)' }, beginAtZero: true },
             y1: { position: 'right', grid: { drawOnChartArea: false }, beginAtZero: true,
                   ticks: { callback: v => 'Bs.' + Number(v).toLocaleString('es-BO') } }
         }

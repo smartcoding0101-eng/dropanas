@@ -15,97 +15,98 @@
     </div>
 
     <!-- ================================================================ -->
-    <!-- 1. SB ADMIN PRO HERO HEADER (Dimensiones Ajustadas sin Espacios)  -->
+    <!-- 1. STRIPE & LINEAR EXECUTIVE HERO HEADER (Sin Espacios + Motion) -->
     <!-- ================================================================ -->
-    <section class="page-header-sb text-white pt-8 pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 relative overflow-hidden shadow-md">
-        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 40%);"></div>
+    <section class="page-header-sb text-white pt-8 pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 relative overflow-hidden shadow-md border-b border-indigo-500/20">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(79,70,229,0.55) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(56,189,248,0.40) 0%, transparent 40%);"></div>
+        <div class="absolute -top-24 -right-20 w-80 h-80 rounded-full bg-[#38BDF8]/10 blur-3xl pointer-events-none hero-floating-card"></div>
 
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                 
                 <div class="lg:col-span-7 space-y-4">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 border border-white/25 text-xs font-bold text-white">
-                        <span class="flex h-2 w-2 rounded-full bg-[#00ac69]"></span>
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-xs font-bold text-indigo-100 backdrop-blur-xs badge-pulse-glow">
+                        <span class="flex h-2 w-2 rounded-full bg-[#10B981] animate-ping"></span>
                         <span>El Ecosistema de Dropshipping & Logística COD Nº 1 de Bolivia</span>
                     </div>
 
-                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] font-heading text-white">
-                        Conectamos Proveedores, Vendedores y Tiendas con el Consumidor Final.
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] font-heading text-white text-balance">
+                        Conectamos <span class="text-gradient-shimmer">Proveedores, Vendedores y Tiendas</span> con el Consumidor Final.
                     </h1>
 
-                    <p class="text-white/90 text-sm sm:text-base leading-relaxed max-w-2xl">
-                        Almacenaje, Fulfillment y Logística con <strong class="text-white font-bold">Pago Contra Entrega (COD)</strong> en Santa Cruz, La Paz, Cochabamba y los 9 departamentos. Recaudación en Bolivianos en efectivo o mediante <strong class="text-white underline decoration-[#00ac69] decoration-2">QR Simple</strong>.
+                    <p class="text-indigo-100/90 text-sm sm:text-base leading-relaxed max-w-2xl">
+                        Almacenaje, Fulfillment y Logística con <strong class="text-white font-bold">Pago Contra Entrega (COD)</strong> en Santa Cruz, La Paz, Cochabamba y los 9 departamentos. Recaudación en Bolivianos en efectivo o mediante <strong class="text-white underline decoration-[#38BDF8] decoration-2">QR Simple</strong>.
                     </p>
 
                     <div class="flex flex-wrap items-center gap-3 pt-1">
-                        <a href="#lead-magnet" class="px-6 py-3 rounded-xl bg-[#00ac69] hover:bg-[#008f57] text-white font-bold text-sm shadow-lg flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <a href="#lead-magnet" class="btn-amber px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition transform hover:-translate-y-0.5">
                             <span>Comienza a Vender Ahora</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="px-6 py-3 rounded-xl bg-white text-[#0061f2] hover:bg-blue-50 font-bold text-sm transition shadow-md flex items-center gap-2">
-                            <i class="fa-solid fa-boxes-stacked"></i>
+                        <a href="{{ url('/catalogo') }}" class="px-6 py-3 rounded-xl bg-white text-[#0F172A] hover:text-[#4F46E5] hover:bg-indigo-50 font-bold text-sm transition shadow-md flex items-center gap-2 transform hover:-translate-y-0.5">
+                            <i class="fa-solid fa-boxes-stacked text-[#4F46E5]"></i>
                             <span>Ver Catálogo Mayorista</span>
                         </a>
                     </div>
 
                     <!-- Métricas Destacadas en Tarjetas Compactas -->
-                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/20">
-                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
+                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/15">
+                        <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
                             <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">9 / 9</div>
-                            <div class="text-[11px] text-white/80 font-medium">Deptos. Cobertura</div>
+                            <div class="text-[11px] text-indigo-100/80 font-medium">Deptos. Cobertura</div>
                         </div>
-                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
-                            <div class="text-xl sm:text-2xl font-extrabold text-white font-mono">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
-                            <div class="text-[11px] text-white/80 font-medium">Tasa Oficial BCB</div>
+                        <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
+                            <div class="text-xl sm:text-2xl font-extrabold text-[#38BDF8] font-mono">{{ number_format($bcbOfficialRate ?? 12.06, 2) }} Bs</div>
+                            <div class="text-[11px] text-indigo-100/80 font-medium">Tasa Oficial BCB</div>
                         </div>
-                        <div class="bg-white/10 border border-white/15 rounded-xl px-3.5 py-2.5">
-                            <div class="text-xl sm:text-2xl font-extrabold text-white font-heading">24 hrs</div>
-                            <div class="text-[11px] text-white/80 font-medium">Retiros a Billetera</div>
+                        <div class="bg-white/10 hover:bg-white/15 transition border border-white/15 rounded-xl px-3.5 py-2.5 backdrop-blur-xs">
+                            <div class="text-xl sm:text-2xl font-extrabold text-[#10B981] font-heading">24 hrs</div>
+                            <div class="text-[11px] text-indigo-100/80 font-medium">Retiros a Billetera</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Tarjeta Blanca SB Admin Pro -->
+                <!-- Columna Derecha: Tarjeta Blanca Interactiva Flotante -->
                 <div class="lg:col-span-5">
-                    <div class="bg-white text-[#212832] rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4">
+                    <div class="hero-floating-card bg-white text-[#0F172A] rounded-2xl p-6 border border-slate-200 shadow-2xl space-y-4">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
                             <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-xl bg-blue-50 text-[#0061f2] flex items-center justify-center font-bold text-lg">
+                                <div class="w-11 h-11 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-100 flex items-center justify-center font-bold text-lg">
                                     <i class="fa-solid fa-truck-fast"></i>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-[#212832]">Envíos DEX Bolivia</h4>
-                                    <span class="text-[11px] text-[#00ac69] font-bold flex items-center gap-1">
+                                    <h4 class="text-sm font-bold text-[#0F172A]">Envíos DEX Bolivia</h4>
+                                    <span class="text-[11px] text-[#10B981] font-bold flex items-center gap-1">
                                         <i class="fa-solid fa-circle-check text-[9px]"></i> 2 Intentos de Entrega Gratis
                                     </span>
                                 </div>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-[#00ac69] border border-emerald-200 uppercase">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-[#10B981] border border-emerald-200 uppercase">
                                 Red COD Activa
                             </span>
                         </div>
 
                         <div class="space-y-2 text-xs">
-                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-[#f2f6fc]">
-                                <span class="text-[#69707a] font-medium">Recaudación:</span>
-                                <span class="font-bold text-[#212832] flex items-center gap-1.5">
-                                    <i class="fa-solid fa-qrcode text-[#0061f2]"></i> Efectivo + QR Simple
+                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-[#F8FAFC] border border-slate-100">
+                                <span class="text-[#64748B] font-medium">Recaudación:</span>
+                                <span class="font-bold text-[#0F172A] flex items-center gap-1.5">
+                                    <i class="fa-solid fa-qrcode text-[#4F46E5]"></i> Efectivo + QR Simple
                                 </span>
                             </div>
-                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-[#f2f6fc]">
-                                <span class="text-[#69707a] font-medium">Costo Almacenaje:</span>
-                                <span class="font-extrabold text-[#00ac69] text-sm">Bs 0.00 (Gratis)</span>
+                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-[#F8FAFC] border border-slate-100">
+                                <span class="text-[#64748B] font-medium">Costo Almacenaje:</span>
+                                <span class="font-extrabold text-[#10B981] text-sm">Bs 0.00 (Gratis)</span>
                             </div>
-                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-blue-50/70 border border-blue-100">
-                                <span class="text-[#0061f2] font-bold">Tus Ganancias:</span>
-                                <span class="font-extrabold text-[#0061f2] text-sm font-mono">+100% Retiro en 24h</span>
+                            <div class="flex justify-between items-center py-2.5 px-3.5 rounded-lg bg-indigo-50/70 border border-indigo-100">
+                                <span class="text-[#4F46E5] font-bold">Tus Ganancias:</span>
+                                <span class="font-extrabold text-[#4F46E5] text-sm font-mono">+100% Retiro en 24h</span>
                             </div>
                         </div>
 
-                        <div class="p-3.5 rounded-xl bg-[#f2f6fc] border border-slate-200/80 flex items-center gap-3">
-                            <i class="fa-solid fa-shield-halved text-[#0061f2] text-xl"></i>
-                            <p class="text-[11px] text-[#69707a] leading-snug">
-                                <strong class="text-[#212832]">Call Center de Novedades:</strong> Nuestro equipo contacta al cliente final en caso de reprogramación de entrega.
+                        <div class="p-3.5 rounded-xl bg-[#F8FAFC] border border-slate-200/80 flex items-center gap-3">
+                            <i class="fa-solid fa-shield-halved text-[#4F46E5] text-xl"></i>
+                            <p class="text-[11px] text-[#64748B] leading-snug">
+                                <strong class="text-[#0F172A]">Call Center de Novedades:</strong> Nuestro equipo contacta al cliente final en caso de reprogramación de entrega.
                             </p>
                         </div>
                     </div>

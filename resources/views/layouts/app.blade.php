@@ -205,6 +205,165 @@
             transition: color 0.15s ease, background-color 0.15s ease;
         }
 
+        /* ===================================================================== */
+        /* PREMIUM UI/UX MOTION & INTERACTIVE CHOREOGRAPHY ENGINE                */
+        /* Skills: ui-motion-transitions, ui-ux-pro-max, frontend-design-eng     */
+        /* ===================================================================== */
+
+        /* 1. Animated Aurora & Mesh Gradient Background for Main Heroes */
+        @keyframes auroraShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50%      { transform: translateY(-6px) rotate(0.5deg); }
+        }
+        @keyframes textShimmer {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes fadeUpSpring {
+            from { opacity: 0; transform: translateY(18px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes barGrowUp {
+            from { transform: scaleY(0); }
+            to   { transform: scaleY(1); }
+        }
+        @keyframes ringSweep {
+            from { transform: rotate(-180deg); opacity: 0; }
+            to   { transform: rotate(-45deg); opacity: 1; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45); }
+            50%      { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+        }
+
+        .page-header-sb {
+            background-size: 200% 200%;
+            animation: auroraShift 14s ease infinite;
+        }
+
+        /* 2. Gradient Shimmer Text & Hero Typography Balance */
+        .text-gradient-shimmer {
+            background: linear-gradient(90deg, #FFFFFF 0%, #38BDF8 35%, #A5B4FC 70%, #FFFFFF 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 6s linear infinite;
+        }
+        .hero-floating-card {
+            animation: floatSlow 6s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        /* 3. Staggered Entrance Choreography for Panels & Grids */
+        .grid > div,
+        .bg-white.rounded-2xl,
+        .bg-white.rounded-3xl,
+        .white-card {
+            animation: fadeUpSpring 0.52s var(--ease-spring) both;
+        }
+        .grid > div:nth-child(1) { animation-delay: 0.04s; }
+        .grid > div:nth-child(2) { animation-delay: 0.09s; }
+        .grid > div:nth-child(3) { animation-delay: 0.14s; }
+        .grid > div:nth-child(4) { animation-delay: 0.19s; }
+        .grid > div:nth-child(5) { animation-delay: 0.24s; }
+        .grid > div:nth-child(6) { animation-delay: 0.29s; }
+
+        /* 4. Interactive Card Spotlight & Tactile Micro-Interactions (<240ms) */
+        .bg-white.rounded-2xl,
+        .bg-white.rounded-3xl,
+        .white-card {
+            position: relative;
+            transition: transform 0.24s var(--ease-spring),
+                        box-shadow 0.24s var(--ease-spring),
+                        border-color 0.2s ease;
+            will-change: transform;
+        }
+        .bg-white.rounded-2xl:hover,
+        .bg-white.rounded-3xl:hover,
+        .white-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px -6px rgba(15, 23, 42, 0.10), 0 4px 12px -2px rgba(79, 70, 229, 0.08);
+            border-color: rgba(79, 70, 229, 0.35);
+        }
+
+        /* 5. Button Shine Sweep & Active Press Physics */
+        .btn-scarlet,
+        .btn-amber {
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+        .btn-scarlet::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.55s var(--ease-spring);
+            pointer-events: none;
+        }
+        .btn-scarlet:hover::after {
+            left: 140%;
+        }
+        .btn-scarlet:active,
+        .btn-amber:active {
+            transform: translateY(0) scale(0.97) !important;
+        }
+
+        /* 6. Table Row Micro-Slide & Left Accent Highlight */
+        tbody tr {
+            transition: background-color 0.18s ease, transform 0.2s var(--ease-spring);
+        }
+        tbody tr:hover {
+            background-color: rgba(79, 70, 229, 0.035) !important;
+        }
+
+        /* 7. Animated Mini-Charts & Sparkline Bars in Panels */
+        .sparkline-bar {
+            transform-origin: bottom;
+            animation: barGrowUp 0.75s var(--ease-spring) both;
+            transition: transform 0.2s var(--ease-spring), background-color 0.2s ease, filter 0.2s ease;
+        }
+        .sparkline-bar:nth-child(1) { animation-delay: 0.10s; }
+        .sparkline-bar:nth-child(2) { animation-delay: 0.16s; }
+        .sparkline-bar:nth-child(3) { animation-delay: 0.22s; }
+        .sparkline-bar:nth-child(4) { animation-delay: 0.28s; }
+        .sparkline-bar:nth-child(5) { animation-delay: 0.34s; }
+        .sparkline-bar:nth-child(6) { animation-delay: 0.40s; }
+        .sparkline-bar:hover {
+            transform: scaleY(1.12);
+            background-color: #38BDF8 !important;
+            filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+        }
+
+        .progress-ring-animated {
+            animation: ringSweep 0.9s var(--ease-spring) both;
+            animation-delay: 0.25s;
+        }
+
+        .badge-pulse-glow {
+            animation: pulseGlow 2.4s infinite;
+        }
+
+        /* 8. Accessibility: Respect Vestibular Motion Preferences (WCAG 2.1 AA) */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
         [x-cloak] { display: none !important; }
     </style>
 </head>

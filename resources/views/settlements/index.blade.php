@@ -5,18 +5,18 @@
 @section('content')
     <style>
         :root {
-            --primary:   #0061f2;
-            --primary-dark: #0052cc;
-            --bg:        #f2f6fc;
+            --primary:   #4F46E5;
+            --primary-dark: #4338CA;
+            --bg:        #F8FAFC;
             --surface:   #ffffff;
-            --surface2:  #eef2f8;
-            --border:    #e0e5ec;
-            --text:      #212832;
-            --text-muted:#69707a;
-            --success:   #00ac69;
-            --warning:   #f4a100;
-            --danger:    #EF4444;
-            --info:      #3B82F6;
+            --surface2:  #F1F5F9;
+            --border:    #E2E8F0;
+            --text:      #0F172A;
+            --text-muted:#64748B;
+            --success:   #10B981;
+            --warning:   #F59E0B;
+            --danger:    #F43F5E;
+            --info:      #38BDF8;
             --radius:    14px;
         }
         /* ── Layout ── */
@@ -62,7 +62,7 @@
             font-size: .875rem; font-family: inherit;
         }
         .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 9px; font-size: .875rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; text-decoration: none; }
-        .btn-primary { background: var(--primary); color: #000; }
+        .btn-primary { background: var(--primary); color: #fff; }
         .btn-primary:hover { background: var(--primary-dark); }
         .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
         .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
