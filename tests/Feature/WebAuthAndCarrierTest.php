@@ -62,6 +62,32 @@ class WebAuthAndCarrierTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_ecosystem_users_can_login_with_bolidrop_or_dropana_domain_and_password_variants(): void
+    {
+        // 1. Login con @bolidrop.bo y password123
+        $response = $this->post(route('login'), [
+            'email'    => '  ADMIN@bolidrop.bo  ',
+            'password' => ' password123 ',
+        ]);
+        $response->assertRedirect(route('panel.admin'));
+        $this->post(route('logout'));
+
+        // 2. Login con alias legado @dropana.bo y password
+        $responseLegacy = $this->post(route('login'), [
+            'email'    => 'dropshipper@dropana.bo',
+            'password' => 'password',
+        ]);
+        $responseLegacy->assertRedirect(route('panel.dropshipper'));
+        $this->post(route('logout'));
+
+        // 3. Login proveedor
+        $responseProv = $this->post(route('login'), [
+            'email'    => 'proveedor@bolidrop.bo',
+            'password' => 'password123',
+        ]);
+        $responseProv->assertRedirect(route('panel.proveedor'));
+    }
+
     public function test_user_can_register_new_account_and_wallet_is_created(): void
     {
         $response = $this->post(route('register'), [

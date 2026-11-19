@@ -47,7 +47,7 @@ class BoliviaEcosystemSeeder extends Seeder
         );
 
         // 3. Usuarios Clave de Demostración
-        $admin = User::firstOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
@@ -58,10 +58,11 @@ class BoliviaEcosystemSeeder extends Seeder
                 'document_id' => '5432101 SC',
                 'city' => 'Santa Cruz de la Sierra',
                 'department' => 'Santa Cruz',
+                'is_active' => true,
             ]
         );
 
-        $provider = User::firstOrCreate(
+        $provider = User::updateOrCreate(
             ['email' => 'proveedor@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
@@ -73,10 +74,11 @@ class BoliviaEcosystemSeeder extends Seeder
                 'company_or_store_name' => 'Megabodega Bolivia S.A.',
                 'city' => 'Santa Cruz de la Sierra',
                 'department' => 'Santa Cruz',
+                'is_active' => true,
             ]
         );
 
-        $dropshipper = User::firstOrCreate(
+        $dropshipper = User::updateOrCreate(
             ['email' => 'dropshipper@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
@@ -88,10 +90,11 @@ class BoliviaEcosystemSeeder extends Seeder
                 'company_or_store_name' => 'Tienda Digital Flash',
                 'city' => 'La Paz',
                 'department' => 'La Paz',
+                'is_active' => true,
             ]
         );
 
-        $carrierUser = User::firstOrCreate(
+        $carrierUser = User::updateOrCreate(
             ['email' => 'carrier@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
@@ -103,10 +106,11 @@ class BoliviaEcosystemSeeder extends Seeder
                 'company_or_store_name' => 'DEX Courier SCZ Móvil #14',
                 'city' => 'Santa Cruz de la Sierra',
                 'department' => 'Santa Cruz',
+                'is_active' => true,
             ]
         );
 
-        $fulfillmentUser = User::firstOrCreate(
+        $fulfillmentUser = User::updateOrCreate(
             ['email' => 'fulfillment@bolidrop.bo'],
             [
                 'tenant_id' => $tenant->id,
@@ -118,6 +122,7 @@ class BoliviaEcosystemSeeder extends Seeder
                 'company_or_store_name' => 'Glow Cosmetics Bolivia',
                 'city' => 'Cochabamba',
                 'department' => 'Cochabamba',
+                'is_active' => true,
             ]
         );
 
