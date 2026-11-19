@@ -85,12 +85,22 @@
             background-image: linear-gradient(135deg, #0061f2 0%, rgba(105, 0, 199, 0.85) 100%);
         }
 
-        /* SB Admin Pro Sidenav Light */
+        /* SB Admin Pro Sidenav Celeste (Sky Blue Sidebar) */
         .sidenav-light {
-            background-color: #ffffff;
-            color: #212832;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.10);
-            border-right: 1px solid #e0e5ec;
+            background: linear-gradient(180deg, #dff0fe 0%, #cde7fe 100%);
+            color: #0f172a;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(2, 132, 199, 0.12);
+            border-right: 1px solid #bae6fd;
+        }
+        .sidenav-light .text-\[\#a7aeb8\] {
+            color: #0369a1 !important;
+        }
+        .sidenav-light a.bg-blue-50\/70 {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(0, 97, 242, 0.12);
+        }
+        .sidenav-light a:hover:not(.bg-blue-50\/70) {
+            background-color: rgba(255, 255, 255, 0.65) !important;
         }
 
         /* SB Admin Pro Card Shadow Elevation */
@@ -495,7 +505,7 @@
                     {{-- ======================================================== --}}
                     {{-- ADDONS / HERRAMIENTAS GLOBALES                           --}}
                     {{-- ======================================================== --}}
-                    <div class="pt-3 mt-3 border-t border-slate-100">
+                    <div class="pt-3 mt-3 border-t border-[#bae6fd]">
                         <div class="px-5 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Addons & Soporte
                         </div>
@@ -515,14 +525,14 @@
                 </nav>
             </div>
 
-            <!-- SB Admin Pro Sidenav Footer -->
-            <div class="bg-[#f2f6fc] border-t border-[#e0e5ec] px-5 py-3.5">
+            <!-- SB Admin Pro Sidenav Footer (Celeste) -->
+            <div class="bg-[#c4e3fe]/70 border-t border-[#93c5fd]/70 px-5 py-3.5">
                 <div class="flex items-center gap-2 mb-1.5">
                     <span class="w-2 h-2 rounded-full bg-[#00ac69] animate-pulse"></span>
                     <span class="text-[10px] font-extrabold text-[#00ac69] uppercase tracking-wider">Nano Banana Sync</span>
                 </div>
-                <div class="text-[11px] text-[#69707a]">Conectado como:</div>
-                <div class="text-xs font-bold text-[#212832] truncate">{{ Auth::user()->name }}</div>
+                <div class="text-[11px] text-[#0369a1]">Conectado como:</div>
+                <div class="text-xs font-bold text-[#0f172a] truncate">{{ Auth::user()->name }}</div>
             </div>
 
         </aside>
