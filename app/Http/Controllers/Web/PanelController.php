@@ -20,8 +20,10 @@ class PanelController extends Controller
      */
     public function dropshipper(Request $request)
     {
-        // Datos demo: usamos el dropshipper del seeder
-        $dropshipper = User::where('role', 'dropshipper')->first();
+        $authUser = $request->user();
+        $dropshipper = ($authUser && $authUser->role === 'dropshipper')
+            ? $authUser
+            : User::where('role', 'dropshipper')->first();
 
         $stats = [
             'total_orders'    => 0,
@@ -166,7 +168,10 @@ class PanelController extends Controller
      */
     public function admin(Request $request)
     {
-        $admin = User::where('role', 'tenant_admin')->first();
+        $authUser = $request->user();
+        $admin = ($authUser && in_array($authUser->role, ['tenant_admin', 'admin']))
+            ? $authUser
+            : User::where('role', 'tenant_admin')->first();
 
         $stats = [
             'total_orders' => Order::count(),
@@ -220,7 +225,10 @@ class PanelController extends Controller
      */
     public function carrier(Request $request)
     {
-        $carrierUser = User::where('role', 'carrier')->first() ?? User::where('role', 'tenant_admin')->first();
+        $authUser = $request->user();
+        $carrierUser = ($authUser && in_array($authUser->role, ['carrier', 'carrier_agent']))
+            ? $authUser
+            : (User::where('role', 'carrier')->first() ?? $authUser ?? User::where('role', 'tenant_admin')->first());
         $carrier = Carrier::first();
 
         $stats = [

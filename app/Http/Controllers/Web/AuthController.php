@@ -136,12 +136,15 @@ class AuthController extends Controller
      */
     private function redirectBasedOnRole($user)
     {
-        return match ($user->role) {
-            'tenant_admin' => redirect()->route('panel.admin'),
-            'provider'     => redirect()->route('panel.proveedor'),
-            'carrier'      => redirect()->route('panel.carrier'),
-            default        => redirect()->route('panel.dropshipper'),
+        $defaultRoute = match ($user->role) {
+            'tenant_admin', 'admin'         => route('panel.admin'),
+            'provider', 'proveedor'         => route('panel.proveedor'),
+            'carrier', 'carrier_agent'      => route('panel.carrier'),
+            'fulfillment_client'            => route('panel.fulfillment'),
+            default                         => route('panel.dropshipper'),
         };
+
+        return redirect()->intended($defaultRoute);
     }
 }
 

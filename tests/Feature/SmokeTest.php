@@ -26,18 +26,42 @@ class SmokeTest extends TestCase
     public function test_smoke_public_web_pages_load_successfully(): void
     {
         $this->get('/')->assertStatus(200);
-        $this->get('/catalogo')->assertStatus(200);
         $this->get('/login')->assertStatus(200);
         $this->get('/registro')->assertStatus(200);
-        $this->get('/checkout-demo')->assertStatus(200);
-        $this->get('/soporte')->assertStatus(200);
-        $this->get('/tracking')->assertStatus(200);
+    }
+
+    public function test_smoke_unauthenticated_users_cannot_access_system_routes(): void
+    {
+        $protectedRoutes = [
+            '/catalogo',
+            '/checkout-demo',
+            '/panel/admin',
+            '/panel/dropshipper',
+            '/panel/proveedor',
+            '/panel/carrier',
+            '/panel/fulfillment',
+            '/carrier/cobro',
+            '/settlements',
+            '/reports',
+            '/returns',
+            '/notifications/whatsapp',
+            '/tracking',
+            '/soporte',
+            '/contactenos',
+        ];
+
+        foreach ($protectedRoutes as $uri) {
+            $this->get($uri)->assertRedirect(route('login'));
+        }
     }
 
     public function test_smoke_carrier_field_cobro_screen_loads(): void
     {
-        $this->get('/carrier/cobro')->assertStatus(200);
-        $this->get('/carrier/cobro/DRP-2026-001234')->assertStatus(200);
+        $carrier = User::where('role', 'carrier')->first()
+            ?? User::where('role', 'tenant_admin')->first();
+
+        $this->actingAs($carrier)->get('/carrier/cobro')->assertStatus(200);
+        $this->actingAs($carrier)->get('/carrier/cobro/DRP-2026-001234')->assertStatus(200);
     }
 
     public function test_smoke_authenticated_panels_load(): void

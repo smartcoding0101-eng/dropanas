@@ -95,7 +95,10 @@ class WebAuthAndCarrierTest extends TestCase
 
     public function test_carrier_panel_loads_with_orders_in_route(): void
     {
-        $response = $this->get(route('panel.carrier'));
+        $carrier = User::where('role', 'carrier')->first()
+            ?? User::where('role', 'tenant_admin')->first();
+
+        $response = $this->actingAs($carrier)->get(route('panel.carrier'));
         $response->assertStatus(200);
         $response->assertSee('DEX Bolivia Express — Ruta COD');
         $response->assertSee('Novedades Activas');

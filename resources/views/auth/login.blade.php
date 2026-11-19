@@ -90,6 +90,16 @@
                 <p class="text-slate-500 text-xs sm:text-sm mt-1">Accede a tu panel de control, megabodega y liquidaciones.</p>
             </div>
 
+            @if (session()->has('url.intended'))
+                <div class="mb-5 bg-amber-50 border border-amber-200/90 rounded-xl p-3.5 text-xs text-amber-900 flex items-start gap-2.5 shadow-2xs">
+                    <i class="fa-solid fa-lock text-amber-600 mt-0.5"></i>
+                    <div>
+                        <strong class="font-bold block text-amber-950">Acceso Protegido — Solo Usuarios Registrados</strong>
+                        <span>Inicia sesión con tu usuario y contraseña (o <a href="{{ route('register') }}" class="underline font-bold text-[#4F46E5]">regístrate gratis aquí</a>) para ingresar al sistema.</span>
+                    </div>
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="mb-5 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-rose-700 space-y-1">
                     @foreach ($errors->all() as $error)

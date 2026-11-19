@@ -131,7 +131,8 @@ class ProveedorProductoTest extends TestCase
     /** Panel web del proveedor muestra boton de publicacion */
     public function test_proveedor_panel_shows_publish_button_and_categories(): void
     {
-        $response = $this->get('/panel/proveedor');
+        $provider = User::where('role', 'provider')->first();
+        $response = $this->actingAs($provider)->get('/panel/proveedor');
 
         $response->assertStatus(200)
             ->assertSee('Publicar Nuevo Producto')
@@ -142,7 +143,8 @@ class ProveedorProductoTest extends TestCase
     /** Panel admin muestra seccion de manifiestos DEX */
     public function test_admin_panel_shows_manifest_section(): void
     {
-        $response = $this->get('/panel/admin');
+        $admin = User::where('role', 'tenant_admin')->first();
+        $response = $this->actingAs($admin)->get('/panel/admin');
 
         $response->assertStatus(200)
             ->assertSee('Manifiestos de Carga Emitidos')
