@@ -880,10 +880,12 @@
             <!-- STRIPE & LINEAR EXECUTIVE FOOTER -->
             <footer class="bg-white border-t border-slate-200/80 px-6 sm:px-10 py-6 text-xs text-[#64748B]">
                 <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                         <span>Copyright &copy; <strong class="text-[#0F172A]">Bolidrop Bolivia</strong> {{ date('Y') }}</span>
                         <span>•</span>
                         <span class="text-[11px]">DEX Bolivia Express & QR Simple (9/9 Deptos)</span>
+                        <span>•</span>
+                        <span class="text-[11px] font-semibold text-[#4F46E5]">Creado por <strong class="text-[#0F172A]">SmartCoding S.A</strong> {{ date('Y') }}</span>
                     </div>
                     <div class="flex items-center space-x-4 text-[11px] font-medium">
                         <a href="{{ url('/catalogo') }}" class="hover:text-[#4F46E5] transition">Megabodega</a>
