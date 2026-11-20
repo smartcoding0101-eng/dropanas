@@ -156,6 +156,14 @@ class PanelController extends Controller
         $allWarehouses = Warehouse::all();
         $categories    = \App\Models\Category::withCount('products')->orderBy('name')->get();
 
+        // Lista simplificada de productos para autocompletado en traspasos
+        $transferProductsList = $products->map(fn($p) => [
+            'id'            => $p->id,
+            'name'          => $p->name,
+            'sku'           => $p->sku,
+            'internal_code' => $p->internal_code,
+        ])->values();
+
         // Dropshippers activos para el módulo de reservas
         $dropshippers = User::where('role', 'dropshipper')
             ->where('is_active', true)
@@ -166,7 +174,7 @@ class PanelController extends Controller
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
             'wallet', 'categories', 'salesOrders', 'recentKardex', 'stockTransfers', 'inventoryAlerts',
-            'dropshippers'
+            'dropshippers', 'transferProductsList'
         ));
     }
 

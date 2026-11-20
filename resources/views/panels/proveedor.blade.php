@@ -2423,12 +2423,7 @@ function almacenModule() {
         transferItems: [],
         productSearchInput: '',
         productDropdownOpen: false,
-        allAvailableProducts: @json($products->map(fn($p) => [
-            'id' => $p->id,
-            'name' => $p->name,
-            'sku' => $p->sku,
-            'internal_code' => $p->internal_code,
-        ])),
+        allAvailableProducts: @json($transferProductsList ?? []),
         traspasoSubmitting: false,
 
         filteredTransferProducts() {
