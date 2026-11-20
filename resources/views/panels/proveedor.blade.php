@@ -468,9 +468,9 @@
             <div x-show="activeTab === 'traspaso'" x-transition class="p-4 space-y-4">
                 <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-xs text-indigo-800 flex items-start gap-2">
                     <i class="fa-solid fa-circle-info mt-0.5 text-indigo-500"></i>
-                    <span>El traspaso descuenta stock de la bodega origen y lo acredita en la bodega destino de forma atómica. Se registra en el Kardex de movimientos.</span>
+                    <span>Puedes transferir uno o múltiples productos entre bodegas con búsqueda y autocompletado en tiempo real. Se descuenta el stock en origen y se acredita en destino con registro automático en Kardex.</span>
                 </div>
-                <div class="bg-white rounded-xl border border-slate-200 p-5 max-w-2xl space-y-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-5 max-w-2xl space-y-5">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bodega Origen *</label>
@@ -493,33 +493,92 @@
                             </select>
                         </div>
                     </div>
+
+                    <!-- Autocompletado y Selección Múltiple de Productos -->
+                    <div class="space-y-2 relative" @click.away="productDropdownOpen = false">
+                        <label class="block text-xs font-semibold text-slate-600">
+                            Buscar y Agregar Productos *
+                            <span class="text-[11px] text-slate-400 font-normal">(Escribe para autocompletar y selecciona múltiples)</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" x-model="productSearchInput"
+                                @focus="productDropdownOpen = true"
+                                @input="productDropdownOpen = true"
+                                placeholder="Escribe el nombre, SKU o código del producto para buscar..."
+                                class="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white">
+                        </div>
+
+                        <!-- Menú desplegable con autocompletado -->
+                        <div x-show="productDropdownOpen && filteredTransferProducts().length > 0" x-cloak
+                            class="absolute z-20 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-xl divide-y divide-slate-100">
+                            <template x-for="p in filteredTransferProducts()" :key="p.id">
+                                <button type="button" @click="addTransferProduct(p)"
+                                    class="w-full px-3.5 py-2.5 text-left text-xs hover:bg-indigo-50/70 flex items-center justify-between gap-3 transition cursor-pointer">
+                                    <div>
+                                        <p class="font-bold text-slate-800" x-text="p.name"></p>
+                                        <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
+                                            <span>SKU: <strong class="text-slate-600" x-text="p.sku"></strong></span>
+                                            <span class="text-indigo-600 bg-indigo-50 px-1 rounded font-bold" x-text="p.internal_code"></span>
+                                        </div>
+                                    </div>
+                                    <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fa-solid fa-plus text-[9px] mr-0.5"></i> Agregar
+                                    </span>
+                                </button>
+                            </template>
+                        </div>
+                        <div x-show="productDropdownOpen && filteredTransferProducts().length === 0 && productSearchInput.trim() !== ''" x-cloak
+                            class="absolute z-20 left-0 right-0 mt-1 p-3 text-center text-xs text-slate-400 bg-white rounded-xl border border-slate-200 shadow-lg">
+                            No se encontraron productos coincidentes
+                        </div>
+                    </div>
+
+                    <!-- Lista de Productos Seleccionados para Traspaso -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-600">
+                            Productos Seleccionados (<span x-text="transferItems.length"></span>)
+                        </label>
+                        <template x-if="transferItems.length === 0">
+                            <div class="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 text-center text-xs text-slate-400">
+                                <i class="fa-solid fa-boxes-stacked text-slate-300 text-lg mb-1 block"></i>
+                                Aún no has seleccionado productos. Escribe en el buscador superior para agregarlos.
+                            </div>
+                        </template>
+
+                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1" x-show="transferItems.length > 0">
+                            <template x-for="(item, idx) in transferItems" :key="item.product_id">
+                                <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-50 transition">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-bold text-slate-800 text-xs truncate" x-text="item.name"></p>
+                                        <p class="text-[10px] font-mono text-slate-400" x-text="item.sku + ' | ' + item.internal_code"></p>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <label class="text-[11px] text-slate-500 font-medium">Cantidad:</label>
+                                        <input type="number" x-model.number="item.quantity" min="1"
+                                            class="w-20 text-xs rounded-lg border border-slate-300 px-2.5 py-1.5 font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white text-right">
+                                        <button type="button" @click="removeTransferProduct(idx)"
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                                            title="Quitar producto">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Producto *</label>
-                        <select x-model="traspasoForm.product_id"
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Notas del traspaso (opcional)</label>
+                        <input type="text" x-model="traspasoForm.notes" placeholder="Ej: Abastecimiento para ventas COD fin de semana..."
                             class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                            <option value="">— Seleccionar producto —</option>
-                            @foreach($products as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }} — {{ $p->sku }} / {{ $p->internal_code }}</option>
-                            @endforeach
-                        </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cantidad a transferir *</label>
-                            <input type="number" x-model.number="traspasoForm.quantity" min="1"
-                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Notas (opcional)</label>
-                            <input type="text" x-model="traspasoForm.notes" placeholder="Motivo del traspaso..."
-                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                    </div>
+
                     <button @click="submitTraspaso()"
-                        :disabled="traspasoSubmitting || !traspasoForm.from_warehouse_id || !traspasoForm.to_warehouse_id || !traspasoForm.product_id || traspasoForm.quantity < 1"
-                        class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow">
-                        <template x-if="traspasoSubmitting"><span><i class="fa-solid fa-spinner fa-spin"></i> Procesando...</span></template>
-                        <template x-if="!traspasoSubmitting"><span><i class="fa-solid fa-right-left"></i> Ejecutar Traspaso</span></template>
+                        :disabled="traspasoSubmitting || !traspasoForm.from_warehouse_id || !traspasoForm.to_warehouse_id || transferItems.length === 0"
+                        class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow transition">
+                        <template x-if="traspasoSubmitting"><span><i class="fa-solid fa-spinner fa-spin"></i> Procesando traspaso múltiple...</span></template>
+                        <template x-if="!traspasoSubmitting"><span><i class="fa-solid fa-right-left"></i> <span x-text="'Ejecutar Traspaso (' + transferItems.length + ' ' + (transferItems.length === 1 ? 'producto' : 'productos') + ')'"></span></span></template>
                     </button>
                 </div>
             </div>
@@ -2360,8 +2419,45 @@ function almacenModule() {
         },
 
         // ---- TRASPASO ----
-        traspasoForm: { from_warehouse_id: '', to_warehouse_id: '', product_id: '', quantity: 1, notes: '' },
+        traspasoForm: { from_warehouse_id: '', to_warehouse_id: '', notes: '' },
+        transferItems: [],
+        productSearchInput: '',
+        productDropdownOpen: false,
+        allAvailableProducts: @json($products->map(fn($p) => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'sku' => $p->sku,
+            'internal_code' => $p->internal_code,
+        ])),
         traspasoSubmitting: false,
+
+        filteredTransferProducts() {
+            const q = (this.productSearchInput || '').toLowerCase().trim();
+            const selectedIds = this.transferItems.map(i => i.product_id);
+            return this.allAvailableProducts.filter(p => {
+                if (selectedIds.includes(p.id)) return false;
+                if (!q) return true;
+                return (p.name || '').toLowerCase().includes(q) ||
+                       (p.sku || '').toLowerCase().includes(q) ||
+                       (p.internal_code || '').toLowerCase().includes(q);
+            });
+        },
+
+        addTransferProduct(product) {
+            this.transferItems.push({
+                product_id: product.id,
+                name: product.name,
+                sku: product.sku,
+                internal_code: product.internal_code,
+                quantity: 1
+            });
+            this.productSearchInput = '';
+            this.productDropdownOpen = false;
+        },
+
+        removeTransferProduct(index) {
+            this.transferItems.splice(index, 1);
+        },
 
         // =================================================================
         // INIT
@@ -2618,30 +2714,52 @@ function almacenModule() {
         },
 
         // =================================================================
-        // TRASPASO (reutiliza endpoint de InventoryController)
+        // TRASPASO (soporte de selección múltiple y autocompletado)
         // =================================================================
         async submitTraspaso() {
             if (this.traspasoForm.from_warehouse_id === this.traspasoForm.to_warehouse_id) {
                 this.showAlmToast('La bodega origen y destino no pueden ser la misma.', 'error');
                 return;
             }
+            if (this.transferItems.length === 0) {
+                this.showAlmToast('Debes seleccionar al menos un producto a transferir.', 'error');
+                return;
+            }
+            for (const item of this.transferItems) {
+                if (!item.quantity || item.quantity < 1) {
+                    this.showAlmToast(`La cantidad para "${item.name}" debe ser mayor a 0.`, 'error');
+                    return;
+                }
+            }
             this.traspasoSubmitting = true;
             try {
+                const payload = {
+                    from_warehouse_id: this.traspasoForm.from_warehouse_id,
+                    to_warehouse_id:   this.traspasoForm.to_warehouse_id,
+                    notes:             this.traspasoForm.notes || null,
+                    items:             this.transferItems.map(i => ({
+                        product_id: i.product_id,
+                        quantity:   parseInt(i.quantity, 10)
+                    }))
+                };
+
                 const res = await fetch('/inventory/transfer', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
-                    body: JSON.stringify(this.traspasoForm)
+                    body: JSON.stringify(payload)
                 });
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
                     this.showAlmToast(data.message || 'Traspaso ejecutado exitosamente.', 'success');
-                    this.traspasoForm = { from_warehouse_id: '', to_warehouse_id: '', product_id: '', quantity: 1, notes: '' };
+                    this.traspasoForm = { from_warehouse_id: '', to_warehouse_id: '', notes: '' };
+                    this.transferItems = [];
+                    this.productSearchInput = '';
                     await this.loadWarehouses();
                 } else {
                     const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error en el traspaso.');
                     this.showAlmToast(msg, 'error');
                 }
-            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+            } catch { this.showAlmToast('Error de comunicación con el servidor.', 'error'); }
             finally { this.traspasoSubmitting = false; }
         },
     }
