@@ -464,7 +464,7 @@
         /* ===================================================================== */
         html, body {
             max-width: 100vw;
-            overflow-x: hidden;
+            overflow-x: clip;
             -webkit-text-size-adjust: 100%;
         }
 
@@ -716,12 +716,12 @@
              x-transition:leave-end="opacity-0"
              class="fixed inset-0 top-16 bg-[#0F172A]/60 backdrop-blur-xs z-30 md:hidden"></div>
 
-        <!-- SIDENAV (Responsive Off-Canvas Drawer on Mobile / Sticky Sidebar on Tablet, Desktop & 4K TV) -->
+        <!-- SIDENAV (Fixed Left Sidebar locked to viewport on Mobile, Tablet, Desktop & 4K TV) -->
         <aside :class="[
                 mobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full hidden md:translate-x-0',
                 sidenavOpen ? 'md:flex' : 'md:hidden'
             ]"
-            class="sidenav-light fixed md:sticky top-16 left-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
+            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
             
             <div class="py-2">
                 <!-- Buscador Rápido Visible en Móvil y Tablet (< 1024px) -->
@@ -937,7 +937,11 @@
         <!-- ===================================================================== -->
         <!-- MAIN CONTENT AREA (#F8FAFC Alabaster Canvas)                          -->
         <!-- ===================================================================== -->
-        <div id="layoutSidenav_content" class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]">
+        <div id="layoutSidenav_content"
+             @if(Auth::check() && !request()->is('/'))
+             :class="sidenavOpen ? 'md:ml-64' : 'md:ml-0'"
+             @endif
+             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out">
             
             <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow">
                 @yield('content')
