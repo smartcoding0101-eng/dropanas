@@ -558,7 +558,9 @@
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0" x-data="{ ratesOpen: false }">
             @php
                 $sellRate = (float) ($bcbOfficialRate ?? 11.75);
-                $buyRate  = round($sellRate - 0.10, 2);
+                $buyRate  = (float) ($bcbBuyRate ?? round($sellRate - 0.10, 2));
+                $rateSource = $bcbRateSource ?? 'Banco Central de Bolivia (www.bcb.gob.bo)';
+                $isManualRate = str_starts_with((string) $rateSource, 'Configuración Manual');
                 $usdtRate = round($sellRate + 0.15, 2);
                 $eurRate  = round($sellRate * 1.08, 2);
                 $cnyRate  = round($sellRate * 0.14, 2);
@@ -593,20 +595,26 @@
                 <!-- Dropdown Detallado de Monedas frente al Boliviano (BOB) -->
                 <div x-show="ratesOpen" x-cloak
                     x-transition
-                    class="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
+                    class="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-84 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                         <div>
                             <div class="font-extrabold text-[#0F172A] text-xs">Tipo de Cambio — BCB Bolivia (BOB)</div>
-                            <div class="text-[10px] text-[#64748B]">Sincronizado en vivo con www.bcb.gob.bo</div>
+                            <div class="text-[10px] text-[#64748B] truncate max-w-[200px]" title="{{ $rateSource }}">
+                                {{ $isManualRate ? 'Tasa Manual Configurada por Admin' : 'Sincronizado con www.bcb.gob.bo' }}
+                            </div>
                         </div>
-                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#10B981] font-bold text-[10px]">BCB En Vivo</span>
+                        @if($isManualRate)
+                            <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-bold text-[10px]">Manual</span>
+                        @else
+                            <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#10B981] font-bold text-[10px]">BCB En Vivo</span>
+                        @endif
                     </div>
 
                     <div class="space-y-2">
                         <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-indigo-50/70 border border-indigo-200/70">
                             <div>
-                                <div class="font-bold text-[#0F172A]">🇧🇴 Dólar Oficial BCB (TCO)</div>
-                                <div class="text-[10px] text-[#64748B]">Banco Central de Bolivia (www.bcb.gob.bo)</div>
+                                <div class="font-bold text-[#0F172A]">🇧🇴 Dólar BCB / Referencial</div>
+                                <div class="text-[10px] text-[#64748B]">{{ $isManualRate ? 'Ajuste Manual Activo' : 'Banco Central de Bolivia (TCO)' }}</div>
                             </div>
                             <div class="text-right font-mono">
                                 <div class="text-[10px] text-[#64748B]">Compra: <strong>{{ number_format($buyRate, 2) }} Bs</strong></div>
@@ -642,6 +650,43 @@
                                 <strong class="font-mono text-[#0F172A]">{{ number_format($sellRate * 0.27, 2) }} Bs</strong>
                             </div>
                         </div>
+
+                        @if(Auth::check() && in_array(Auth::user()->role, ['tenant_admin', 'admin', 'superadmin']))
+                        <!-- Formulario de Configuración Manual del Tipo de Cambio (Exclusivo Admin) -->
+                        <div class="pt-2.5 mt-2 border-t border-slate-200/80 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#0F172A]">
+                                    <i class="fa-solid fa-sliders text-[#4F46E5] mr-1"></i> Configurar Tasa Manual
+                                </span>
+                                <form method="POST" action="{{ route('admin.exchange-rate.update') }}" class="inline">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="sync_bcb">
+                                    <button type="submit" class="text-[10px] font-bold text-[#4F46E5] hover:underline cursor-pointer" title="Volver a sincronizar con www.bcb.gob.bo">
+                                        <i class="fa-solid fa-rotate mr-0.5"></i> Auto BCB
+                                    </button>
+                                </form>
+                            </div>
+                            <form method="POST" action="{{ route('admin.exchange-rate.update') }}" class="space-y-2">
+                                @csrf
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Compra (Bs)</label>
+                                        <input type="number" step="0.01" min="1" max="100" name="buy_rate" value="{{ number_format($buyRate, 2, '.', '') }}" required
+                                            class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-[#0F172A] font-mono text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Venta (Bs)</label>
+                                        <input type="number" step="0.01" min="1" max="100" name="sell_rate" value="{{ number_format($sellRate, 2, '.', '') }}" required
+                                            class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-[#0F172A] font-mono text-xs font-bold focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full py-1.5 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#312E81] text-white font-bold text-[11px] transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                                    <i class="fa-solid fa-floppy-disk text-[10px]"></i>
+                                    <span>Guardar Tipo de Cambio</span>
+                                </button>
+                            </form>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -944,6 +989,18 @@
              class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out">
             
             <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow">
+                @if (session('status'))
+                    <div x-data="{ show: true }" x-show="show" x-cloak
+                        class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-2xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                            <span>{{ session('status') }}</span>
+                        </div>
+                        <button type="button" @click="show = false" class="text-emerald-600 hover:text-emerald-800 cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                @endif
                 @yield('content')
             </main>
 

@@ -24,7 +24,7 @@ class ExchangeRateController extends Controller
             'status' => 'success',
             'data' => [
                 'currency_pair' => 'USD/BOB',
-                'buy_rate' => $latestRecord ? (float) $latestRecord->buy_rate : 6.8600,
+                'buy_rate' => $latestRecord ? (float) $latestRecord->buy_rate : round($sellRate - 0.10, 4),
                 'sell_rate' => $sellRate,
                 'official_source' => $latestRecord->official_source ?? 'Banco Central de Bolivia (Oficial)',
                 'last_updated_bolivia' => $latestRecord ? $latestRecord->fetched_at->toDateTimeString() : now()->toDateTimeString(),
@@ -33,10 +33,30 @@ class ExchangeRateController extends Controller
     }
 
     /**
-     * Forzar sincronización bajo demanda (requiere permisos de administrador).
+     * Forzar sincronización bajo demanda o configurar tasa manual (requiere permisos de administrador).
      */
-    public function sync(BcbExchangeRateService $service): JsonResponse
+    public function sync(Request $request, BcbExchangeRateService $service): JsonResponse
     {
+        if ($request->filled('sell_rate')) {
+            $validated = $request->validate([
+                'sell_rate' => 'required|numeric|min:1|max:100',
+                'buy_rate'  => 'nullable|numeric|min:1|max:100',
+            ]);
+            $user = $request->user();
+            $rate = $service->setManualRate(
+                (float) $validated['sell_rate'],
+                isset($validated['buy_rate']) ? (float) $validated['buy_rate'] : null,
+                $user?->tenant_id,
+                $user?->name
+            );
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tipo de cambio configurado manualmente.',
+                'data' => $rate,
+            ]);
+        }
+
         $rate = $service->syncRate();
 
         return response()->json([

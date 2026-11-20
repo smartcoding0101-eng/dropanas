@@ -64,6 +64,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export',  [\App\Http\Controllers\Web\Admin\KardexController::class, 'export'])->name('export');
     });
 
+    // Configuración Manual o Sincronización de Tipo de Cambio BCB (Admin)
+    Route::post('/panel/admin/exchange-rate', [PanelController::class, 'updateExchangeRate'])->name('admin.exchange-rate.update');
+
     // Liquidaciones Bancarias Bolivia (Admin)
     Route::prefix('settlements')->name('settlements.')->group(function () {
         Route::get('/',                [\App\Http\Controllers\Web\BankSettlementController::class, 'index'])    ->name('index');

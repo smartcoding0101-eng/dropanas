@@ -15,7 +15,8 @@ class BcbExchangeRateService
 
     /**
      * Obtiene la tasa de venta actual (USD -> BOB).
-     * Si no hay caché o si el registro en BD es obsoleto, ejecuta sincronización en vivo.
+     * Respeta si existe una tasa configurada manualmente por el Administrador;
+     * de lo contrario, sincroniza con el BCB si han pasado más de 12 horas.
      */
     public function getCurrentSellRate(): float
     {
@@ -23,11 +24,16 @@ class BcbExchangeRateService
             $latest = null;
             try {
                 $latest = ExchangeRate::where('currency_pair', 'USD/BOB')
-                    ->where('is_official', true)
                     ->latest('fetched_at')
+                    ->latest('created_at')
                     ->first();
 
-                // Si no hay registro o si el último registro es de hace más de 12 horas, sincronizar en vivo
+                // Si la última tasa fue fijada manualmente por el Administrador, respetarla siempre
+                if ($latest && str_starts_with((string) $latest->official_source, 'Configuración Manual')) {
+                    return (float) $latest->sell_rate;
+                }
+
+                // Si no hay registro o si el último registro automático es de hace más de 12 horas, sincronizar en vivo
                 if (!$latest || $latest->fetched_at->diffInHours(now()) >= 12) {
                     $synced = $this->syncRate();
                     return (float) $synced->sell_rate;
@@ -39,6 +45,45 @@ class BcbExchangeRateService
                 return ($latest && isset($latest->sell_rate)) ? (float) $latest->sell_rate : 11.7500;
             }
         });
+    }
+
+    /**
+     * Obtiene el registro completo de la última tasa activa (para mostrar Compra, Venta y Fuente).
+     */
+    public function getLatestRecord(): ?ExchangeRate
+    {
+        try {
+            return ExchangeRate::where('currency_pair', 'USD/BOB')
+                ->latest('fetched_at')
+                ->latest('created_at')
+                ->first();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Configura manualmente el tipo de cambio (USD/BOB) por parte del Administrador.
+     */
+    public function setManualRate(float $sellRate, ?float $buyRate = null, ?string $tenantId = null, ?string $adminName = null): ExchangeRate
+    {
+        $resolvedBuyRate = $buyRate !== null && $buyRate > 0
+            ? round($buyRate, 4)
+            : round(max(1.00, $sellRate - 0.10), 4);
+
+        $record = ExchangeRate::create([
+            'tenant_id'       => $tenantId,
+            'currency_pair'   => 'USD/BOB',
+            'buy_rate'        => $resolvedBuyRate,
+            'sell_rate'       => round($sellRate, 4),
+            'official_source' => 'Configuración Manual Admin' . ($adminName ? " ({$adminName})" : ''),
+            'is_official'     => true,
+            'fetched_at'      => Carbon::now('America/La_Paz'),
+        ]);
+
+        Cache::put(self::CACHE_KEY, (float) $record->sell_rate, self::CACHE_TTL_SECONDS);
+
+        return $record;
     }
 
     /**

@@ -289,6 +289,37 @@ class PanelController extends Controller
 
         return view('carrier.cobro', compact('carrierUser'));
     }
+
+    /**
+     * Actualiza manualmente la Tasa de Cambio (USD/BOB) o resincroniza con el portal del BCB.
+     */
+    public function updateExchangeRate(Request $request, \App\Services\Currency\BcbExchangeRateService $exchangeService)
+    {
+        $user = $request->user();
+        if (!$user || !in_array($user->role, ['tenant_admin', 'admin', 'superadmin'], true)) {
+            abort(403, 'Solo el Administrador puede modificar la tasa de cambio.');
+        }
+
+        // Si solicita resincronización automática con el BCB
+        if ($request->input('mode') === 'sync_bcb') {
+            $record = $exchangeService->syncRate($user->tenant_id);
+            return back()->with('status', "Tipo de cambio sincronizado con BCB: Venta Bs " . number_format((float) $record->sell_rate, 2));
+        }
+
+        $validated = $request->validate([
+            'sell_rate' => 'required|numeric|min:1|max:100',
+            'buy_rate'  => 'nullable|numeric|min:1|max:100',
+        ]);
+
+        $sellRate = (float) $validated['sell_rate'];
+        $buyRate  = isset($validated['buy_rate']) && $validated['buy_rate'] !== ''
+            ? (float) $validated['buy_rate']
+            : round(max(1.00, $sellRate - 0.10), 2);
+
+        $record = $exchangeService->setManualRate($sellRate, $buyRate, $user->tenant_id, $user->name);
+
+        return back()->with('status', "Tasa de cambio configurada manualmente: Compra Bs " . number_format((float) $record->buy_rate, 2) . " / Venta Bs " . number_format((float) $record->sell_rate, 2));
+    }
 }
 
 
