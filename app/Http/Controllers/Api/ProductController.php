@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Warehouse;
+use App\Services\ProductBulkImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ProductController extends Controller
 {
@@ -160,6 +162,54 @@ class ProductController extends Controller
             'message' => 'Producto publicado en el catálogo mayorista con éxito.',
             'data' => $product->load('warehouseInventories.warehouse'),
         ], 201);
+    }
+
+    /**
+     * Descarga la plantilla oficial para Carga Masiva (Excel / CSV).
+     */
+    public function downloadTemplate(Request $request, ProductBulkImportService $service): BinaryFileResponse
+    {
+        $format = strtolower($request->query('format', 'xlsx'));
+        if (!in_array($format, ['xlsx', 'csv'])) {
+            $format = 'xlsx';
+        }
+
+        $result = $service->generateTemplate($format);
+
+        return response()->download($result['path'], $result['filename'], [
+            'Content-Type' => $result['mime'],
+        ])->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Procesa la carga masiva de productos desde Excel (.xlsx/.xls) o CSV (.csv).
+     */
+    public function bulkUpload(Request $request, ProductBulkImportService $service): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user || (!$user->isProvider() && !$user->isTenantAdmin())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo los proveedores mayoristas o administradores pueden realizar carga masiva.',
+            ], 403);
+        }
+
+        $request->validate([
+            'file' => 'required|file|max:10240',
+        ]);
+
+        $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, ['xlsx', 'xls', 'csv', 'txt'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Formato no soportado. Debe ser un archivo Excel (.xlsx, .xls) o CSV (.csv).',
+            ], 422);
+        }
+
+        $result = $service->processBulkUpload($file, $user);
+
+        return response()->json($result, $result['success'] ? 200 : 422);
     }
 }
 

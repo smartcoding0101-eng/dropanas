@@ -44,6 +44,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('catalog');
 
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
+    Route::get('/products/template/download', [\App\Http\Controllers\Api\ProductController::class, 'downloadTemplate'])->name('products.template.download');
+    Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');
     Route::post('/inventory/transfer', [\App\Http\Controllers\Api\InventoryController::class, 'transfer'])->name('inventory.transfer.web');
     Route::post('/inventory/alerts', [\App\Http\Controllers\Api\InventoryController::class, 'setAlert'])->name('inventory.alerts.web');

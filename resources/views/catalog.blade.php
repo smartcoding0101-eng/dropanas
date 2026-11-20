@@ -23,6 +23,7 @@
             'id' => (string) $p->id,
             'name' => strtolower($p->name ?? ''),
             'sku' => strtolower($p->sku ?? ''),
+            'internal_code' => strtolower($p->internal_code ?? ''),
             'category_id' => (string) ($p->category_id ?? ''),
             'category_name' => strtolower($p->category->name ?? 'tecnología'),
             'warehouses_str' => implode(' | ', $whTags),
@@ -43,7 +44,7 @@
         if (!item) return true;
 
         const q = this.searchQuery.toLowerCase().trim();
-        const matchesText = !q || item.name.includes(q) || item.sku.includes(q) || item.category_name.includes(q);
+        const matchesText = !q || item.name.includes(q) || item.sku.includes(q) || item.internal_code.includes(q) || item.category_name.includes(q);
         const matchesCat  = this.categoryFilter === 'all' || item.category_id === String(this.categoryFilter);
         const matchesWh   = this.warehouseFilter === 'all' || item.warehouses_str.includes(this.warehouseFilter);
 
@@ -221,9 +222,16 @@
                 <div class="p-6 flex-grow space-y-4">
                     <div class="flex items-start justify-between gap-2">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[#4F46E5] font-heading">
-                                {{ $product->category->name ?? 'Tecnología' }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#4F46E5] font-heading">
+                                    {{ $product->category->name ?? 'Tecnología' }}
+                                </span>
+                                @if($product->internal_code)
+                                    <span class="text-[9px] font-mono font-bold bg-slate-100 text-slate-500 px-1.5 py-0.2 rounded border border-slate-200" title="Código Interno Bolidrop">
+                                        {{ $product->internal_code }}
+                                    </span>
+                                @endif
+                            </div>
                             <h3 class="text-lg font-bold text-[#0F172A] font-heading mt-0.5 group-hover:text-[#4F46E5] transition line-clamp-1">
                                 {{ $product->name }}
                             </h3>

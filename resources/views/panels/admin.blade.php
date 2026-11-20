@@ -57,12 +57,12 @@
             </div>
             <div class="space-y-1">
                 <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
-                    Bs {{ number_format($stats['total_volume_bob'] ?? 32450.00, 2) }}
+                    Bs {{ number_format($stats['total_volume_bob'] ?? 0, 2) }}
                 </div>
                 <div class="text-[11px] font-semibold flex items-center justify-between">
                     <span class="text-[#10B981] flex items-center gap-1" x-show="!activeBar">
                         <i class="fa-solid fa-arrow-trend-up"></i>
-                        <span>+8.5% vs semana pasada</span>
+                        <span>Recaudación real acumulada</span>
                     </span>
                     <span class="text-[#4F46E5] font-mono font-bold" x-show="activeBar" x-cloak
                           x-text="activeBar ? (activeBar.day + ': ' + activeBar.amount) : ''"></span>
@@ -89,18 +89,18 @@
             </div>
             <div class="space-y-1">
                 <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
-                    {{ $stats['total_orders'] ?? 157 }}
+                    {{ $stats['total_orders'] ?? 0 }}
                 </div>
                 <div class="text-[11px] text-[#10B981] font-semibold flex items-center gap-1">
                     <i class="fa-solid fa-arrow-trend-up"></i>
-                    <span>+12% en conversión contra entrega</span>
+                    <span>Órdenes contra entrega registradas</span>
                 </div>
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center">
                 <span>Despachos activos:</span>
                 <strong class="text-[#0F172A] flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-ping"></span>
-                    <span>42 órdenes en ruta</span>
+                    <span>{{ $stats['active_dispatches'] ?? 0 }} órdenes en ruta</span>
                 </strong>
             </div>
         </div>
@@ -115,7 +115,7 @@
             </div>
             <div class="space-y-1">
                 <div class="text-3xl font-extrabold text-[#4F46E5] font-heading font-mono" data-countup>
-                    Bs 18,310.00
+                    Bs {{ number_format($stats['pending_cod_bob'] ?? 0, 2) }}
                 </div>
                 <div class="text-[11px] text-slate-500">
                     En poder de transportadoras DEX / Cartero
@@ -128,6 +128,12 @@
         </div>
 
         <!-- Efectividad de Entrega DEX Bolivia -->
+        @php
+            $totalOrd = (int) ($stats['total_orders'] ?? 0);
+            $delivOrd = (int) ($stats['delivered_orders'] ?? 0);
+            $pendOrd  = (int) ($stats['pending_orders'] ?? 0);
+            $effPct   = $totalOrd > 0 ? round(($delivOrd / $totalOrd) * 100) : 100;
+        @endphp
         <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4 interactive-card">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Efectividad DEX Bolivia</span>
@@ -138,19 +144,19 @@
             <div class="flex items-center justify-between">
                 <div class="space-y-1">
                     <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>
-                        94%
+                        {{ $effPct }}%
                     </div>
-                    <div class="text-[11px] text-slate-500">Entregas a tiempo</div>
+                    <div class="text-[11px] text-slate-500">Entregas efectivas</div>
                 </div>
                 <!-- Anillo de progreso animado en Esmeralda -->
                 <div class="relative w-14 h-14 rounded-full border-4 border-indigo-100 flex items-center justify-center group">
                     <div class="absolute inset-0 rounded-full border-4 border-[#10B981] border-t-transparent -rotate-45 progress-ring-animated"></div>
-                    <span class="text-[11px] font-bold text-[#0F172A] group-hover:scale-110 transition-transform" data-countup>94%</span>
+                    <span class="text-[11px] font-bold text-[#0F172A] group-hover:scale-110 transition-transform" data-countup>{{ $effPct }}%</span>
                 </div>
             </div>
             <div class="text-xs text-slate-500 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px]">
-                <span class="text-emerald-700 font-semibold">147 Entregados</span>
-                <span class="text-[#4F46E5] font-bold">8 Pendientes</span>
+                <span class="text-emerald-700 font-semibold">{{ $delivOrd }} Entregados</span>
+                <span class="text-[#4F46E5] font-bold">{{ $pendOrd }} Pendientes</span>
             </div>
         </div>
 

@@ -132,6 +132,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::post('/exchange-rate/sync', [ExchangeRateController::class, 'sync']);
 
     // Publicación de productos y CRUD de Categorías (Proveedores / Admin)
+    Route::get('/products/template/download', [ProductController::class, 'downloadTemplate']);
+    Route::post('/products/bulk-upload', [ProductController::class, 'bulkUpload']);
     Route::post('/products', [ProductController::class, 'store']);
     Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
     Route::match(['put', 'patch'], '/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);

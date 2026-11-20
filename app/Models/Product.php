@@ -20,6 +20,7 @@ class Product extends Model
         'name',
         'slug',
         'sku',
+        'internal_code',
         'description',
         'cost_price_bob',
         'suggested_price_bob',
@@ -40,6 +41,43 @@ class Product extends Model
         'images' => 'array',
         'attributes' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product) {
+            if (empty($product->internal_code)) {
+                $product->internal_code = static::generateNextInternalCode();
+            }
+        });
+    }
+
+    /**
+     * Genera el siguiente Código Interno oficial de Bolidrop (ej. BLD-PRD-000001).
+     */
+    public static function generateNextInternalCode(): string
+    {
+        $count = static::withoutGlobalScopes()->count();
+        $next = $count + 1;
+
+        $highest = static::withoutGlobalScopes()
+            ->where('internal_code', 'LIKE', 'BLD-PRD-%')
+            ->orderByRaw('CAST(SUBSTRING(internal_code, 9) AS UNSIGNED) DESC')
+            ->value('internal_code');
+
+        if ($highest && preg_match('/BLD-PRD-(\d+)/', $highest, $matches)) {
+            $next = max($next, ((int) $matches[1]) + 1);
+        }
+
+        do {
+            $candidate = 'BLD-PRD-' . str_pad((string) $next, 6, '0', STR_PAD_LEFT);
+            $exists = static::withoutGlobalScopes()->where('internal_code', $candidate)->exists();
+            if ($exists) {
+                $next++;
+            }
+        } while ($exists);
+
+        return $candidate;
+    }
 
     public function provider(): BelongsTo
     {

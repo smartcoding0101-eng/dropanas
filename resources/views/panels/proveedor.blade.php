@@ -11,6 +11,10 @@
         icon="fa-solid fa-warehouse"
         badge="Panel del Proveedor / Mayorista">
         <x-slot:actions>
+            <button @click="bulkModalOpen = true"
+                class="px-4 py-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md transition cursor-pointer">
+                <i class="fa-solid fa-file-excel text-amber-200"></i> Carga Masiva Excel
+            </button>
             <button @click="productModalOpen = true"
                 class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md cursor-pointer">
                 <i class="fa-solid fa-plus"></i> Publicar Nuevo Producto
@@ -432,6 +436,15 @@
                 <h3 class="font-bold text-slate-900 text-sm font-heading">Mis Productos Publicados</h3>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+                <button @click="downloadAlertModalOpen = true"
+                    class="px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer"
+                    title="Descargar plantilla de ejemplo">
+                    <i class="fa-solid fa-download text-slate-500"></i> Plantilla Excel
+                </button>
+                <button @click="bulkModalOpen = true"
+                    class="px-3.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-file-excel text-emerald-600"></i> Carga Masiva
+                </button>
                 <button @click="categoryModalOpen = true"
                     class="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200/80 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
                     <i class="fa-solid fa-tags"></i> Gestionar Categorías
@@ -450,7 +463,7 @@
             <table class="w-full text-left text-sm text-slate-600">
                 <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
                     <tr>
-                        <th class="py-3 px-5">Producto / SKU</th>
+                        <th class="py-3 px-5">Producto / Códigos</th>
                         <th class="py-3 px-5">Categoría</th>
                         <th class="py-3 px-5">Costo Mayorista</th>
                         <th class="py-3 px-5">Precio Sugerido</th>
@@ -472,7 +485,14 @@
                                 @endif
                                 <div>
                                     <div class="font-bold text-slate-900">{{ $product->name }}</div>
-                                    <div class="text-[11px] text-[#0061f2] font-mono font-semibold">SKU: {{ $product->sku }}</div>
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                        <span class="text-[11px] text-[#0061f2] font-mono font-semibold">SKU: {{ $product->sku }}</span>
+                                        @if($product->internal_code)
+                                            <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200 inline-flex items-center gap-1" title="Código Interno Bolidrop Oficial">
+                                                <i class="fa-solid fa-barcode text-[9px] text-slate-400"></i>{{ $product->internal_code }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -1025,6 +1045,294 @@
         </div>
     </div>
 
+    <!-- ============================================================== -->
+    <!-- MODAL DE ALERTA TAILWIND: CONFIRMAR DESCARGA DE PLANTILLA      -->
+    <!-- ============================================================== -->
+    <div x-show="downloadAlertModalOpen" x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
+
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 text-left transform transition-all"
+            @click.away="downloadAlertModalOpen = false"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100">
+
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
+                    <i class="fa-solid fa-file-excel text-2xl"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="text-base font-bold text-slate-900 font-heading">
+                        ¿Deseas descargar la plantilla oficial?
+                    </h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Se descargará la plantilla con los 11 campos requeridos, 3 productos de ejemplo ya configurados y los códigos oficiales de Megabodegas de Bolivia (<span class="font-mono text-indigo-600 font-bold">WH-SCZ-01</span>, <span class="font-mono text-indigo-600 font-bold">WH-LPZ-01</span>, <span class="font-mono text-indigo-600 font-bold">WH-CBB-01</span>).
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+                <div class="flex items-center justify-between text-slate-700 font-semibold">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-xs"></i>
+                        Estructura lista para Excel y Google Sheets
+                    </span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Recomendado</span>
+                </div>
+                <p class="text-[11px] text-slate-500">
+                    Al importar, el sistema generará automáticamente en paralelo un <strong>Código Interno Oficial (BLD-PRD-XXXXXX)</strong> para control en bodegas y manifiestos.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-2">
+                <button type="button" @click="downloadAlertModalOpen = false"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="button" @click="triggerDownload('csv')"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer inline-flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-file-csv text-slate-500"></i> Descargar CSV
+                </button>
+                <button type="button" @click="triggerDownload('xlsx')"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition cursor-pointer inline-flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-download"></i> Descargar Excel (.xlsx)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL INTERACTIVO: CARGA MASIVA DE PRODUCTOS (EXCEL / CSV)     -->
+    <!-- ============================================================== -->
+    <div x-show="bulkModalOpen" x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
+
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 space-y-6 text-left transform transition-all my-8"
+            @click.away="if (!bulkUploading) bulkModalOpen = false"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100">
+
+            <!-- Encabezado del Modal -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-xs border border-emerald-100">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 font-heading">
+                            Carga Masiva de Productos en Lote
+                        </h3>
+                        <p class="text-xs text-slate-500">
+                            Importa productos en Excel (.xlsx) o CSV. Se generarán Códigos Internos Bolidrop en paralelo.
+                        </p>
+                    </div>
+                </div>
+                <button type="button" @click="bulkModalOpen = false" :disabled="bulkUploading"
+                    class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Paso 1: Descargar Plantilla -->
+            <div class="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-info text-emerald-600 text-sm mt-0.5"></i>
+                    <div>
+                        <span class="font-bold text-emerald-950">¿No tienes el formato oficial de importación?</span>
+                        <p class="text-[11px] text-emerald-800">Usa la plantilla preconfigurada con validaciones, ejemplos y códigos de megabodega.</p>
+                    </div>
+                </div>
+                <button type="button" @click="downloadAlertModalOpen = true"
+                    class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs transition shrink-0 cursor-pointer">
+                    <i class="fa-solid fa-download"></i> Descargar Plantilla
+                </button>
+            </div>
+
+            <!-- Paso 2: Zona de Carga de Archivo (Dropzone) -->
+            <div x-show="!bulkResult">
+                <div class="border-2 border-dashed rounded-2xl p-6 text-center transition cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/30"
+                    :class="bulkFile ? 'border-emerald-400 bg-emerald-50/20' : 'border-slate-300 bg-slate-50/50'"
+                    @dragover.prevent=""
+                    @drop.prevent="handleBulkDrop($event)"
+                    @click="$refs.bulkFileInput.click()">
+
+                    <input type="file" x-ref="bulkFileInput" @change="handleBulkFileInput($event)"
+                        accept=".xlsx,.xls,.csv" class="hidden">
+
+                    <div class="space-y-3">
+                        <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center"
+                            :class="bulkFile ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'">
+                            <i class="fa-solid text-2xl" :class="bulkFile ? 'fa-file-excel' : 'fa-cloud-arrow-up'"></i>
+                        </div>
+
+                        <template x-if="!bulkFile">
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">
+                                    Haz clic para seleccionar o arrastra tu archivo aquí
+                                </p>
+                                <p class="text-xs text-slate-400 mt-1">
+                                    Formatos permitidos: <span class="font-mono font-semibold text-slate-600">.xlsx, .xls, .csv</span> (Máximo 10 MB)
+                                </p>
+                            </div>
+                        </template>
+
+                        <template x-if="bulkFile">
+                            <div class="space-y-1">
+                                <p class="text-sm font-bold text-emerald-900" x-text="bulkFile.name"></p>
+                                <p class="text-xs text-emerald-700 font-mono" x-text="(bulkFile.size / 1024).toFixed(1) + ' KB'"></p>
+                                <button type="button" @click.stop="removeBulkFile()"
+                                    class="text-xs text-rose-600 hover:text-rose-800 font-semibold underline pt-1 cursor-pointer">
+                                    Cambiar archivo
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-3">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                        Generación automática de Código Interno (BLD-PRD-XXXXXX)
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-boxes-packing text-indigo-600"></i>
+                        Registro simultáneo en Kardex e Inventario
+                    </span>
+                </div>
+            </div>
+
+            <!-- Paso 3: Resultados de la Importación -->
+            <div x-show="bulkResult" class="space-y-4">
+                <!-- Tarjetas de resumen -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                        <div class="text-xs text-slate-500 font-medium">Total Procesados</div>
+                        <div class="text-2xl font-extrabold text-slate-900 font-mono mt-0.5" x-text="bulkResult?.total || 0"></div>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                        <div class="text-xs text-emerald-700 font-bold">Nuevos Creados</div>
+                        <div class="text-2xl font-extrabold text-emerald-700 font-mono mt-0.5" x-text="bulkResult?.created || 0"></div>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-center">
+                        <div class="text-xs text-blue-700 font-bold">Actualizados</div>
+                        <div class="text-2xl font-extrabold text-blue-700 font-mono mt-0.5" x-text="bulkResult?.updated || 0"></div>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-center">
+                        <div class="text-xs text-amber-700 font-bold">Con Observaciones</div>
+                        <div class="text-2xl font-extrabold text-amber-700 font-mono mt-0.5" x-text="bulkResult?.failed || 0"></div>
+                    </div>
+                </div>
+
+                <!-- Lista de errores si hubieron -->
+                <template x-if="bulkErrors && bulkErrors.length > 0">
+                    <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1.5 text-xs text-rose-800">
+                        <div class="font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation text-rose-600"></i>
+                            Observaciones encontradas en algunas filas:
+                        </div>
+                        <ul class="list-disc list-inside space-y-0.5 text-[11px] max-h-24 overflow-y-auto">
+                            <template x-for="(err, i) in bulkErrors" :key="i">
+                                <li x-text="err"></li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+
+                <!-- Tabla de productos procesados con Doble Código -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden max-h-60 overflow-y-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-[10px] uppercase font-bold text-slate-600 border-b border-slate-200 sticky top-0">
+                            <tr>
+                                <th class="py-2.5 px-3">SKU Cliente</th>
+                                <th class="py-2.5 px-3">Código Bolidrop</th>
+                                <th class="py-2.5 px-3">Producto</th>
+                                <th class="py-2.5 px-3">Bodega / Stock</th>
+                                <th class="py-2.5 px-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-for="(p, i) in bulkProducts" :key="i">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-2 px-3 font-mono font-bold text-[#0061f2]" x-text="p.sku"></td>
+                                    <td class="py-2 px-3">
+                                        <span class="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-barcode text-[9px] text-slate-400"></i>
+                                            <span x-text="p.internal_code"></span>
+                                        </span>
+                                    </td>
+                                    <td class="py-2 px-3 font-semibold text-slate-900" x-text="p.name"></td>
+                                    <td class="py-2 px-3 text-slate-600">
+                                        <span x-text="p.warehouse"></span> • <strong class="text-slate-900" x-text="p.stock + ' uds'"></strong>
+                                    </td>
+                                    <td class="py-2 px-3 text-right">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                            :class="p.action === 'creado' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'"
+                                            x-text="p.action === 'creado' ? 'Nuevo' : 'Actualizado'">
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                <template x-if="!bulkResult">
+                    <div class="flex items-center justify-between w-full">
+                        <button type="button" @click="bulkModalOpen = false" :disabled="bulkUploading"
+                            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="button" @click="submitBulkUpload()" :disabled="!bulkFile || bulkUploading"
+                            class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 inline-flex items-center gap-2 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                            <template x-if="bulkUploading">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                    <span>Procesando archivo...</span>
+                                </span>
+                            </template>
+                            <template x-if="!bulkUploading">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <span>Importar Productos</span>
+                                </span>
+                            </template>
+                        </button>
+                    </div>
+                </template>
+
+                <template x-if="bulkResult">
+                    <div class="flex items-center justify-between w-full">
+                        <button type="button" @click="resetBulkModal()"
+                            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition cursor-pointer">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Cargar otro archivo
+                        </button>
+                        <button type="button" @click="window.location.reload()"
+                            class="px-5 py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-bold text-xs shadow-md inline-flex items-center gap-2 transition cursor-pointer">
+                            <i class="fa-solid fa-check text-emerald-400"></i>
+                            <span>Listo, Actualizar Panel y Catálogo</span>
+                        </button>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -1034,6 +1342,13 @@ function proveedorDashboard() {
         categoryModalOpen: false,
         transferModalOpen: false,
         alertModalOpen: false,
+        downloadAlertModalOpen: false,
+        bulkModalOpen: false,
+        bulkUploading: false,
+        bulkFile: null,
+        bulkResult: null,
+        bulkProducts: [],
+        bulkErrors: [],
         submitting: false,
         categorySubmitting: false,
         transferring: false,
@@ -1319,6 +1634,88 @@ function proveedorDashboard() {
                 this.showToast('Error de comunicación con el servidor.', 'error');
             } finally {
                 this.submitting = false;
+            }
+        },
+
+        triggerDownload(format = 'xlsx') {
+            this.downloadAlertModalOpen = false;
+            this.showToast('Generando plantilla oficial Bolidrop...', 'success');
+            window.location.href = `/products/template/download?format=${format}`;
+        },
+
+        handleBulkFileInput(e) {
+            const file = e.target.files[0];
+            if (file) {
+                this.bulkFile = file;
+                this.bulkResult = null;
+                this.bulkErrors = [];
+            }
+        },
+
+        handleBulkDrop(e) {
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                this.bulkFile = file;
+                this.bulkResult = null;
+                this.bulkErrors = [];
+            }
+        },
+
+        removeBulkFile() {
+            this.bulkFile = null;
+            this.bulkResult = null;
+            this.bulkProducts = [];
+            this.bulkErrors = [];
+            if (this.$refs.bulkFileInput) {
+                this.$refs.bulkFileInput.value = '';
+            }
+        },
+
+        resetBulkModal() {
+            this.bulkFile = null;
+            this.bulkResult = null;
+            this.bulkProducts = [];
+            this.bulkErrors = [];
+            if (this.$refs.bulkFileInput) {
+                this.$refs.bulkFileInput.value = '';
+            }
+        },
+
+        async submitBulkUpload() {
+            if (!this.bulkFile) {
+                this.showToast('Por favor selecciona un archivo Excel o CSV.', 'error');
+                return;
+            }
+            this.bulkUploading = true;
+            try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const formData = new FormData();
+                formData.append('file', this.bulkFile);
+
+                const response = await fetch('/products/bulk-upload', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    this.bulkResult = result.summary;
+                    this.bulkProducts = result.products || [];
+                    this.bulkErrors = result.errors || [];
+                    this.showToast(result.message || 'Carga masiva completada exitosamente.', 'success');
+                } else {
+                    this.bulkErrors = result.errors || [result.message || 'Error al procesar el archivo.'];
+                    this.showToast(result.message || 'Hubo observaciones al procesar el archivo.', 'error');
+                }
+            } catch (err) {
+                this.showToast('Error de conexión al cargar el archivo.', 'error');
+            } finally {
+                this.bulkUploading = false;
             }
         }
     }

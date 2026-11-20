@@ -176,6 +176,10 @@ class PanelController extends Controller
         $stats = [
             'total_orders' => Order::count(),
             'total_volume_bob' => (float) Order::sum('total_amount_bob'),
+            'pending_cod_bob' => (float) Order::whereIn('status', ['pending_confirmation', 'confirmed', 'dispatched', 'in_transit'])->sum('total_amount_bob'),
+            'active_dispatches' => Order::whereIn('status', ['dispatched', 'in_transit'])->count(),
+            'delivered_orders' => Order::whereIn('status', ['delivered', 'settled'])->count(),
+            'pending_orders' => Order::whereIn('status', ['pending_confirmation', 'confirmed', 'dispatched', 'in_transit'])->count(),
             'platform_fees_bob' => (float) Order::where('status', 'settled')->sum('platform_fee_bob'),
             'total_dropshippers' => User::where('role', 'dropshipper')->count(),
             'total_providers' => User::where('role', 'provider')->count(),
@@ -267,7 +271,7 @@ class PanelController extends Controller
             'orders_month'    => Order::count(),
             'delivered'       => Order::where('status', 'delivered')->count(),
             'in_transit'      => Order::where('status', 'dispatched')->count(),
-            'stock_units'     => 1240, // demo
+            'stock_units'     => (int) \App\Models\WarehouseInventory::sum('stock_available'),
         ];
 
         $recentOrders = Order::with(['items.product', 'carrier'])
