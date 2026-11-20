@@ -449,7 +449,7 @@
                                 <span>Orden Binance Pay Generada</span>
                             </div>
                             <span class="bg-amber-200 text-amber-950 font-black px-2.5 py-1 rounded-lg font-mono text-xs"
-                                  x-text="(result?.payment?.order_amount_usdt || ((result?.order?.total_amount_bob || 0) / 12.06).toFixed(2)) + ' USDT'"></span>
+                                  x-text="(result?.payment?.order_amount_usdt || ((result?.order?.total_amount_bob || 0) / {{ $bcbOfficialRate ?? 11.75 }}).toFixed(2)) + ' USDT'"></span>
                         </div>
                         <div class="flex flex-col items-center gap-2 bg-white p-4 rounded-xl border border-amber-200 shadow-xs">
                             <img :src="result?.payment?.qr_image_url || result?.payment?.qr_code_url" alt="QR Binance Pay"

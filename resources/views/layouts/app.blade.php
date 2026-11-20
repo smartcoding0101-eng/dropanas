@@ -505,9 +505,39 @@
         }
 
         [x-cloak] { display: none !important; }
+
+        /* 10. WCAG 2.2 AA Accessible Keyboard Focus Rings & Tactile Feedback */
+        :focus-visible {
+            outline: 2px solid #4F46E5 !important;
+            outline-offset: 2px !important;
+        }
+        .skip-to-main {
+            position: fixed;
+            top: -100px;
+            left: 1rem;
+            z-index: 200;
+            background: #4F46E5;
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 0.65rem 1.1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+            transition: top 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .skip-to-main:focus {
+            top: 0.75rem;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]" x-data="{ sidenavOpen: true, mobileMenuOpen: false, logoutModalOpen: false }" @keydown.escape.window="logoutModalOpen = false">
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
+      x-data="{ sidenavOpen: true, mobileMenuOpen: false, logoutModalOpen: false, cmdPaletteOpen: false, cmdQuery: '' }"
+      @keydown.escape.window="logoutModalOpen = false; cmdPaletteOpen = false"
+      @keydown.ctrl.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())"
+      @keydown.meta.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())">
+
+    <!-- WCAG 2.2 AA Skip Navigation Link -->
+    <a href="#main-content" class="skip-to-main">Saltar al contenido principal</a>
 
     <!-- ===================================================================== -->
     <!-- STRIPE & LINEAR EXECUTIVE TOPNAV (Fixed Full-Width Frosted Navbar)    -->
@@ -543,14 +573,23 @@
             </a>
 
             @if(Auth::check() && !request()->is('/'))
-            <!-- Global Search Input (Solo en Paneles Internos) -->
-            <form action="{{ url('/tracking') }}" method="GET" class="hidden lg:flex items-center relative ml-2">
-                <input type="text" name="guide" placeholder="Buscar guía, pedido o SKU..."
-                    class="bg-[#F1F5F9] border border-slate-200/70 text-[#0F172A] placeholder-[#64748B] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition w-56 xl:w-64">
-                <button type="submit" class="absolute right-3 text-[#64748B] hover:text-[#4F46E5] transition">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            <!-- Global Search Input & Command Palette Trigger (Ctrl+K) -->
+            <div class="hidden lg:flex items-center gap-2 ml-2">
+                <form action="{{ url('/tracking') }}" method="GET" class="flex items-center relative">
+                    <input type="text" name="guide" placeholder="Buscar guía, pedido o SKU..."
+                        aria-label="Buscar guía, pedido o SKU"
+                        class="bg-[#F1F5F9] border border-slate-200/70 text-[#0F172A] placeholder-[#64748B] rounded-lg pl-3.5 pr-9 py-2 text-xs font-medium focus:outline-none focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15 transition w-52 xl:w-60">
+                    <button type="submit" aria-label="Ejecutar búsqueda" class="absolute right-3 text-[#64748B] hover:text-[#4F46E5] transition cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </button>
+                </form>
+                <button type="button" @click="cmdPaletteOpen = true; $nextTick(() => $refs.cmdInput?.focus())"
+                    title="Abrir Paleta de Comandos Rápida (Ctrl + K)"
+                    class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-[#64748B] hover:text-[#4F46E5] border border-slate-200/80 text-[11px] font-bold flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-terminal text-[10px]"></i>
+                    <kbd class="font-mono text-[10px] bg-white px-1.5 py-0.5 rounded border border-slate-200 text-[#0F172A]">Ctrl K</kbd>
                 </button>
-            </form>
+            </div>
             @endif
         </div>
 
@@ -988,7 +1027,50 @@
              @endif
              class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out">
             
-            <main class="px-4 py-3 sm:px-8 sm:py-5 flex-grow">
+            <main id="main-content" class="px-4 py-3 sm:px-8 sm:py-5 pb-20 md:pb-6 flex-grow">
+                @if(Auth::check() && !request()->is('/'))
+                    <!-- Barra Contextual de Ubicación (UX Wayfinding Breadcrumb + Acciones Rápidas) -->
+                    @php
+                        $currentModuleTitle = match(true) {
+                            request()->is('panel/admin/kardex*')     => 'Kardex Global & Trazabilidad de Stock',
+                            request()->is('panel/admin*')            => 'Dashboard Central Administrador',
+                            request()->is('panel/dropshipper*')      => 'Panel de Vendedor Dropshipper',
+                            request()->is('panel/proveedor*')        => 'Panel de Proveedor Mayorista',
+                            request()->is('panel/carrier*')          => 'Panel de Repartidor DEX Express',
+                            request()->is('panel/fulfillment*')      => 'Panel de Cliente Fulfillment',
+                            request()->is('catalogo*')               => 'Megabodega Mayorista Nacional',
+                            request()->is('checkout-demo*')          => 'Generador de Pedidos Contra Entrega (COD)',
+                            request()->is('settlements*')            => 'Conciliación & Liquidaciones Bancarias',
+                            request()->is('reports*')                => 'Reportes Financieros & Analytics',
+                            request()->is('returns*')                => 'Logística Inversa & Novedades en Ruta',
+                            request()->is('carrier/cobro*')          => 'Terminal de Cobro en Puerta (Efectivo / QR)',
+                            request()->is('notifications/whatsapp*') => 'Centro Transaccional WhatsApp (+591)',
+                            request()->is('tracking*')               => 'Rastreo de Guías en Vivo',
+                            request()->is('soporte*')                => 'Centro de Ayuda & Soporte Técnico',
+                            request()->is('contactenos*')            => 'Red de Megabodegas & Almacenes',
+                            default                                  => 'Plataforma Operativa',
+                        };
+                    @endphp
+                    <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#64748B]">
+                        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 font-medium">
+                            <a href="{{ $dashboardUrl ?? url('/') }}" class="hover:text-[#4F46E5] transition flex items-center gap-1">
+                                <i class="fa-solid fa-house-chimney text-[10px] text-[#4F46E5]"></i>
+                                <span>Bolidrop</span>
+                            </a>
+                            <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
+                            <span class="font-bold text-[#0F172A]">{{ $currentModuleTitle }}</span>
+                        </nav>
+                        <div class="flex items-center gap-2">
+                            <button type="button" @click="cmdPaletteOpen = true; $nextTick(() => $refs.cmdInput?.focus())"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-indigo-50 text-[#4F46E5] border border-slate-200/80 font-bold text-[10px] shadow-2xs transition cursor-pointer">
+                                <i class="fa-solid fa-bolt text-[9px]"></i>
+                                <span>Salto Rápido</span>
+                                <kbd class="hidden sm:inline font-mono text-[9px] text-slate-400">Ctrl+K</kbd>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 @if (session('status'))
                     <div x-data="{ show: true }" x-show="show" x-cloak
                         class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-2xs">
@@ -1005,7 +1087,7 @@
             </main>
 
             <!-- STRIPE & LINEAR EXECUTIVE FOOTER -->
-            <footer class="bg-white border-t border-slate-200/80 px-6 sm:px-10 py-6 text-xs text-[#64748B]">
+            <footer class="bg-white border-t border-slate-200/80 px-6 sm:px-10 py-6 pb-20 md:pb-6 text-xs text-[#64748B]">
                 <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                         <span>Copyright &copy; <strong class="text-[#0F172A]">Bolidrop Bolivia</strong> {{ date('Y') }}</span>
@@ -1030,6 +1112,109 @@
     </div>
 
     @if(Auth::check())
+    <!-- ===================================================================== -->
+    <!-- BARRA INFERIOR TÁCTIL MÓVIL (Mobile Bottom Navigation Dock < 768px)   -->
+    <!-- ===================================================================== -->
+    @if(!request()->is('/'))
+    <nav aria-label="Navegación rápida móvil"
+         class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] px-2 py-1.5 flex items-center justify-around">
+        <a href="{{ $dashboardUrl ?? url('/panel/admin') }}"
+           class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 py-1 rounded-xl transition {{ request()->is('panel/*') && !request()->is('panel/admin/kardex*') ? 'text-[#4F46E5] font-extrabold bg-indigo-50/70' : 'text-[#64748B] hover:text-[#0F172A] font-medium' }}">
+            <i class="fa-solid fa-gauge-high text-sm mb-0.5"></i>
+            <span class="text-[10px] leading-none">Panel</span>
+        </a>
+        <a href="{{ url('/catalogo') }}"
+           class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 py-1 rounded-xl transition {{ request()->is('catalogo*') ? 'text-[#4F46E5] font-extrabold bg-indigo-50/70' : 'text-[#64748B] hover:text-[#0F172A] font-medium' }}">
+            <i class="fa-solid fa-boxes-stacked text-sm mb-0.5"></i>
+            <span class="text-[10px] leading-none">Catálogo</span>
+        </a>
+        <a href="{{ url('/checkout-demo') }}"
+           class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-3 py-1 rounded-xl bg-gradient-to-r from-[#4F46E5] to-[#312E81] text-white font-extrabold shadow-sm">
+            <i class="fa-solid fa-plus text-sm mb-0.5"></i>
+            <span class="text-[10px] leading-none">Pedido COD</span>
+        </a>
+        <a href="{{ url('/tracking') }}"
+           class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 py-1 rounded-xl transition {{ request()->is('tracking*') ? 'text-[#4F46E5] font-extrabold bg-indigo-50/70' : 'text-[#64748B] hover:text-[#0F172A] font-medium' }}">
+            <i class="fa-solid fa-magnifying-glass-location text-sm mb-0.5"></i>
+            <span class="text-[10px] leading-none">Rastreo</span>
+        </a>
+        <button type="button" @click="cmdPaletteOpen = true; $nextTick(() => $refs.cmdInput?.focus())"
+           class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] px-2 py-1 rounded-xl text-[#64748B] hover:text-[#4F46E5] font-medium transition cursor-pointer">
+            <i class="fa-solid fa-compass text-sm mb-0.5"></i>
+            <span class="text-[10px] leading-none">Módulos</span>
+        </button>
+    </nav>
+    @endif
+
+    <!-- ===================================================================== -->
+    <!-- PALETA DE COMANDOS EJECUTIVA (Command Palette Ctrl+K — Stripe/Linear) -->
+    <!-- ===================================================================== -->
+    <div x-show="cmdPaletteOpen" x-cloak
+         class="fixed inset-0 z-[110] flex items-start justify-center pt-14 sm:pt-24 p-4 bg-[#0F172A]/60 backdrop-blur-xs"
+         role="dialog" aria-modal="true" aria-label="Paleta de navegación rápida"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-120"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        <div @click.away="cmdPaletteOpen = false"
+             class="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
+            <div class="p-3.5 border-b border-slate-100 flex items-center gap-3 bg-slate-50/60">
+                <i class="fa-solid fa-magnifying-glass text-[#4F46E5] text-sm ml-1"></i>
+                <input type="text" x-ref="cmdInput" x-model="cmdQuery"
+                       placeholder="Ir a módulo, crear pedido COD, abrir Kardex, liquidaciones..."
+                       class="w-full bg-transparent text-xs sm:text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none font-medium">
+                <button type="button" @click="cmdPaletteOpen = false"
+                        class="px-2 py-0.5 rounded bg-slate-200/70 text-[10px] font-mono font-bold text-slate-600 hover:bg-slate-300 cursor-pointer">
+                    ESC
+                </button>
+            </div>
+
+            <div class="max-h-80 overflow-y-auto p-2 space-y-1 text-xs">
+                <div class="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    Accesos Directos del Ecosistema Bolidrop
+                </div>
+                @php
+                    $quickActions = [
+                        ['label' => 'Mi Panel Principal (Dashboard)', 'desc' => 'Métricas COD, pedidos y billetera en vivo', 'url' => $dashboardUrl ?? url('/panel/admin'), 'icon' => 'fa-solid fa-gauge-high', 'tag' => 'Panel'],
+                        ['label' => 'Megabodega Mayorista Nacional', 'desc' => 'Catálogo verificado con stock en Santa Cruz, La Paz y Cochabamba', 'url' => url('/catalogo'), 'icon' => 'fa-solid fa-boxes-stacked', 'tag' => 'Catálogo'],
+                        ['label' => 'Crear Nuevo Pedido Contra Entrega (COD)', 'desc' => 'Registrar orden con guía DEX y cobro Efectivo o QR Simple', 'url' => url('/checkout-demo'), 'icon' => 'fa-solid fa-cart-plus', 'tag' => 'Venta COD'],
+                        ['label' => 'Rastreo de Guías en Vivo', 'desc' => 'Consultar estatus logístico DRP-2026-XXXXXX', 'url' => url('/tracking'), 'icon' => 'fa-solid fa-magnifying-glass-location', 'tag' => 'Tracking'],
+                        ['label' => 'Logística Inversa & Novedades en Ruta', 'desc' => 'Reprogramar entregas fallidas o procesar devoluciones', 'url' => url('/returns'), 'icon' => 'fa-solid fa-rotate-left', 'tag' => 'Logística'],
+                        ['label' => 'Terminal de Cobro Repartidor (QR / Efectivo)', 'desc' => 'Cobrar entrega en puerta con QR Simple o Binance USDT', 'url' => url('/carrier/cobro'), 'icon' => 'fa-solid fa-qrcode', 'tag' => 'Courier DEX'],
+                    ];
+                    if (in_array(Auth::user()->role, ['tenant_admin', 'admin', 'superadmin'])) {
+                        $quickActions[] = ['label' => 'Liquidaciones Bancarias & Lotes BNB', 'desc' => 'Aprobar retiros a vendedores y proveedores', 'url' => url('/settlements'), 'icon' => 'fa-solid fa-building-columns', 'tag' => 'Finanzas'];
+                        $quickActions[] = ['label' => 'Kardex Global & Auditoría de Inventario', 'desc' => 'Trazabilidad física e invariante contable de bodegas', 'url' => route('admin.kardex.index'), 'icon' => 'fa-solid fa-clipboard-list', 'tag' => 'Admin'];
+                        $quickActions[] = ['label' => 'Reportes Financieros & Analytics', 'desc' => 'Efectividad de entrega por departamento y transportadora', 'url' => url('/reports'), 'icon' => 'fa-solid fa-chart-line', 'tag' => 'Analytics'];
+                        $quickActions[] = ['label' => 'Centro Transaccional WhatsApp (+591)', 'desc' => 'Confirmación automática de pedidos con compradores', 'url' => url('/notifications/whatsapp'), 'icon' => 'fa-brands fa-whatsapp', 'tag' => 'Bot +591'];
+                    }
+                @endphp
+
+                @foreach($quickActions as $qa)
+                    <a href="{{ $qa['url'] }}"
+                       x-show="!cmdQuery || '{{ strtolower($qa['label'] . ' ' . $qa['desc'] . ' ' . $qa['tag']) }}'.includes(cmdQuery.toLowerCase())"
+                       class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50/80 text-[#0F172A] group transition">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 group-hover:bg-[#4F46E5] text-[#4F46E5] group-hover:text-white flex items-center justify-center transition shrink-0">
+                                <i class="{{ $qa['icon'] }} text-xs"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-xs text-[#0F172A] group-hover:text-[#4F46E5] truncate">{{ $qa['label'] }}</div>
+                                <div class="text-[10px] text-slate-500 truncate">{{ $qa['desc'] }}</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100 group-hover:bg-indigo-100 text-slate-600 group-hover:text-[#4F46E5] font-bold text-[10px] shrink-0">
+                            {{ $qa['tag'] }} →
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
     <!-- ===================================================================== -->
     <!-- TARJETA TAILWIND DE ADVERTENCIA ANTES DE SALIR DEL SISTEMA            -->
     <!-- ===================================================================== -->
