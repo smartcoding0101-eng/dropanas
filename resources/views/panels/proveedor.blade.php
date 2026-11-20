@@ -1295,26 +1295,89 @@
                         <p class="text-xs text-slate-500">Mueve inventario entre Santa Cruz, La Paz y Cochabamba con Kardex dual</p>
                     </div>
                 </div>
-                <button @click="transferModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100">
+                <button @click="transferModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
             <form @submit.prevent="submitTransfer()" class="text-xs space-y-4">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Producto a Mover:</label>
-                    <select x-model="transferForm.product_id" required
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
-                        <option value="">Selecciona un producto...</option>
-                        @foreach($products as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku }})</option>
-                        @endforeach
-                    </select>
+                <!-- Autocompletado y Selección Múltiple de Productos -->
+                <div class="space-y-1.5 relative" @click.away="transferModalDropdownOpen = false">
+                    <label class="block font-bold text-slate-700">
+                        Productos a Mover: *
+                        <span class="text-[11px] text-slate-400 font-normal">(Escribe para autocompletar y selecciona múltiples)</span>
+                    </label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" x-model="transferModalSearch"
+                            @focus="transferModalDropdownOpen = true"
+                            @input="transferModalDropdownOpen = true"
+                            placeholder="Escribe el nombre, SKU o código del producto..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-slate-800 text-xs focus:outline-none focus:border-indigo-500 focus:bg-white transition">
+                    </div>
+
+                    <!-- Dropdown de autocompletado -->
+                    <div x-show="transferModalDropdownOpen && filteredModalProducts().length > 0" x-cloak
+                        class="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-xl divide-y divide-slate-100">
+                        <template x-for="p in filteredModalProducts()" :key="p.id">
+                            <button type="button" @click="addModalTransferProduct(p)"
+                                class="w-full px-3.5 py-2.5 text-left text-xs hover:bg-indigo-50 flex items-center justify-between gap-2 transition cursor-pointer">
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-bold text-slate-800 truncate" x-text="p.name"></p>
+                                    <p class="text-[10px] text-slate-400 font-mono">
+                                        SKU: <strong class="text-slate-600" x-text="p.sku"></strong> · <span class="text-indigo-600 font-bold" x-text="p.internal_code"></span>
+                                    </p>
+                                </div>
+                                <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <i class="fa-solid fa-plus text-[9px]"></i> Agregar
+                                </span>
+                            </button>
+                        </template>
+                    </div>
+                    <div x-show="transferModalDropdownOpen && filteredModalProducts().length === 0 && transferModalSearch.trim() !== ''" x-cloak
+                        class="absolute z-30 left-0 right-0 mt-1 p-3 text-center text-xs text-slate-400 bg-white rounded-xl border border-slate-200 shadow-lg">
+                        No se encontraron productos coincidentes
+                    </div>
+                </div>
+
+                <!-- Lista de productos seleccionados en el modal -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label class="font-bold text-slate-700">Productos Seleccionados:</label>
+                        <span class="text-[11px] font-mono text-indigo-600 font-bold" x-text="transferModalItems.length + ' producto(s)'"></span>
+                    </div>
+
+                    <template x-if="transferModalItems.length === 0">
+                        <div class="p-3.5 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 text-center text-xs text-slate-400">
+                            <i class="fa-solid fa-box-open text-slate-300 text-base mb-1 block"></i>
+                            Escribe en el campo de arriba para buscar y agregar productos a transferir.
+                        </div>
+                    </template>
+
+                    <div class="space-y-2 max-h-48 overflow-y-auto pr-1" x-show="transferModalItems.length > 0">
+                        <template x-for="(item, idx) in transferModalItems" :key="item.product_id">
+                            <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-slate-200 bg-slate-50">
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-bold text-slate-800 text-xs truncate" x-text="item.name"></p>
+                                    <p class="text-[10px] font-mono text-slate-400" x-text="item.sku + ' · ' + item.internal_code"></p>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <label class="text-[11px] text-slate-500">Uds:</label>
+                                    <input type="number" x-model.number="item.quantity" min="1" required
+                                        class="w-20 bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-800 text-xs font-mono font-bold text-right focus:outline-none focus:border-indigo-500">
+                                    <button type="button" @click="removeModalTransferProduct(idx)"
+                                        class="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer">
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Bodega Origen:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Bodega Origen: *</label>
                         <select x-model="transferForm.from_warehouse_id" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
                             <option value="">Seleccionar origen...</option>
@@ -1325,7 +1388,7 @@
                     </div>
 
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Bodega Destino:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Bodega Destino: *</label>
                         <select x-model="transferForm.to_warehouse_id" required
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
                             <option value="">Seleccionar destino...</option>
@@ -1336,27 +1399,20 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Cantidad de Unidades:</label>
-                        <input type="number" x-model.number="transferForm.quantity" min="1" required placeholder="Ej: 25"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono font-bold focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Motivo / Guía interna:</label>
-                        <input type="text" x-model="transferForm.notes" placeholder="Ej: Reabastecimiento eje troncal"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
-                    </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Motivo / Guía interna: (opcional)</label>
+                    <input type="text" x-model="transferForm.notes" placeholder="Ej: Reabastecimiento operativo eje troncal"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                    <button type="button" @click="transferModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100">
+                    <button type="button" @click="transferModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="submit" :disabled="transferring"
-                        class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm">
+                    <button type="submit" :disabled="transferring || transferModalItems.length === 0 || !transferForm.from_warehouse_id || !transferForm.to_warehouse_id"
+                        class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                         <span x-show="!transferring" class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-arrow-right-arrow-left text-amber-200"></i> Registrar Transferencia
+                            <i class="fa-solid fa-arrow-right-arrow-left text-amber-200"></i> Registrar Transferencia (<span x-text="transferModalItems.length"></span>)
                         </span>
                         <span x-show="transferring" class="flex items-center gap-1.5">
                             <i class="fa-solid fa-spinner animate-spin"></i> Procesando...
@@ -2034,11 +2090,41 @@ function proveedorDashboard() {
             image_url: ''
         },
         transferForm: {
-            product_id: '{{ $products->first()?->id ?? "" }}',
             from_warehouse_id: '{{ $allWarehouses->first()?->id ?? "" }}',
             to_warehouse_id: '{{ $allWarehouses->count() > 1 ? $allWarehouses->get(1)->id : "" }}',
-            quantity: 10,
             notes: 'Transferencia operativa entre bodegas'
+        },
+        transferModalItems: [],
+        transferModalSearch: '',
+        transferModalDropdownOpen: false,
+        allModalProducts: @json($transferProductsList ?? []),
+
+        filteredModalProducts() {
+            const q = (this.transferModalSearch || '').toLowerCase().trim();
+            const selectedIds = this.transferModalItems.map(i => i.product_id);
+            return this.allModalProducts.filter(p => {
+                if (selectedIds.includes(p.id)) return false;
+                if (!q) return true;
+                return (p.name || '').toLowerCase().includes(q) ||
+                       (p.sku || '').toLowerCase().includes(q) ||
+                       (p.internal_code || '').toLowerCase().includes(q);
+            });
+        },
+
+        addModalTransferProduct(product) {
+            this.transferModalItems.push({
+                product_id: product.id,
+                name: product.name,
+                sku: product.sku,
+                internal_code: product.internal_code,
+                quantity: 10
+            });
+            this.transferModalSearch = '';
+            this.transferModalDropdownOpen = false;
+        },
+
+        removeModalTransferProduct(index) {
+            this.transferModalItems.splice(index, 1);
         },
         alertForm: {
             product_id: '{{ $products->first()?->id ?? "" }}',
@@ -2081,9 +2167,29 @@ function proveedorDashboard() {
                 this.showToast('La bodega de origen y destino no pueden ser iguales.', 'error');
                 return;
             }
+            if (this.transferModalItems.length === 0) {
+                this.showToast('Debes seleccionar al menos un producto a mover.', 'error');
+                return;
+            }
+            for (const item of this.transferModalItems) {
+                if (!item.quantity || item.quantity < 1) {
+                    this.showToast(`La cantidad para "${item.name}" debe ser al menos 1.`, 'error');
+                    return;
+                }
+            }
             this.transferring = true;
             try {
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const payload = {
+                    from_warehouse_id: this.transferForm.from_warehouse_id,
+                    to_warehouse_id:   this.transferForm.to_warehouse_id,
+                    notes:             this.transferForm.notes || null,
+                    items:             this.transferModalItems.map(i => ({
+                        product_id: i.product_id,
+                        quantity:   parseInt(i.quantity, 10)
+                    }))
+                };
+
                 const response = await fetch('/inventory/transfer', {
                     method: 'POST',
                     headers: {
@@ -2091,12 +2197,13 @@ function proveedorDashboard() {
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrf
                     },
-                    body: JSON.stringify(this.transferForm)
+                    body: JSON.stringify(payload)
                 });
                 const result = await response.json();
                 if (response.ok && result.status === 'success') {
                     this.showToast(result.message || 'Transferencia realizada con éxito.', 'success');
                     this.transferModalOpen = false;
+                    this.transferModalItems = [];
                     setTimeout(() => { window.location.reload(); }, 1000);
                 } else {
                     const errMsg = result.errors ? Object.values(result.errors).flat().join(' ') : (result.message || 'Error al realizar la transferencia.');
