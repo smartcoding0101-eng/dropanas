@@ -43,7 +43,10 @@ Route::middleware(['auth'])->group(function () {
         return view('catalog', compact('products', 'categories'));
     })->name('catalog');
 
-    // CRUD Web de Categorías de Productos (JSON para Modal en Panel Proveedor / Admin)
+    // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
+    Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');
+    Route::post('/inventory/transfer', [\App\Http\Controllers\Api\InventoryController::class, 'transfer'])->name('inventory.transfer.web');
+    Route::post('/inventory/alerts', [\App\Http\Controllers\Api\InventoryController::class, 'setAlert'])->name('inventory.alerts.web');
     Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store'])->name('categories.store');
     Route::match(['put', 'patch'], '/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'update'])->name('categories.update');

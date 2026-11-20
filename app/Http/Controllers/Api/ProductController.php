@@ -76,6 +76,13 @@ class ProductController extends Controller
             ], 403);
         }
 
+        // Normalizar booleanos que llegan como string ("true" / "false") desde FormData multipart
+        if ($request->has('is_cod_available')) {
+            $request->merge([
+                'is_cod_available' => filter_var($request->input('is_cod_available'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
+            ]);
+        }
+
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:200',
@@ -88,7 +95,7 @@ class ProductController extends Controller
             'images' => 'nullable|array',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
             'image_url' => 'nullable|string|max:500',
-            'is_cod_available' => 'boolean',
+            'is_cod_available' => 'nullable|boolean',
             'initial_warehouse_id' => 'nullable|exists:warehouses,id',
             'initial_stock' => 'nullable|integer|min:0',
         ]);
@@ -110,28 +117,42 @@ class ProductController extends Controller
         $initialStock = (int) ($validated['initial_stock'] ?? 0);
         unset($validated['initial_warehouse_id'], $validated['initial_stock']);
 
-        $validated['provider_id'] = $user->id;
-        $validated['tenant_id'] = $user->tenant_id;
+        // Si quien publica es tenant_admin, asignar al proveedor del almacén o al proveedor principal
+        $providerId = $user->id;
+        if (!$user->isProvider()) {
+            $whProviderId = $initialWarehouseId ? Warehouse::where('id', $initialWarehouseId)->value('provider_id') : null;
+            $providerId = $whProviderId ?? \App\Models\User::where('role', 'provider')->value('id') ?? $user->id;
+        }
+
+        $validated['provider_id'] = $providerId;
+        $validated['tenant_id'] = $user->tenant_id ?? \App\Models\Tenant::value('id');
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['name']) . '-' . rand(1000, 9999);
         $validated['status'] = 'published';
+        $validated['is_cod_available'] = $validated['is_cod_available'] ?? true;
 
         $product = Product::create($validated);
 
-        if ($initialWarehouseId && $initialStock > 0) {
-            $inv = \App\Models\WarehouseInventory::create([
-                'tenant_id' => $user->tenant_id,
-                'warehouse_id' => $initialWarehouseId,
-                'product_id' => $product->id,
-                'stock_physical' => $initialStock,
-                'stock_reserved' => 0,
-                'stock_available' => $initialStock,
-            ]);
-
-            app(\App\Services\Inventory\KardexService::class)->recordOpeningBalance(
-                $inv,
-                $user->id,
-                'Ingreso inicial por alta y publicación de producto en bodega'
+        if ($initialWarehouseId) {
+            $inv = \App\Models\WarehouseInventory::updateOrCreate(
+                [
+                    'warehouse_id' => $initialWarehouseId,
+                    'product_id'   => $product->id,
+                ],
+                [
+                    'tenant_id'       => $validated['tenant_id'],
+                    'stock_physical'  => $initialStock,
+                    'stock_reserved'  => 0,
+                    'stock_available' => $initialStock,
+                ]
             );
+
+            if ($initialStock > 0) {
+                app(\App\Services\Inventory\KardexService::class)->recordOpeningBalance(
+                    $inv,
+                    $user->id,
+                    'Ingreso inicial por alta y publicación de producto en bodega'
+                );
+            }
         }
 
         return response()->json([

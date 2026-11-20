@@ -1074,26 +1074,16 @@ function proveedorDashboard() {
             reorder_quantity: 50
         },
 
-        async getAuthToken() {
-            const authRes = await fetch('/api/v1/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ email: 'proveedor@bolidrop.bo', password: 'password123' })
-            });
-            const authData = await authRes.json();
-            return authData.data?.token;
-        },
-
         async submitAlert() {
             this.alertSubmitting = true;
             try {
-                const token = await this.getAuthToken();
-                const response = await fetch('/api/v1/inventory/alerts', {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/inventory/alerts', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'X-CSRF-TOKEN': csrf
                     },
                     body: JSON.stringify(this.alertForm)
                 });
@@ -1101,9 +1091,10 @@ function proveedorDashboard() {
                 if (response.ok && result.status === 'success') {
                     this.showToast(result.message || 'Alerta de inventario configurada correctamente.', 'success');
                     this.alertModalOpen = false;
-                    setTimeout(() => { window.location.reload(); }, 1200);
+                    setTimeout(() => { window.location.reload(); }, 1000);
                 } else {
-                    this.showToast(result.message || 'Error al configurar la alerta.', 'error');
+                    const errMsg = result.errors ? Object.values(result.errors).flat().join(' ') : (result.message || 'Error al configurar la alerta.');
+                    this.showToast(errMsg, 'error');
                 }
             } catch (err) {
                 this.showToast('Error de comunicación con el servidor.', 'error');
@@ -1119,13 +1110,13 @@ function proveedorDashboard() {
             }
             this.transferring = true;
             try {
-                const token = await this.getAuthToken();
-                const response = await fetch('/api/v1/inventory/transfer', {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/inventory/transfer', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'X-CSRF-TOKEN': csrf
                     },
                     body: JSON.stringify(this.transferForm)
                 });
@@ -1133,9 +1124,10 @@ function proveedorDashboard() {
                 if (response.ok && result.status === 'success') {
                     this.showToast(result.message || 'Transferencia realizada con éxito.', 'success');
                     this.transferModalOpen = false;
-                    setTimeout(() => { window.location.reload(); }, 1200);
+                    setTimeout(() => { window.location.reload(); }, 1000);
                 } else {
-                    this.showToast(result.message || 'Error al realizar la transferencia.', 'error');
+                    const errMsg = result.errors ? Object.values(result.errors).flat().join(' ') : (result.message || 'Error al realizar la transferencia.');
+                    this.showToast(errMsg, 'error');
                 }
             } catch (err) {
                 this.showToast('Error de comunicación con el servidor.', 'error');
@@ -1285,31 +1277,28 @@ function proveedorDashboard() {
         async submitProduct() {
             this.submitting = true;
             try {
-                // Obtener token con el usuario proveedor
-                const authRes = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'proveedor@bolidrop.bo', password: 'password123' })
-                });
-                const authData = await authRes.json();
-                const token = authData.data?.token;
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-                // Crear FormData para soportar carga de imagen física
+                // Crear FormData para soportar carga de imagen física y normalizar booleanos
                 const formData = new FormData();
                 for (const key in this.form) {
                     if (this.form[key] !== null && this.form[key] !== undefined && this.form[key] !== '') {
-                        formData.append(key, this.form[key]);
+                        if (typeof this.form[key] === 'boolean') {
+                            formData.append(key, this.form[key] ? '1' : '0');
+                        } else {
+                            formData.append(key, this.form[key]);
+                        }
                     }
                 }
                 if (this.imageFile) {
                     formData.append('image', this.imageFile);
                 }
 
-                const response = await fetch('/api/v1/products', {
+                const response = await fetch('/products', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'X-CSRF-TOKEN': csrf
                     },
                     body: formData
                 });
@@ -1317,11 +1306,14 @@ function proveedorDashboard() {
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    this.showToast(result.message || 'Producto publicado con éxito.', 'success');
+                    this.showToast(result.message || 'Producto publicado con éxito en Catálogo e Inventarios.', 'success');
                     this.productModalOpen = false;
-                    setTimeout(() => { window.location.reload(); }, 1200);
+                    setTimeout(() => { window.location.reload(); }, 900);
                 } else {
-                    this.showToast(result.message || 'Error al guardar el producto.', 'error');
+                    const errMsg = result.errors
+                        ? Object.values(result.errors).flat().join(' ')
+                        : (result.message || 'Error al guardar el producto.');
+                    this.showToast(errMsg, 'error');
                 }
             } catch (err) {
                 this.showToast('Error de comunicación con el servidor.', 'error');

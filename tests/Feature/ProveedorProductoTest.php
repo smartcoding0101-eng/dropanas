@@ -224,6 +224,41 @@ class ProveedorProductoTest extends TestCase
             ->assertJsonPath('status', 'success');
         $this->assertDatabaseMissing('categories', ['id' => $catId]);
     }
+
+    /** Publicar producto vía formulario web (/products con FormData boolean string "true") aparece en Catálogo e Inventarios */
+    public function test_web_product_creation_with_formdata_boolean_appears_in_catalog_and_inventory(): void
+    {
+        $provider  = User::where('role', 'provider')->first();
+        $category  = Category::first();
+        $warehouse = Warehouse::where('provider_id', $provider->id)->first();
+
+        $response = $this->actingAs($provider)->postJson('/products', [
+            'name'                 => 'Impresora Multifuncional Epson EcoTank L4150',
+            'sku'                  => 'IMPR-EPSON-01',
+            'category_id'          => $category->id,
+            'cost_price_bob'       => 120,
+            'min_price_bob'        => 140,
+            'suggested_price_bob'  => 199,
+            'initial_warehouse_id' => $warehouse->id,
+            'initial_stock'        => 50,
+            'is_cod_available'     => 'true', // Tal como lo envía FormData.append() en JS
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('status', 'success');
+
+        // Verificar que aparece en /catalogo
+        $catalogRes = $this->actingAs($provider)->get('/catalogo');
+        $catalogRes->assertStatus(200)
+            ->assertSee('Impresora Multifuncional Epson EcoTank L4150')
+            ->assertSee('IMPR-EPSON-01');
+
+        // Verificar que aparece en /panel/proveedor (Inventarios y Mis Productos)
+        $panelRes = $this->actingAs($provider)->get('/panel/proveedor');
+        $panelRes->assertStatus(200)
+            ->assertSee('Impresora Multifuncional Epson EcoTank L4150')
+            ->assertSee('IMPR-EPSON-01');
+    }
 }
 
 
