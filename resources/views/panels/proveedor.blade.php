@@ -93,6 +93,9 @@
         <a href="#almacenes" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
             <i class="fa-solid fa-warehouse text-indigo-500"></i> Almacenes
         </a>
+        <a href="#red-comercial" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-users-rays text-emerald-600"></i> Vendedores & Clientes
+        </a>
         <a href="#inventario" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
             <i class="fa-solid fa-boxes-stacked text-slate-400"></i> Inventario
         </a>
@@ -728,6 +731,542 @@
         </div>
     </div>
     <!-- FIN MÓDULO ALMACENES -->
+
+    <!-- =========================================================
+         MÓDULO RED COMERCIAL (VENDEDORES & CLIENTES + RESERVAS)
+    ========================================================= -->
+    <div id="red-comercial" class="space-y-6" x-data="networkModule()">
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <!-- Cabecera de Red Comercial -->
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold text-sm shadow-xs">
+                        <i class="fa-solid fa-users-rays"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm font-heading">Red Comercial de Venta & Apartado de Stock</h3>
+                        <p class="text-xs text-slate-500">Administra tus Vendedores (Dropshippers) y Clientes directos · Separa productos de bodega exclusivamente para ellos</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" @click="openReserveModal()"
+                        class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition">
+                        <i class="fa-solid fa-bookmark text-amber-100"></i> Apartar Stock
+                    </button>
+                    <button type="button" @click="customerModalOpen = true; resetCustomerForm()"
+                        class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-user-plus text-amber-200"></i> Nuevo Cliente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sub-tabs del módulo -->
+            <div class="flex border-b border-slate-200 bg-white overflow-x-auto">
+                <button type="button" @click="activeTab = 'vendedores'; loadSellers()"
+                    :class="activeTab === 'vendedores' ? 'border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50/60 font-bold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+                    class="px-5 py-3 text-xs whitespace-nowrap flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-store"></i> Vendedores (Dropshippers)
+                    <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-mono" x-text="sellersPagination ? sellersPagination.total : sellersList.length"></span>
+                </button>
+                <button type="button" @click="activeTab = 'clientes'; loadCustomers()"
+                    :class="activeTab === 'clientes' ? 'border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50/60 font-bold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+                    class="px-5 py-3 text-xs whitespace-nowrap flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-users"></i> Cartera de Clientes
+                    <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-mono" x-text="customersPagination ? customersPagination.total : customersList.length"></span>
+                </button>
+                <button type="button" @click="activeTab = 'apartados'; loadReserves()"
+                    :class="activeTab === 'apartados' ? 'border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50/60 font-bold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+                    class="px-5 py-3 text-xs whitespace-nowrap flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-cubes-stacked"></i> Stock Apartado / Reservas Activas
+                    <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-mono font-bold" x-text="reservesList.length"></span>
+                </button>
+            </div>
+
+            <!-- =====================================================
+                 SUB-TAB 1: VENDEDORES (DROPSHIPPERS)
+            ===================================================== -->
+            <div x-show="activeTab === 'vendedores'" x-transition class="p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                    <div class="relative w-full sm:w-80">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" x-model="sellerSearch" @input.debounce.400ms="loadSellers()"
+                            placeholder="Buscar vendedor por nombre, tienda o ciudad..."
+                            class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+                    </div>
+                    <span class="text-[11px] text-slate-400">Dropshippers activos en la plataforma para impulsar tus ventas</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3">Vendedor / Tienda</th>
+                                <th class="px-4 py-3">Ubicación</th>
+                                <th class="px-4 py-3 text-center">Pedidos</th>
+                                <th class="px-4 py-3 text-center">Stock Apartado</th>
+                                <th class="px-4 py-3 text-right">Contacto</th>
+                                <th class="px-4 py-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="loadingSellers">
+                                <tr><td colspan="6" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-emerald-500 text-xl mb-2 block"></i>
+                                    Cargando vendedores...
+                                </td></tr>
+                            </template>
+                            <template x-if="!loadingSellers && sellersList.length === 0">
+                                <tr><td colspan="6" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-store-slash text-3xl mb-2 block text-slate-300"></i>
+                                    No se encontraron vendedores activos coincidentes.
+                                </td></tr>
+                            </template>
+                            <template x-for="seller in sellersList" :key="seller.id">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-4 py-3">
+                                        <p class="font-bold text-slate-800 text-xs" x-text="seller.company_or_store_name || seller.name"></p>
+                                        <p class="text-[10px] text-slate-400" x-text="seller.name + ' · ' + seller.email"></p>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center gap-1 text-[11px] text-slate-600">
+                                            <i class="fa-solid fa-location-dot text-slate-400"></i>
+                                            <span x-text="(seller.city || 'Bolivia') + (seller.department ? ', ' + seller.department : '')"></span>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center font-mono font-bold text-slate-700" x-text="(seller.orders_count || 0) + ' pedidos'"></td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono"
+                                            :class="seller.active_reserved_units > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'">
+                                            <i class="fa-solid fa-cubes text-[10px]"></i>
+                                            <span x-text="seller.active_reserved_units + ' uds'"></span>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <a x-show="seller.phone" :href="'https://wa.me/' + cleanPhone(seller.phone)" target="_blank"
+                                            class="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-semibold hover:underline bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                                            <i class="fa-brands fa-whatsapp text-emerald-600"></i> <span x-text="seller.phone"></span>
+                                        </a>
+                                        <span x-show="!seller.phone" class="text-slate-400 italic text-[10px]">Sin teléfono</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button type="button" @click="startReserveFor('seller', seller)"
+                                            class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] cursor-pointer transition inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-bookmark text-[10px]"></i> Apartar Stock
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =====================================================
+                 SUB-TAB 2: CLIENTES (CARTERA)
+            ===================================================== -->
+            <div x-show="activeTab === 'clientes'" x-transition class="p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                    <div class="flex flex-1 gap-2 w-full sm:w-auto">
+                        <div class="relative flex-1 sm:w-80">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" x-model="customerSearch" @input.debounce.400ms="loadCustomers()"
+                                placeholder="Buscar cliente por nombre, teléfono, CI o ciudad..."
+                                class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+                        </div>
+                        <select x-model="customerSegmentFilter" @change="loadCustomers()"
+                            class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                            <option value="">Todos los segmentos</option>
+                            <option value="vip">⭐ Clientes VIP</option>
+                            <option value="regular">👍 Recurrentes</option>
+                            <option value="new">🌱 Nuevos</option>
+                        </select>
+                    </div>
+                    <button type="button" @click="customerModalOpen = true; resetCustomerForm()"
+                        class="btn-scarlet px-4 py-2 rounded-xl font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer self-end sm:self-auto">
+                        <i class="fa-solid fa-user-plus text-amber-200"></i> Registrar Cliente
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3">Nombre del Cliente</th>
+                                <th class="px-4 py-3">Ciudad / Dirección</th>
+                                <th class="px-4 py-3 text-center">Segmento</th>
+                                <th class="px-4 py-3 text-right">Compras Históricas</th>
+                                <th class="px-4 py-3 text-center">Stock Apartado</th>
+                                <th class="px-4 py-3 text-right">Teléfono</th>
+                                <th class="px-4 py-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="loadingCustomers">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-emerald-500 text-xl mb-2 block"></i>
+                                    Cargando clientes...
+                                </td></tr>
+                            </template>
+                            <template x-if="!loadingCustomers && customersList.length === 0">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-user-group text-3xl mb-2 block text-slate-300"></i>
+                                    <p class="font-bold text-slate-600">No hay clientes registrados aún</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Registra clientes directos con el botón superior para apartarles mercadería.</p>
+                                </td></tr>
+                            </template>
+                            <template x-for="cust in customersList" :key="cust.id">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-4 py-3">
+                                        <p class="font-bold text-slate-800 text-xs" x-text="cust.full_name"></p>
+                                        <p class="text-[10px] text-slate-400" x-text="cust.email || (cust.document_id ? 'CI/NIT: ' + cust.document_id : 'Sin documento')"></p>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <p class="text-[11px] text-slate-700 font-medium" x-text="cust.city || cust.department || 'Bolivia'"></p>
+                                        <p class="text-[10px] text-slate-400 truncate max-w-[180px]" x-text="cust.default_address || '—'"></p>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                                            :class="{
+                                                'bg-amber-100 text-amber-800 border border-amber-200': cust.customer_segment === 'vip',
+                                                'bg-indigo-100 text-indigo-800 border border-indigo-200': cust.customer_segment === 'regular',
+                                                'bg-slate-100 text-slate-600 border border-slate-200': cust.customer_segment === 'new'
+                                            }"
+                                            x-text="cust.customer_segment"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono font-bold text-slate-800" x-text="'Bs ' + Number(cust.total_spent_bob || 0).toFixed(2)"></td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono"
+                                            :class="cust.active_reserved_units > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-500'">
+                                            <i class="fa-solid fa-cubes text-[10px]"></i>
+                                            <span x-text="cust.active_reserved_units + ' uds'"></span>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                        <a x-show="cust.phone" :href="'https://wa.me/' + cleanPhone(cust.phone)" target="_blank"
+                                            class="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-semibold hover:underline bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                                            <i class="fa-brands fa-whatsapp text-emerald-600"></i> <span x-text="cust.phone"></span>
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button type="button" @click="startReserveFor('customer', cust)"
+                                            class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[11px] cursor-pointer transition inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-bookmark text-[10px]"></i> Apartar Stock
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =====================================================
+                 SUB-TAB 3: STOCK APARTADO (CONSOLIDADO)
+            ===================================================== -->
+            <div x-show="activeTab === 'apartados'" x-transition class="p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="reserveTargetFilter = ''; loadReserves()"
+                            :class="reserveTargetFilter === '' ? 'bg-slate-800 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer">
+                            Todas
+                        </button>
+                        <button type="button" @click="reserveTargetFilter = 'seller'; loadReserves()"
+                            :class="reserveTargetFilter === 'seller' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-store text-[10px]"></i> A Vendedores
+                        </button>
+                        <button type="button" @click="reserveTargetFilter = 'customer'; loadReserves()"
+                            :class="reserveTargetFilter === 'customer' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3 py-1.5 rounded-lg text-xs transition cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-users text-[10px]"></i> A Clientes
+                        </button>
+                    </div>
+                    <button type="button" @click="openReserveModal()"
+                        class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus text-amber-100"></i> Nueva Separación de Stock
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3">Tipo & Beneficiario</th>
+                                <th class="px-4 py-3">Producto Apartado</th>
+                                <th class="px-4 py-3">Bodega Origen</th>
+                                <th class="px-4 py-3 text-right">Cantidad</th>
+                                <th class="px-4 py-3">Vencimiento</th>
+                                <th class="px-4 py-3">Notas</th>
+                                <th class="px-4 py-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="loadingReserves">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-amber-500 text-xl mb-2 block"></i>
+                                    Cargando reservas activas...
+                                </td></tr>
+                            </template>
+                            <template x-if="!loadingReserves && reservesList.length === 0">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-box-open text-3xl mb-2 block text-slate-300"></i>
+                                    No tienes mercadería apartada actualmente.
+                                </td></tr>
+                            </template>
+                            <template x-for="res in reservesList" :key="res.id">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+                                                :class="res.target_type === 'seller' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'"
+                                                x-text="res.target_type === 'seller' ? 'Vendedor' : 'Cliente'"></span>
+                                            <div>
+                                                <p class="font-bold text-slate-800 text-xs" x-text="res.target_type === 'seller' ? (res.dropshipper?.company_or_store_name || res.dropshipper?.name) : res.customer?.full_name"></p>
+                                                <p class="text-[10px] text-slate-400" x-text="res.target_type === 'seller' ? (res.dropshipper?.email || res.dropshipper?.phone) : res.customer?.phone"></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <p class="font-semibold text-slate-800 truncate max-w-[200px]" x-text="res.product?.name"></p>
+                                        <span class="text-[10px] font-mono text-indigo-600 bg-indigo-50 px-1 rounded font-bold" x-text="res.product?.internal_code"></span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="font-medium text-slate-700" x-text="res.warehouse?.name"></span>
+                                        <p class="text-[10px] text-slate-400 font-mono" x-text="res.warehouse?.code + ' (' + res.warehouse?.city + ')'"></p>
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-mono font-bold text-amber-700 text-sm" x-text="res.quantity + ' uds'"></td>
+                                    <td class="px-4 py-3 text-slate-500 text-[11px]" x-text="res.expires_at ? new Date(res.expires_at).toLocaleDateString('es-BO') : 'Sin expiración'"></td>
+                                    <td class="px-4 py-3 text-slate-500 text-[11px] truncate max-w-[160px]" x-text="res.notes || '—'"></td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button type="button" @click="releaseNetworkReserve(res)"
+                                            class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold text-[11px] cursor-pointer transition inline-flex items-center gap-1">
+                                            <i class="fa-solid fa-unlock text-[10px]"></i> Liberar Stock
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             MODAL: REGISTRAR NUEVO CLIENTE DIRECTO
+        ===================================================== -->
+        <div x-show="customerModalOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            @click.self="customerModalOpen = false">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" @click.stop>
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-sm font-heading">Registrar Cliente Directo</h3>
+                    </div>
+                    <button type="button" @click="customerModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitCustomer()" class="p-5 space-y-3.5 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nombre Completo del Cliente / Razón Social *</label>
+                        <input type="text" x-model="customerForm.full_name" required placeholder="Ej: Carlos Gutiérrez Mamani"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp *</label>
+                            <input type="text" x-model="customerForm.phone" required placeholder="70012345"
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">CI / NIT (opcional)</label>
+                            <input type="text" x-model="customerForm.document_id" placeholder="8921234 SC"
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Departamento</label>
+                            <select x-model="customerForm.department"
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+                                <option value="">Seleccionar departamento...</option>
+                                <option>Santa Cruz</option>
+                                <option>La Paz</option>
+                                <option>Cochabamba</option>
+                                <option>Oruro</option>
+                                <option>Potosí</option>
+                                <option>Chuquisaca</option>
+                                <option>Tarija</option>
+                                <option>Beni</option>
+                                <option>Pando</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Ciudad / Localidad</label>
+                            <input type="text" x-model="customerForm.city" placeholder="Ej: Santa Cruz de la Sierra"
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Dirección de Entrega / Referencia</label>
+                        <input type="text" x-model="customerForm.default_address" placeholder="Ej: Av. Banzer 4to Anillo, Condominio Sevilla"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                        <button type="button" @click="customerModalOpen = false" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" :disabled="customerSubmitting"
+                            class="btn-scarlet px-5 py-2 rounded-xl font-bold flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50">
+                            <span x-show="!customerSubmitting"><i class="fa-solid fa-floppy-disk text-amber-200"></i> Guardar Cliente</span>
+                            <span x-show="customerSubmitting"><i class="fa-solid fa-spinner animate-spin"></i> Guardando...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             MODAL DUAL: APARTAR STOCK (VENDEDOR O CLIENTE)
+        ===================================================== -->
+        <div x-show="reserveModalOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            @click.self="reserveModalOpen = false">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" @click.stop>
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-bookmark"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm font-heading">Separar / Apartar Stock de Bodega</h3>
+                            <p class="text-[11px] text-slate-500">Reserva unidades exclusivas para un vendedor o cliente</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="reserveModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitReserve()" class="p-5 space-y-3.5 text-xs">
+                    <!-- Selector de Destinatario: Vendedor vs Cliente -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Destinatario de la Separación: *</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" @click="reserveForm.target_type = 'seller'; reserveForm.customer_id = ''"
+                                :class="reserveForm.target_type === 'seller' ? 'bg-emerald-600 text-white font-bold border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'"
+                                class="py-2 px-3 rounded-xl border text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i class="fa-solid fa-store"></i> Vendedor (Dropshipper)
+                            </button>
+                            <button type="button" @click="reserveForm.target_type = 'customer'; reserveForm.dropshipper_id = ''"
+                                :class="reserveForm.target_type === 'customer' ? 'bg-indigo-600 text-white font-bold border-indigo-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'"
+                                class="py-2 px-3 rounded-xl border text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                                <i class="fa-solid fa-user"></i> Cliente Final / Mayorista
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Si es Vendedor -->
+                    <div x-show="reserveForm.target_type === 'seller'">
+                        <label class="block font-bold text-slate-700 mb-1">Seleccionar Vendedor: *</label>
+                        <select x-model="reserveForm.dropshipper_id" :required="reserveForm.target_type === 'seller'"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="">Selecciona el dropshipper...</option>
+                            <template x-for="seller in sellersList" :key="seller.id">
+                                <option :value="seller.id" x-text="(seller.company_or_store_name || seller.name) + ' (' + (seller.city || 'Bolivia') + ')'"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Si es Cliente -->
+                    <div x-show="reserveForm.target_type === 'customer'">
+                        <label class="block font-bold text-slate-700 mb-1">Seleccionar Cliente: *</label>
+                        <select x-model="reserveForm.customer_id" :required="reserveForm.target_type === 'customer'"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="">Selecciona el cliente...</option>
+                            <template x-for="cust in customersList" :key="cust.id">
+                                <option :value="cust.id" x-text="cust.full_name + ' (Telf: ' + cust.phone + ' - ' + (cust.city || 'Bolivia') + ')'"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Bodega Origen -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Bodega de Almacenamiento: *</label>
+                        <select x-model="reserveForm.warehouse_id" required
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="">Seleccionar bodega...</option>
+                            @foreach($allWarehouses as $wh)
+                                <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }} - {{ $wh->code }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Producto a Apartar -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Producto a Separar: *</label>
+                        <select x-model="reserveForm.product_id" required
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="">Seleccionar producto...</option>
+                            @foreach($products as $p)
+                                <option value="{{ $p->id }}">{{ $p->name }} (SKU: {{ $p->sku }} · {{ $p->internal_code }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Cantidad de Unidades: *</label>
+                            <input type="number" x-model.number="reserveForm.quantity" min="1" required
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 font-mono font-bold text-slate-800 text-right focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Fecha Límite (opcional)</label>
+                            <input type="datetime-local" x-model="reserveForm.expires_at"
+                                class="w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Motivo / Acuerdo de Separación:</label>
+                        <input type="text" x-model="reserveForm.notes" placeholder="Ej: Separación exclusiva para lanzamiento promocional"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                        <button type="button" @click="reserveModalOpen = false" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" :disabled="reserveSubmitting"
+                            class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50">
+                            <span x-show="!reserveSubmitting"><i class="fa-solid fa-bookmark text-amber-100"></i> Confirmar Apartado</span>
+                            <span x-show="reserveSubmitting"><i class="fa-solid fa-spinner animate-spin"></i> Apartando...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toast de Red Comercial -->
+        <div x-show="netToast.show" x-cloak x-transition
+            class="fixed bottom-6 right-6 z-50 max-w-sm p-4 rounded-2xl text-xs font-semibold flex items-center gap-3 shadow-xl"
+            :class="netToast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'">
+            <i class="fa-solid" :class="netToast.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'"></i>
+            <span x-text="netToast.message" class="flex-1"></span>
+            <button @click="netToast.show = false" class="ml-2 opacity-70 hover:opacity-100 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+    <!-- FIN MÓDULO RED COMERCIAL -->
 
     <!-- Bodegas con Inventario (#FFFFFF) con ancla #inventario -->
     <div id="inventario" class="space-y-6">
@@ -2865,6 +3404,291 @@ function almacenModule() {
             finally { this.traspasoSubmitting = false; }
         },
     }
+}
+
+// =============================================================================
+// MÓDULO ALPINE.JS — RED COMERCIAL (VENDEDORES & CLIENTES + RESERVAS)
+// =============================================================================
+function networkModule() {
+    return {
+        activeTab: 'vendedores',
+        netToast: { show: false, message: '', type: 'success' },
+
+        // ---- VENDEDORES ----
+        sellersList: [],
+        loadingSellers: false,
+        sellerSearch: '',
+        sellersPagination: null,
+
+        // ---- CLIENTES ----
+        customersList: [],
+        loadingCustomers: false,
+        customerSearch: '',
+        customerSegmentFilter: '',
+        customersPagination: null,
+        customerModalOpen: false,
+        customerSubmitting: false,
+        customerForm: {
+            full_name: '',
+            phone: '',
+            document_id: '',
+            department: '',
+            city: '',
+            default_address: ''
+        },
+
+        // ---- RESERVAS / APARTADOS ----
+        reservesList: [],
+        loadingReserves: false,
+        reserveTargetFilter: '',
+        reserveModalOpen: false,
+        reserveSubmitting: false,
+        reserveForm: {
+            target_type: 'seller',
+            dropshipper_id: '',
+            customer_id: '',
+            warehouse_id: '',
+            product_id: '',
+            quantity: 1,
+            expires_at: '',
+            notes: ''
+        },
+
+        init() {
+            this.loadSellers();
+            this.loadCustomers();
+            this.loadReserves();
+        },
+
+        showNetToast(message, type = 'success') {
+            this.netToast = { show: true, message, type };
+            setTimeout(() => { this.netToast.show = false; }, 5000);
+        },
+
+        csrf() {
+            return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        },
+
+        cleanPhone(phone) {
+            if (!phone) return '';
+            let p = String(phone).replace(/\D/g, '');
+            if (p.length === 8) p = '591' + p;
+            return p;
+        },
+
+        // =============================================================
+        // VENDEDORES
+        // =============================================================
+        async loadSellers(page = 1) {
+            this.loadingSellers = true;
+            const params = new URLSearchParams({ page });
+            if (this.sellerSearch) params.set('search', this.sellerSearch);
+            try {
+                const res = await fetch(`/provider/network/sellers?${params}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.sellersList = data.data.data ?? data.data;
+                    this.sellersPagination = data.data.meta ? data.data.meta : null;
+                }
+            } catch {
+                this.showNetToast('Error al cargar la lista de vendedores.', 'error');
+            } finally {
+                this.loadingSellers = false;
+            }
+        },
+
+        // =============================================================
+        // CLIENTES
+        // =============================================================
+        async loadCustomers(page = 1) {
+            this.loadingCustomers = true;
+            const params = new URLSearchParams({ page });
+            if (this.customerSearch) params.set('search', this.customerSearch);
+            if (this.customerSegmentFilter) params.set('segment', this.customerSegmentFilter);
+            try {
+                const res = await fetch(`/provider/network/customers?${params}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.customersList = data.data.data ?? data.data;
+                    this.customersPagination = data.data.meta ? data.data.meta : null;
+                }
+            } catch {
+                this.showNetToast('Error al cargar clientes.', 'error');
+            } finally {
+                this.loadingCustomers = false;
+            }
+        },
+
+        resetCustomerForm() {
+            this.customerForm = {
+                full_name: '',
+                phone: '',
+                document_id: '',
+                department: '',
+                city: '',
+                default_address: ''
+            };
+        },
+
+        async submitCustomer() {
+            if (!this.customerForm.full_name || !this.customerForm.phone) {
+                this.showNetToast('Nombre y teléfono son obligatorios.', 'error');
+                return;
+            }
+            this.customerSubmitting = true;
+            try {
+                const res = await fetch('/provider/network/customers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.csrf()
+                    },
+                    body: JSON.stringify(this.customerForm)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showNetToast(data.message, 'success');
+                    this.customerModalOpen = false;
+                    this.resetCustomerForm();
+                    await this.loadCustomers();
+                } else {
+                    const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error al guardar.');
+                    this.showNetToast(msg, 'error');
+                }
+            } catch {
+                this.showNetToast('Error de comunicación con el servidor.', 'error');
+            } finally {
+                this.customerSubmitting = false;
+            }
+        },
+
+        // =============================================================
+        // RESERVAS / APARTADOS
+        // =============================================================
+        async loadReserves(page = 1) {
+            this.loadingReserves = true;
+            const params = new URLSearchParams({ page });
+            if (this.reserveTargetFilter) params.set('target_type', this.reserveTargetFilter);
+            try {
+                const res = await fetch(`/provider/network/reserves?${params}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.reservesList = data.data.data ?? data.data;
+                }
+            } catch {
+                this.showNetToast('Error al cargar reservas.', 'error');
+            } finally {
+                this.loadingReserves = false;
+            }
+        },
+
+        openReserveModal() {
+            this.reserveForm = {
+                target_type: 'seller',
+                dropshipper_id: this.sellersList[0]?.id || '',
+                customer_id: this.customersList[0]?.id || '',
+                warehouse_id: '',
+                product_id: '',
+                quantity: 1,
+                expires_at: '',
+                notes: ''
+            };
+            this.reserveModalOpen = true;
+        },
+
+        startReserveFor(type, entity) {
+            this.openReserveModal();
+            this.reserveForm.target_type = type;
+            if (type === 'seller') {
+                this.reserveForm.dropshipper_id = entity.id;
+            } else {
+                this.reserveForm.customer_id = entity.id;
+            }
+        },
+
+        async submitReserve() {
+            if (this.reserveForm.target_type === 'seller' && !this.reserveForm.dropshipper_id) {
+                this.showNetToast('Selecciona el vendedor.', 'error');
+                return;
+            }
+            if (this.reserveForm.target_type === 'customer' && !this.reserveForm.customer_id) {
+                this.showNetToast('Selecciona el cliente.', 'error');
+                return;
+            }
+            if (!this.reserveForm.warehouse_id || !this.reserveForm.product_id) {
+                this.showNetToast('Selecciona la bodega y el producto.', 'error');
+                return;
+            }
+            if (!this.reserveForm.quantity || this.reserveForm.quantity < 1) {
+                this.showNetToast('La cantidad debe ser mayor a 0.', 'error');
+                return;
+            }
+
+            this.reserveSubmitting = true;
+            try {
+                const res = await fetch('/provider/network/reserves', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.csrf()
+                    },
+                    body: JSON.stringify(this.reserveForm)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showNetToast(data.message, 'success');
+                    this.reserveModalOpen = false;
+                    await this.loadReserves();
+                    await this.loadSellers();
+                    await this.loadCustomers();
+                } else {
+                    const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error al apartar stock.');
+                    this.showNetToast(msg, 'error');
+                }
+            } catch {
+                this.showNetToast('Error de comunicación con el servidor.', 'error');
+            } finally {
+                this.reserveSubmitting = false;
+            }
+        },
+
+        async releaseNetworkReserve(reserve) {
+            const dest = reserve.target_type === 'seller'
+                ? (reserve.dropshipper?.company_or_store_name || reserve.dropshipper?.name)
+                : reserve.customer?.full_name;
+
+            if (!confirm(`¿Deseas liberar las ${reserve.quantity} unidades apartadas para "${dest}"? El stock volverá a estar disponible en bodega.`)) return;
+
+            try {
+                const res = await fetch(`/provider/network/reserves/${reserve.id}/release`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.csrf()
+                    }
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showNetToast(data.message, 'success');
+                    await this.loadReserves();
+                    await this.loadSellers();
+                    await this.loadCustomers();
+                } else {
+                    this.showNetToast(data.message || 'No se pudo liberar.', 'error');
+                }
+            } catch {
+                this.showNetToast('Error al procesar la liberación.', 'error');
+            }
+        }
+    };
 }
 </script>
 @endsection

@@ -68,6 +68,18 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/{warehouseId}/reserves/{reserveId}/release', [\App\Http\Controllers\Web\WarehouseController::class, 'releaseReserve'])      ->name('reserves.release');
     });
 
+    // =========================================================================
+    // MÓDULO RED COMERCIAL (Vendedores & Clientes del Proveedor + Reservas)
+    // =========================================================================
+    Route::prefix('provider/network')->name('provider.network.')->group(function () {
+        Route::get('/sellers',               [\App\Http\Controllers\Web\ProviderNetworkController::class, 'sellers'])        ->name('sellers');
+        Route::get('/customers',             [\App\Http\Controllers\Web\ProviderNetworkController::class, 'customers'])      ->name('customers');
+        Route::post('/customers',            [\App\Http\Controllers\Web\ProviderNetworkController::class, 'storeCustomer'])  ->name('customers.store');
+        Route::get('/reserves',              [\App\Http\Controllers\Web\ProviderNetworkController::class, 'reserves'])       ->name('reserves');
+        Route::post('/reserves',             [\App\Http\Controllers\Web\ProviderNetworkController::class, 'storeReserve'])   ->name('reserves.store');
+        Route::patch('/reserves/{id}/release', [\App\Http\Controllers\Web\ProviderNetworkController::class, 'releaseReserve'])->name('reserves.release');
+    });
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');

@@ -17,6 +17,8 @@ class WarehouseSellerReserve extends Model
         'warehouse_id',
         'product_id',
         'dropshipper_id',
+        'customer_id',
+        'target_type',
         'reserved_by',
         'quantity',
         'notes',
@@ -41,6 +43,11 @@ class WarehouseSellerReserve extends Model
     public function dropshipper(): BelongsTo
     {
         return $this->belongsTo(User::class, 'dropshipper_id');
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     public function reservedBy(): BelongsTo
