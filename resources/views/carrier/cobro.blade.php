@@ -92,8 +92,8 @@
                     </div>
                 </div>
                 <div class="text-right text-xs text-slate-500 space-y-0.5">
-                    <div>≈ <strong class="text-slate-700">$<span x-text="(currentOrder?.cod_amount / {{ $bcbOfficialRate ?? 12.06 }}).toFixed(2)"></span> USD</strong></div>
-                    <div class="text-[10px] text-slate-400">Tasa BCB: Bs. {{ number_format($bcbOfficialRate ?? 12.06, 2) }}</div>
+                    <div>≈ <strong class="text-slate-700">$<span x-text="(currentOrder?.cod_amount / {{ $bcbOfficialRate ?? 11.75 }}).toFixed(2)"></span> USD</strong></div>
+                    <div class="text-[10px] text-slate-400">Tasa BCB: Bs. {{ number_format($bcbOfficialRate ?? 11.75, 2) }}</div>
                 </div>
             </div>
 
@@ -161,9 +161,9 @@
                 </div>
                 <div>
                     <div class="text-base font-black text-amber-900 font-mono">
-                        <span x-text="(currentOrder?.cod_amount / {{ $bcbOfficialRate ?? 12.06 }}).toFixed(2)"></span> USDT
+                        <span x-text="(currentOrder?.cod_amount / {{ $bcbOfficialRate ?? 11.75 }}).toFixed(2)"></span> USDT
                     </div>
-                    <div class="text-xs text-slate-600 font-medium">Equivalente a Bs. <span x-text="currentOrder?.cod_amount"></span> (Tasa BCB: {{ number_format($bcbOfficialRate ?? 12.06, 2) }})</div>
+                    <div class="text-xs text-slate-600 font-medium">Equivalente a Bs. <span x-text="currentOrder?.cod_amount"></span> (Tasa BCB: {{ number_format($bcbOfficialRate ?? 11.75, 2) }})</div>
                 </div>
                 <div class="text-[11px] text-amber-800 bg-amber-100/70 p-2 rounded-lg font-medium">
                     El cliente escanea el QR con su app de Binance o transfiere al Pay ID Bolidrop. La acreditación es inmediata con 0% de comisión.

@@ -557,8 +557,8 @@
         <!-- Right: Cotizaciones del Boliviano (BOB), Divisas & Auth Buttons -->
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0" x-data="{ ratesOpen: false }">
             @php
-                $sellRate = (float) ($bcbOfficialRate ?? 11.70);
-                $buyRate  = max(6.86, round($sellRate - 0.10, 2));
+                $sellRate = (float) ($bcbOfficialRate ?? 11.75);
+                $buyRate  = round($sellRate - 0.10, 2);
                 $usdtRate = round($sellRate + 0.15, 2);
                 $eurRate  = round($sellRate * 1.08, 2);
                 $cnyRate  = round($sellRate * 0.14, 2);
@@ -596,32 +596,21 @@
                     class="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 mt-2 sm:w-80 bg-white rounded-xl border border-slate-200 shadow-2xl p-4 z-50 text-xs space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
                         <div>
-                            <div class="font-extrabold text-[#0F172A] text-xs">Tipo de Cambio — Bolivia (BOB)</div>
-                            <div class="text-[10px] text-[#64748B]">Cotizaciones referenciales e importación</div>
+                            <div class="font-extrabold text-[#0F172A] text-xs">Tipo de Cambio — BCB Bolivia (BOB)</div>
+                            <div class="text-[10px] text-[#64748B]">Sincronizado en vivo con www.bcb.gob.bo</div>
                         </div>
-                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#10B981] font-bold text-[10px]">En Vivo</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#10B981] font-bold text-[10px]">BCB En Vivo</span>
                     </div>
 
                     <div class="space-y-2">
-                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#F8FAFC]">
+                        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-indigo-50/70 border border-indigo-200/70">
                             <div>
-                                <div class="font-bold text-[#0F172A]">🇺🇸 Dólar BCB Referencial</div>
-                                <div class="text-[10px] text-[#64748B]">Comercio Exterior / Importación</div>
+                                <div class="font-bold text-[#0F172A]">🇧🇴 Dólar Oficial BCB (TCO)</div>
+                                <div class="text-[10px] text-[#64748B]">Banco Central de Bolivia (www.bcb.gob.bo)</div>
                             </div>
                             <div class="text-right font-mono">
                                 <div class="text-[10px] text-[#64748B]">Compra: <strong>{{ number_format($buyRate, 2) }} Bs</strong></div>
-                                <div class="text-xs font-bold text-[#4F46E5]">Venta: {{ number_format($sellRate, 2) }} Bs</div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-[#F8FAFC]">
-                            <div>
-                                <div class="font-bold text-[#0F172A]">🇧🇴 Dólar Oficial BCB</div>
-                                <div class="text-[10px] text-[#64748B]">Tasa Fija Bancaria</div>
-                            </div>
-                            <div class="text-right font-mono">
-                                <div class="text-[10px] text-[#64748B]">Compra: <strong>6.86 Bs</strong></div>
-                                <div class="text-xs font-bold text-[#0F172A]">Venta: 6.96 Bs</div>
+                                <div class="text-xs font-extrabold text-[#4F46E5]">Venta: {{ number_format($sellRate, 2) }} Bs</div>
                             </div>
                         </div>
 

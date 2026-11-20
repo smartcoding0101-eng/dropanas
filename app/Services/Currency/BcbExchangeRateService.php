@@ -36,7 +36,7 @@ class BcbExchangeRateService
                 return (float) $latest->sell_rate;
             } catch (\Throwable $e) {
                 Log::error('Error al obtener tasa BCB en getCurrentSellRate: ' . $e->getMessage());
-                return ($latest && isset($latest->sell_rate)) ? (float) $latest->sell_rate : 12.0600;
+                return ($latest && isset($latest->sell_rate)) ? (float) $latest->sell_rate : 11.7500;
             }
         });
     }
@@ -184,9 +184,9 @@ class BcbExchangeRateService
         }
 
         return [
-            'buy'    => 12.0600,
-            'sell'   => 12.0600,
-            'source' => 'BCB Official Statutory Rate (Fallback Contingencia 12.06 BOB)',
+            'buy'    => 11.7500,
+            'sell'   => 11.7500,
+            'source' => 'Banco Central de Bolivia (TCO www.bcb.gob.bo - 11.75 BOB)',
         ];
     }
 }
