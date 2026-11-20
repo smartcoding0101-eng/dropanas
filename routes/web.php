@@ -38,66 +38,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Catálogo Mayorista de Productos (Megabodega Nacional)
     Route::get('/catalogo', function () {
-        $products = Product::with(['provider', 'category', 'warehouseInventories.warehouse'])
+        $products = Product::with(['category', 'warehouseInventories.warehouse'])
             ->where('status', 'published')
             ->where('is_cod_available', true)
             ->get();
         $categories = \App\Models\Category::withCount('products')->orderBy('name')->get();
-
-        $catalogModalProducts = $products->map(function ($p) {
-            $stockByWh = [];
-            $whTags = [];
-            foreach ($p->warehouseInventories as $inv) {
-                if ((int) $inv->stock_available > 0) {
-                    $city = strtolower($inv->warehouse->city ?? '');
-                    $dept = strtolower($inv->warehouse->department ?? '');
-                    $whTags[] = $city . ' ' . $dept;
-                    $stockByWh[] = [
-                        'warehouse_id' => (string) $inv->warehouse_id,
-                        'name' => $inv->warehouse->name ?? 'Bodega',
-                        'code' => $inv->warehouse->code ?? '',
-                        'city' => $inv->warehouse->city ?? '',
-                        'department' => $inv->warehouse->department ?? '',
-                        'address' => $inv->warehouse->address ?? '',
-                        'stock_available' => (int) $inv->stock_available,
-                        'stock_physical' => (int) $inv->stock_physical,
-                    ];
-                }
-            }
-
-            $cost = (float) $p->cost_price_bob;
-            $sug  = (float) $p->suggested_price_bob;
-            $min  = (float) $p->min_price_bob;
-            $margin = $sug - $cost;
-            $roi = $cost > 0 ? round(($margin / $cost) * 100) : 0;
-
-            return [
-                'id' => (string) $p->id,
-                'name' => $p->name,
-                'slug' => $p->slug,
-                'sku' => $p->sku,
-                'internal_code' => $p->internal_code,
-                'description' => $p->description ?? 'Producto verificado para distribución nacional contra entrega (COD).',
-                'cost_price_bob' => $cost,
-                'suggested_price_bob' => $sug,
-                'min_price_bob' => $min,
-                'margin_bob' => $margin,
-                'roi_percent' => $roi,
-                'weight_kg' => (float) ($p->weight_kg ?? 0.5),
-                'is_cod_available' => (bool) $p->is_cod_available,
-                'images' => !empty($p->images) && is_array($p->images) ? array_values($p->images) : [],
-                'category_id' => (string) ($p->category_id ?? ''),
-                'category_name' => $p->category->name ?? 'Tecnología y Gadgets',
-                'provider_name' => $p->provider?->company_or_store_name ?? $p->provider?->name ?? 'Megabodega Bolidrop',
-                'provider_city' => $p->provider?->city ?? 'Santa Cruz',
-                'provider_phone' => $p->provider?->phone ?? '',
-                'warehouses_str' => implode(' | ', $whTags),
-                'stock_by_wh' => $stockByWh,
-                'total_stock' => array_sum(array_column($stockByWh, 'stock_available')),
-            ];
-        })->values();
-
-        return view('catalog', compact('products', 'categories', 'catalogModalProducts'));
+        return view('catalog', compact('products', 'categories'));
     })->name('catalog');
 
     // =========================================================================
