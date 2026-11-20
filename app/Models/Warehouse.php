@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Warehouse extends Model
 {
     use HasFactory, HasUuids, BelongsToTenant;
-
     protected $fillable = [
         'tenant_id',
         'provider_id',
@@ -38,9 +37,36 @@ class Warehouse extends Model
         return $this->hasMany(WarehouseInventory::class);
     }
 
+    public function sellerReserves(): HasMany
+    {
+        return $this->hasMany(WarehouseSellerReserve::class);
+    }
+
+    public function stockTransfersOut(): HasMany
+    {
+        return $this->hasMany(StockTransfer::class, 'from_warehouse_id');
+    }
+
+    public function stockTransfersIn(): HasMany
+    {
+        return $this->hasMany(StockTransfer::class, 'to_warehouse_id');
+    }
+
     public function provider(): BelongsTo
     {
         return $this->belongsTo(User::class, 'provider_id');
+    }
+
+    /** Stock total disponible del almacén */
+    public function getTotalStockAttribute(): int
+    {
+        return (int) $this->inventories()->sum('stock_available');
+    }
+
+    /** Número de productos únicos con stock > 0 en este almacén */
+    public function getActiveProductsCountAttribute(): int
+    {
+        return $this->inventories()->where('stock_available', '>', 0)->count();
     }
 }
 

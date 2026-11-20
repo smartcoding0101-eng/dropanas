@@ -156,9 +156,17 @@ class PanelController extends Controller
         $allWarehouses = Warehouse::all();
         $categories    = \App\Models\Category::withCount('products')->orderBy('name')->get();
 
+        // Dropshippers activos para el módulo de reservas
+        $dropshippers = User::where('role', 'dropshipper')
+            ->where('is_active', true)
+            ->select('id', 'name', 'company_or_store_name', 'email', 'city', 'department')
+            ->orderBy('name')
+            ->get();
+
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
-            'wallet', 'categories', 'salesOrders', 'recentKardex', 'stockTransfers', 'inventoryAlerts'
+            'wallet', 'categories', 'salesOrders', 'recentKardex', 'stockTransfers', 'inventoryAlerts',
+            'dropshippers'
         ));
     }
 

@@ -88,6 +88,588 @@
         </div>
     </div>
 
+    <!-- Barra de Navegación Rápida entre Secciones del Panel -->
+    <nav class="sticky top-14 z-30 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-2xl shadow-sm px-2 py-1.5 flex items-center gap-1 overflow-x-auto">
+        <a href="#almacenes" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-warehouse text-indigo-500"></i> Almacenes
+        </a>
+        <a href="#inventario" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-boxes-stacked text-slate-400"></i> Inventario
+        </a>
+        <a href="#alertas" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-bell text-slate-400"></i> Alertas
+        </a>
+        <a href="#kardex" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Kardex
+        </a>
+        <a href="#productos" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-tag text-slate-400"></i> Productos
+        </a>
+        <a href="#ventas" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-chart-line text-slate-400"></i> Ventas
+        </a>
+    </nav>
+
+    <!-- =========================================================
+         MÓDULO ALMACENES — Tab nav de sección
+    ========================================================= -->
+    <div id="almacenes" class="space-y-6" x-data="almacenModule()">
+
+        <!-- Cabecera del módulo -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-warehouse text-[#4F46E5]"></i>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm font-heading">Gestión de Almacenes</h3>
+                        <p class="text-xs text-slate-500">Crea, edita y administra tus bodegas · Productos · Reservas de Stock · Visibilidad</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button @click="warehouseModalOpen = true; resetWarehouseForm()"
+                        class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Almacén
+                    </button>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-slate-900 border border-slate-200 font-mono"
+                        x-text="warehouseList.length + ' bodegas'"></span>
+                </div>
+            </div>
+
+            <!-- Sub-tabs de navegación -->
+            <div class="flex border-b border-slate-200 bg-white overflow-x-auto">
+                <button @click="activeTab = 'bodegas'"
+                    :class="activeTab === 'bodegas' ? 'border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50/60' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-3 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-warehouse"></i> Mis Bodegas
+                </button>
+                <button @click="activeTab = 'productos'; loadProducts()"
+                    :class="activeTab === 'productos' ? 'border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50/60' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-3 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-boxes-stacked"></i> Productos del Almacén
+                </button>
+                <button @click="activeTab = 'reservas'; loadReserves()"
+                    :class="activeTab === 'reservas' ? 'border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50/60' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-3 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-bookmark"></i> Reservas de Vendedores
+                </button>
+                <button @click="activeTab = 'traspaso'"
+                    :class="activeTab === 'traspaso' ? 'border-b-2 border-indigo-600 text-indigo-700 bg-indigo-50/60' : 'text-slate-500 hover:text-slate-700'"
+                    class="px-5 py-3 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-right-left"></i> Traspaso entre Bodegas
+                </button>
+            </div>
+
+            <!-- =====================================================
+                 TAB 1: MIS BODEGAS — CRUD
+            ===================================================== -->
+            <div x-show="activeTab === 'bodegas'" x-transition class="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <template x-if="loadingWarehouses">
+                        <div class="col-span-3 py-10 text-center text-slate-400 text-sm">
+                            <i class="fa-solid fa-spinner fa-spin text-indigo-400 text-xl mb-2 block"></i>
+                            Cargando almacenes...
+                        </div>
+                    </template>
+                    <template x-for="wh in warehouseList" :key="wh.id">
+                        <div class="rounded-xl border p-4 space-y-3 transition hover:shadow-md"
+                            :class="wh.is_active ? 'border-slate-200 bg-white' : 'border-slate-200 bg-slate-50 opacity-70'">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                                        :class="wh.is_active ? 'bg-indigo-600' : 'bg-slate-400'">
+                                        <i class="fa-solid fa-warehouse"></i>
+                                    </span>
+                                    <div>
+                                        <p class="font-bold text-slate-900 text-sm" x-text="wh.name"></p>
+                                        <p class="text-[11px] text-slate-400 font-mono" x-text="wh.code"></p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                    :class="wh.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'"
+                                    x-text="wh.is_active ? 'Activa' : 'Inactiva'"></span>
+                            </div>
+                            <div class="text-xs text-slate-500 space-y-1">
+                                <div class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-[#4F46E5] w-3"></i> <span x-text="wh.city + ', ' + wh.department"></span></div>
+                                <div class="flex items-center gap-1.5" x-show="wh.address"><i class="fa-solid fa-road text-slate-400 w-3"></i> <span x-text="wh.address" class="line-clamp-1"></span></div>
+                                <div class="flex items-center gap-1.5" x-show="wh.contact_phone"><i class="fa-solid fa-phone text-slate-400 w-3"></i> <span x-text="wh.contact_phone"></span></div>
+                            </div>
+                            <!-- KPIs rápidos -->
+                            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                                <div class="text-center">
+                                    <p class="text-[11px] text-slate-400">Productos</p>
+                                    <p class="font-bold text-slate-800 font-mono" x-text="wh.total_products_count ?? 0"></p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[11px] text-slate-400">Stock disponible</p>
+                                    <p class="font-bold text-emerald-700 font-mono" x-text="(wh.total_stock ?? 0) + ' uds'"></p>
+                                </div>
+                            </div>
+                            <!-- Acciones -->
+                            <div class="flex gap-2 pt-1">
+                                <button @click="selectWarehouse(wh); activeTab = 'productos'; loadProducts()"
+                                    class="flex-1 text-[11px] font-semibold py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition cursor-pointer">
+                                    <i class="fa-solid fa-boxes-stacked mr-1"></i> Ver productos
+                                </button>
+                                <button @click="editWarehouse(wh)"
+                                    class="px-3 text-[11px] font-semibold py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition cursor-pointer">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button @click="confirmDeleteWarehouse(wh)"
+                                    class="px-3 text-[11px] font-semibold py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition cursor-pointer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="!loadingWarehouses && warehouseList.length === 0">
+                        <div class="col-span-3 py-12 text-center text-slate-400">
+                            <i class="fa-solid fa-warehouse text-4xl mb-3 block text-slate-200"></i>
+                            <p class="font-semibold text-slate-500">Aún no tienes almacenes registrados</p>
+                            <p class="text-xs mt-1">Crea tu primer almacén para gestionar tu inventario</p>
+                            <button @click="warehouseModalOpen = true; resetWarehouseForm()"
+                                class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer">
+                                <i class="fa-solid fa-plus"></i> Crear Almacén
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- =====================================================
+                 TAB 2: PRODUCTOS DEL ALMACÉN
+            ===================================================== -->
+            <div x-show="activeTab === 'productos'" x-transition class="p-4 space-y-4">
+                <!-- Selector de bodega + buscador -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <select x-model="selectedWarehouseId" @change="loadProducts()"
+                        class="flex-1 text-xs rounded-xl border border-slate-200 px-3 py-2.5 text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <option value="">— Selecciona un almacén —</option>
+                        <template x-for="wh in warehouseList" :key="wh.id">
+                            <option :value="wh.id" x-text="wh.name + ' (' + wh.code + ')'"></option>
+                        </template>
+                    </select>
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" x-model="productSearch" @input.debounce.400ms="loadProducts()"
+                            placeholder="Buscar por nombre, SKU o código..."
+                            class="w-full pl-8 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    </div>
+                    <!-- Filtros de visibilidad -->
+                    <div class="flex items-center gap-2">
+                        <label class="flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" x-model="filterVisiblePublic" @change="loadProducts()" class="rounded accent-indigo-600">
+                            <i class="fa-solid fa-eye text-slate-400"></i> Solo públicos
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
+                            <input type="checkbox" x-model="filterVisibleSellers" @change="loadProducts()" class="rounded accent-emerald-600">
+                            <i class="fa-solid fa-store text-slate-400"></i> Solo vendedores
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Acciones en lote -->
+                <div x-show="selectedInventoryIds.length > 0" x-transition
+                    class="flex flex-wrap items-center gap-3 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5">
+                    <span class="text-xs font-bold text-indigo-700" x-text="selectedInventoryIds.length + ' productos seleccionados'"></span>
+                    <button @click="batchVisibility(true, true)"
+                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer">
+                        <i class="fa-solid fa-eye mr-1"></i> Mostrar todos
+                    </button>
+                    <button @click="batchVisibility(false, false)"
+                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-slate-600 hover:bg-slate-700 text-white cursor-pointer">
+                        <i class="fa-solid fa-eye-slash mr-1"></i> Ocultar todos
+                    </button>
+                    <button @click="batchVisibility(null, true)"
+                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer">
+                        <i class="fa-solid fa-store mr-1"></i> Solo vendedores
+                    </button>
+                    <button @click="selectedInventoryIds = []"
+                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">
+                        Cancelar
+                    </button>
+                </div>
+
+                <!-- Tabla de productos -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="px-3 py-3 w-8">
+                                    <input type="checkbox" @change="toggleSelectAll($event)" class="rounded accent-indigo-600 cursor-pointer">
+                                </th>
+                                <th class="px-3 py-3">Producto</th>
+                                <th class="px-3 py-3 text-right">Stock</th>
+                                <th class="px-3 py-3 text-right">Reservado</th>
+                                <th class="px-3 py-3 text-center">Público</th>
+                                <th class="px-3 py-3 text-center">Vendedores</th>
+                                <th class="px-3 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="loadingProducts">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-indigo-400 text-xl mb-2 block"></i>
+                                    Cargando productos...
+                                </td></tr>
+                            </template>
+                            <template x-if="!loadingProducts && productList.length === 0">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-box-open text-4xl mb-2 block text-slate-200"></i>
+                                    <p class="font-semibold text-slate-500">Sin productos en este almacén</p>
+                                    <p class="text-xs">Selecciona otro almacén o agrega stock via Carga Masiva</p>
+                                </td></tr>
+                            </template>
+                            <template x-for="inv in productList" :key="inv.id">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-3 py-2.5">
+                                        <input type="checkbox" :value="inv.id"
+                                            :checked="selectedInventoryIds.includes(inv.id)"
+                                            @change="toggleSelectInventory(inv.id)"
+                                            class="rounded accent-indigo-600 cursor-pointer">
+                                    </td>
+                                    <td class="px-3 py-2.5">
+                                        <p class="font-semibold text-slate-800 text-xs" x-text="inv.product?.name"></p>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="font-mono text-[10px] text-slate-400" x-text="inv.product?.sku"></span>
+                                            <span class="font-mono text-[10px] text-indigo-600 bg-indigo-50 rounded px-1" x-text="inv.product?.internal_code"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-2.5 text-right font-mono font-bold"
+                                        :class="inv.stock_available > 10 ? 'text-emerald-700' : (inv.stock_available > 0 ? 'text-amber-600' : 'text-red-500')"
+                                        x-text="inv.stock_available + ' uds'"></td>
+                                    <td class="px-3 py-2.5 text-right font-mono text-slate-500" x-text="inv.stock_reserved + ' uds'"></td>
+                                    <!-- Toggle Público -->
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button @click="toggleSingleVisibility(inv, 'visible_public', !inv.visible_public)"
+                                            :title="inv.visible_public ? 'Ocultar del catálogo público' : 'Mostrar en catálogo público'"
+                                            class="w-8 h-5 rounded-full transition-colors duration-200 cursor-pointer"
+                                            :class="inv.visible_public ? 'bg-emerald-500' : 'bg-slate-300'">
+                                            <span class="block w-3 h-3 bg-white rounded-full shadow transition-transform duration-200 mx-auto"
+                                                :class="inv.visible_public ? 'translate-x-1.5' : '-translate-x-1.5'"></span>
+                                        </button>
+                                    </td>
+                                    <!-- Toggle Vendedores -->
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button @click="toggleSingleVisibility(inv, 'visible_sellers', !inv.visible_sellers)"
+                                            :title="inv.visible_sellers ? 'Ocultar de vendedores' : 'Mostrar a vendedores'"
+                                            class="w-8 h-5 rounded-full transition-colors duration-200 cursor-pointer"
+                                            :class="inv.visible_sellers ? 'bg-indigo-500' : 'bg-slate-300'">
+                                            <span class="block w-3 h-3 bg-white rounded-full shadow transition-transform duration-200 mx-auto"
+                                                :class="inv.visible_sellers ? 'translate-x-1.5' : '-translate-x-1.5'"></span>
+                                        </button>
+                                    </td>
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button @click="openReserveModal(inv)"
+                                            class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 cursor-pointer"
+                                            title="Reservar stock para un vendedor">
+                                            <i class="fa-solid fa-bookmark mr-0.5"></i> Reservar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación simple -->
+                <div class="flex items-center justify-between text-xs text-slate-500" x-show="productPagination">
+                    <span x-text="'Mostrando ' + productList.length + ' de ' + (productPagination?.total ?? 0) + ' productos'"></span>
+                    <div class="flex gap-2">
+                        <button x-show="productPagination?.prev_page_url" @click="loadProducts(productPagination.current_page - 1)"
+                            class="px-3 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button x-show="productPagination?.next_page_url" @click="loadProducts(productPagination.current_page + 1)"
+                            class="px-3 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =====================================================
+                 TAB 3: RESERVAS DE STOCK PARA VENDEDORES
+            ===================================================== -->
+            <div x-show="activeTab === 'reservas'" x-transition class="p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                    <select x-model="selectedWarehouseId" @change="loadReserves()"
+                        class="flex-1 text-xs rounded-xl border border-slate-200 px-3 py-2.5 text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <option value="">— Selecciona un almacén —</option>
+                        <template x-for="wh in warehouseList" :key="wh.id">
+                            <option :value="wh.id" x-text="wh.name + ' (' + wh.code + ')'"></option>
+                        </template>
+                    </select>
+                    <button @click="reserveModalOpen = true; resetReserveForm()"
+                        :disabled="!selectedWarehouseId"
+                        class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow">
+                        <i class="fa-solid fa-bookmark"></i> Nueva Reserva
+                    </button>
+                </div>
+
+                <!-- Lista de reservas -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="px-4 py-3">Producto</th>
+                                <th class="px-4 py-3">Vendedor Asignado</th>
+                                <th class="px-4 py-3 text-right">Cantidad</th>
+                                <th class="px-4 py-3">Estado</th>
+                                <th class="px-4 py-3">Vencimiento</th>
+                                <th class="px-4 py-3">Notas</th>
+                                <th class="px-4 py-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="loadingReserves">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-amber-400 text-xl mb-2 block"></i>
+                                    Cargando reservas...
+                                </td></tr>
+                            </template>
+                            <template x-if="!loadingReserves && reserveList.length === 0">
+                                <tr><td colspan="7" class="py-10 text-center text-slate-400">
+                                    <i class="fa-solid fa-bookmark text-4xl mb-2 block text-slate-200"></i>
+                                    <p class="font-semibold text-slate-500">Sin reservas activas</p>
+                                    <p class="text-xs">Selecciona un almacén y crea una reserva para un vendedor</p>
+                                </td></tr>
+                            </template>
+                            <template x-for="res in reserveList" :key="res.id">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-4 py-2.5">
+                                        <p class="font-semibold text-slate-800" x-text="res.product?.name"></p>
+                                        <span class="font-mono text-[10px] text-indigo-600" x-text="res.product?.internal_code"></span>
+                                    </td>
+                                    <td class="px-4 py-2.5">
+                                        <p class="font-semibold text-slate-700" x-text="res.dropshipper?.company_or_store_name || res.dropshipper?.name"></p>
+                                        <p class="text-slate-400 text-[10px]" x-text="res.dropshipper?.email"></p>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right font-mono font-bold text-amber-700" x-text="res.quantity + ' uds'"></td>
+                                    <td class="px-4 py-2.5">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Activa</span>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-slate-400" x-text="res.expires_at ? new Date(res.expires_at).toLocaleDateString('es-BO') : 'Sin vencimiento'"></td>
+                                    <td class="px-4 py-2.5 text-slate-500 max-w-[180px] truncate" x-text="res.notes || '—'"></td>
+                                    <td class="px-4 py-2.5 text-center">
+                                        <button @click="releaseReserve(res)"
+                                            class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 cursor-pointer">
+                                            <i class="fa-solid fa-xmark mr-0.5"></i> Liberar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =====================================================
+                 TAB 4: TRASPASO ENTRE BODEGAS
+            ===================================================== -->
+            <div x-show="activeTab === 'traspaso'" x-transition class="p-4 space-y-4">
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-xs text-indigo-800 flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info mt-0.5 text-indigo-500"></i>
+                    <span>El traspaso descuenta stock de la bodega origen y lo acredita en la bodega destino de forma atómica. Se registra en el Kardex de movimientos.</span>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5 max-w-2xl space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bodega Origen *</label>
+                            <select x-model="traspasoForm.from_warehouse_id"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <option value="">— Seleccionar bodega origen —</option>
+                                <template x-for="wh in warehouseList" :key="wh.id">
+                                    <option :value="wh.id" x-text="wh.name + ' (' + wh.code + ')'"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bodega Destino *</label>
+                            <select x-model="traspasoForm.to_warehouse_id"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <option value="">— Seleccionar bodega destino —</option>
+                                <template x-for="wh in warehouseList" :key="wh.id">
+                                    <option :value="wh.id" x-text="wh.name + ' (' + wh.code + ')'"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Producto *</label>
+                        <select x-model="traspasoForm.product_id"
+                            class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="">— Seleccionar producto —</option>
+                            @foreach($products as $p)
+                            <option value="{{ $p->id }}">{{ $p->name }} — {{ $p->sku }} / {{ $p->internal_code }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cantidad a transferir *</label>
+                            <input type="number" x-model.number="traspasoForm.quantity" min="1"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Notas (opcional)</label>
+                            <input type="text" x-model="traspasoForm.notes" placeholder="Motivo del traspaso..."
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                    </div>
+                    <button @click="submitTraspaso()"
+                        :disabled="traspasoSubmitting || !traspasoForm.from_warehouse_id || !traspasoForm.to_warehouse_id || !traspasoForm.product_id || traspasoForm.quantity < 1"
+                        class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow">
+                        <template x-if="traspasoSubmitting"><span><i class="fa-solid fa-spinner fa-spin"></i> Procesando...</span></template>
+                        <template x-if="!traspasoSubmitting"><span><i class="fa-solid fa-right-left"></i> Ejecutar Traspaso</span></template>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             MODAL: CREAR / EDITAR ALMACÉN
+        ===================================================== -->
+        <div x-show="warehouseModalOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            @click.self="warehouseModalOpen = false">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg" @click.stop>
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-900 text-sm" x-text="warehouseForm.id ? 'Editar Almacén' : 'Nuevo Almacén'"></h3>
+                    <button @click="warehouseModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Almacén *</label>
+                            <input type="text" x-model="warehouseForm.name" placeholder="Bodega Principal Santa Cruz"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                        <div x-show="!warehouseForm.id">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Código Único *</label>
+                            <input type="text" x-model="warehouseForm.code" placeholder="WH-SCZ-02"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300 uppercase">
+                            <p class="text-[10px] text-slate-400 mt-1">Solo letras, números y guiones. Ej: WH-SCZ-02</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Departamento *</label>
+                            <select x-model="warehouseForm.department"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <option value="">— Seleccionar —</option>
+                                <option>Santa Cruz</option>
+                                <option>La Paz</option>
+                                <option>Cochabamba</option>
+                                <option>Oruro</option>
+                                <option>Potosí</option>
+                                <option>Sucre</option>
+                                <option>Tarija</option>
+                                <option>Beni</option>
+                                <option>Pando</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Ciudad *</label>
+                            <input type="text" x-model="warehouseForm.city" placeholder="Santa Cruz de la Sierra"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Dirección *</label>
+                            <input type="text" x-model="warehouseForm.address" placeholder="Av. San Martín #850, Zona Sur"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Teléfono de contacto</label>
+                            <input type="text" x-model="warehouseForm.contact_phone" placeholder="+591 70000000"
+                                class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        </div>
+                        <div x-show="warehouseForm.id" class="flex items-center gap-3 pt-5">
+                            <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-600">
+                                <input type="checkbox" x-model="warehouseForm.is_active" class="rounded accent-emerald-600">
+                                Almacén activo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5 border-t border-slate-200 flex justify-end gap-3">
+                    <button @click="warehouseModalOpen = false" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer">Cancelar</button>
+                    <button @click="saveWarehouse()" :disabled="warehouseSubmitting"
+                        class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer disabled:opacity-50">
+                        <template x-if="warehouseSubmitting"><span><i class="fa-solid fa-spinner fa-spin mr-1"></i> Guardando...</span></template>
+                        <template x-if="!warehouseSubmitting"><span><i class="fa-solid fa-floppy-disk mr-1"></i> <span x-text="warehouseForm.id ? 'Actualizar' : 'Crear Almacén'"></span></span></template>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             MODAL: NUEVA RESERVA DE STOCK
+        ===================================================== -->
+        <div x-show="reserveModalOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            @click.self="reserveModalOpen = false">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md" @click.stop>
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm">Reservar Stock para Vendedor</h3>
+                        <p class="text-xs text-slate-500 mt-0.5" x-text="reserveForm.productName ? '📦 ' + reserveForm.productName : 'Selecciona producto y vendedor'"></p>
+                    </div>
+                    <button @click="reserveModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <!-- Stock disponible -->
+                    <div x-show="reserveForm.stockAvailable !== null"
+                        class="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs">
+                        <i class="fa-solid fa-cubes text-amber-500"></i>
+                        <span class="text-amber-700">Stock disponible en bodega: <strong x-text="reserveForm.stockAvailable + ' unidades'"></strong></span>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Vendedor / Dropshipper *</label>
+                        <select x-model="reserveForm.dropshipper_id"
+                            class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                            <option value="">— Seleccionar vendedor —</option>
+                            @foreach($dropshippers as $ds)
+                            <option value="{{ $ds->id }}">{{ $ds->company_or_store_name ?: $ds->name }} — {{ $ds->city ?? '' }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cantidad a reservar *</label>
+                        <input type="number" x-model.number="reserveForm.quantity" min="1"
+                            :max="reserveForm.stockAvailable"
+                            class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <p class="text-[10px] text-slate-400 mt-1">El stock reservado se descuenta del disponible en bodega.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Fecha de vencimiento (opcional)</label>
+                        <input type="datetime-local" x-model="reserveForm.expires_at"
+                            class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Notas internas</label>
+                        <textarea x-model="reserveForm.notes" rows="2" placeholder="Motivo de la reserva, campaña, acuerdo especial..."
+                            class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300 resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="p-5 border-t border-slate-200 flex justify-end gap-3">
+                    <button @click="reserveModalOpen = false" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer">Cancelar</button>
+                    <button @click="submitReserve()" :disabled="reserveSubmitting || !reserveForm.dropshipper_id || reserveForm.quantity < 1"
+                        class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold cursor-pointer disabled:opacity-50">
+                        <template x-if="reserveSubmitting"><span><i class="fa-solid fa-spinner fa-spin mr-1"></i> Reservando...</span></template>
+                        <template x-if="!reserveSubmitting"><span><i class="fa-solid fa-bookmark mr-1"></i> Confirmar Reserva</span></template>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast de almacenes (independiente del dashboard) -->
+        <div x-show="almToast.show" x-cloak x-transition
+            class="fixed bottom-6 right-6 z-50 max-w-sm p-4 rounded-2xl text-xs font-semibold flex items-center gap-3 shadow-xl"
+            :class="almToast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'">
+            <i class="fa-solid" :class="almToast.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'"></i>
+            <span x-text="almToast.message" class="flex-1"></span>
+            <button @click="almToast.show = false" class="ml-2 opacity-70 hover:opacity-100 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+    <!-- FIN MÓDULO ALMACENES -->
+
     <!-- Bodegas con Inventario (#FFFFFF) con ancla #inventario -->
     <div id="inventario" class="space-y-6">
         @if($warehouses->isNotEmpty())
@@ -1733,6 +2315,333 @@ function proveedorDashboard() {
                 this.bulkUploading = false;
             }
         }
+    }
+}
+
+// =============================================================================
+// MÓDULO ALPINE.JS — GESTIÓN DE ALMACENES
+// =============================================================================
+function almacenModule() {
+    return {
+        // Estado UI
+        activeTab: 'bodegas',
+        almToast: { show: false, message: '', type: 'success' },
+
+        // ---- BODEGAS ----
+        warehouseList: [],
+        loadingWarehouses: false,
+        warehouseModalOpen: false,
+        warehouseSubmitting: false,
+        selectedWarehouseId: '',
+        warehouseForm: {
+            id: null, name: '', code: '', department: '', city: '',
+            address: '', contact_phone: '', is_active: true
+        },
+
+        // ---- PRODUCTOS ----
+        productList: [],
+        loadingProducts: false,
+        productSearch: '',
+        filterVisiblePublic: false,
+        filterVisibleSellers: false,
+        selectedInventoryIds: [],
+        productPagination: null,
+
+        // ---- RESERVAS ----
+        reserveList: [],
+        loadingReserves: false,
+        reserveModalOpen: false,
+        reserveSubmitting: false,
+        reserveForm: {
+            product_id: '', productName: '', stockAvailable: null,
+            dropshipper_id: '', quantity: 1, notes: '', expires_at: ''
+        },
+
+        // ---- TRASPASO ----
+        traspasoForm: { from_warehouse_id: '', to_warehouse_id: '', product_id: '', quantity: 1, notes: '' },
+        traspasoSubmitting: false,
+
+        // =================================================================
+        // INIT
+        // =================================================================
+        init() {
+            this.loadWarehouses();
+        },
+
+        showAlmToast(message, type = 'success') {
+            this.almToast = { show: true, message, type };
+            setTimeout(() => { this.almToast.show = false; }, 5000);
+        },
+
+        csrf() {
+            return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        },
+
+        // =================================================================
+        // CRUD ALMACENES
+        // =================================================================
+        async loadWarehouses() {
+            this.loadingWarehouses = true;
+            try {
+                const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                if (data.status === 'success') this.warehouseList = data.data;
+            } catch { this.showAlmToast('Error al cargar almacenes.', 'error'); }
+            finally { this.loadingWarehouses = false; }
+        },
+
+        resetWarehouseForm() {
+            this.warehouseForm = { id: null, name: '', code: '', department: '', city: '', address: '', contact_phone: '', is_active: true };
+        },
+
+        editWarehouse(wh) {
+            this.warehouseForm = {
+                id: wh.id, name: wh.name, code: wh.code,
+                department: wh.department, city: wh.city,
+                address: wh.address, contact_phone: wh.contact_phone ?? '',
+                is_active: wh.is_active
+            };
+            this.warehouseModalOpen = true;
+        },
+
+        selectWarehouse(wh) {
+            this.selectedWarehouseId = wh.id;
+        },
+
+        async saveWarehouse() {
+            if (!this.warehouseForm.name || !this.warehouseForm.department || !this.warehouseForm.city || !this.warehouseForm.address) {
+                this.showAlmToast('Completa los campos obligatorios.', 'error');
+                return;
+            }
+            this.warehouseSubmitting = true;
+            const isEdit = Boolean(this.warehouseForm.id);
+            const url    = isEdit ? `/warehouses/${this.warehouseForm.id}` : '/warehouses';
+            const method = isEdit ? 'PUT' : 'POST';
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
+                    body: JSON.stringify(this.warehouseForm)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message, 'success');
+                    this.warehouseModalOpen = false;
+                    await this.loadWarehouses();
+                } else {
+                    const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error al guardar.');
+                    this.showAlmToast(msg, 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+            finally { this.warehouseSubmitting = false; }
+        },
+
+        async confirmDeleteWarehouse(wh) {
+            if (!confirm(`¿Eliminar el almacén "${wh.name}"?\nSolo se puede eliminar si no tiene stock activo.`)) return;
+            try {
+                const res = await fetch(`/warehouses/${wh.id}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() }
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message, 'success');
+                    await this.loadWarehouses();
+                } else {
+                    this.showAlmToast(data.message || 'No se pudo eliminar.', 'error');
+                }
+            } catch { this.showAlmToast('Error al eliminar.', 'error'); }
+        },
+
+        // =================================================================
+        // PRODUCTOS DEL ALMACÉN
+        // =================================================================
+        async loadProducts(page = 1) {
+            if (!this.selectedWarehouseId) { this.productList = []; return; }
+            this.loadingProducts = true;
+            const params = new URLSearchParams({ page });
+            if (this.productSearch) params.set('search', this.productSearch);
+            if (this.filterVisiblePublic)  params.set('visible_public', '1');
+            if (this.filterVisibleSellers) params.set('visible_sellers', '1');
+            try {
+                const res = await fetch(`/warehouses/${this.selectedWarehouseId}/products?${params}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.productList      = data.data.data ?? data.data;
+                    this.productPagination = data.data.meta ? { ...data.data.meta, prev_page_url: data.data.prev_page_url, next_page_url: data.data.next_page_url } : null;
+                }
+            } catch { this.showAlmToast('Error al cargar productos.', 'error'); }
+            finally { this.loadingProducts = false; }
+        },
+
+        toggleSelectAll(e) {
+            if (e.target.checked) {
+                this.selectedInventoryIds = this.productList.map(i => i.id);
+            } else {
+                this.selectedInventoryIds = [];
+            }
+        },
+
+        toggleSelectInventory(id) {
+            const idx = this.selectedInventoryIds.indexOf(id);
+            if (idx === -1) this.selectedInventoryIds.push(id);
+            else this.selectedInventoryIds.splice(idx, 1);
+        },
+
+        // Toggle individual de visibilidad (switch)
+        async toggleSingleVisibility(inv, field, value) {
+            const payload = {};
+            payload[field] = value;
+            try {
+                const res = await fetch(`/warehouses/${this.selectedWarehouseId}/products/${inv.id}/visibility`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    inv[field] = value;
+                    this.showAlmToast(data.message, 'success');
+                } else {
+                    this.showAlmToast(data.message || 'Error al cambiar visibilidad.', 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+        },
+
+        // Toggle en lote (null = no cambiar ese campo)
+        async batchVisibility(visiblePublic, visibleSellers) {
+            if (this.selectedInventoryIds.length === 0) return;
+            const payload = { inventory_ids: this.selectedInventoryIds };
+            if (visiblePublic  !== null) payload.visible_public  = visiblePublic;
+            if (visibleSellers !== null) payload.visible_sellers = visibleSellers;
+            try {
+                const res = await fetch(`/warehouses/${this.selectedWarehouseId}/products/batch-visibility`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message, 'success');
+                    this.selectedInventoryIds = [];
+                    await this.loadProducts();
+                } else {
+                    this.showAlmToast(data.message || 'Error en la operación por lote.', 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+        },
+
+        // =================================================================
+        // RESERVAS
+        // =================================================================
+        async loadReserves(page = 1) {
+            if (!this.selectedWarehouseId) { this.reserveList = []; return; }
+            this.loadingReserves = true;
+            try {
+                const res = await fetch(`/warehouses/${this.selectedWarehouseId}/reserves?page=${page}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.reserveList = data.data.data ?? data.data;
+                }
+            } catch { this.showAlmToast('Error al cargar reservas.', 'error'); }
+            finally { this.loadingReserves = false; }
+        },
+
+        resetReserveForm() {
+            this.reserveForm = { product_id: '', productName: '', stockAvailable: null, dropshipper_id: '', quantity: 1, notes: '', expires_at: '' };
+        },
+
+        openReserveModal(inv) {
+            this.resetReserveForm();
+            this.reserveForm.product_id      = inv.product?.id ?? '';
+            this.reserveForm.productName     = inv.product?.name ?? '';
+            this.reserveForm.stockAvailable  = inv.stock_available;
+            this.reserveForm.quantity        = Math.min(1, inv.stock_available);
+            this.reserveModalOpen = true;
+        },
+
+        async submitReserve() {
+            if (!this.reserveForm.dropshipper_id || this.reserveForm.quantity < 1) {
+                this.showAlmToast('Selecciona un vendedor y una cantidad válida.', 'error');
+                return;
+            }
+            this.reserveSubmitting = true;
+            try {
+                const payload = {
+                    product_id:     this.reserveForm.product_id,
+                    dropshipper_id: this.reserveForm.dropshipper_id,
+                    quantity:       this.reserveForm.quantity,
+                    notes:          this.reserveForm.notes || null,
+                    expires_at:     this.reserveForm.expires_at || null,
+                };
+                const res = await fetch(`/warehouses/${this.selectedWarehouseId}/reserves`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message, 'success');
+                    this.reserveModalOpen = false;
+                    await this.loadProducts();
+                    await this.loadReserves();
+                } else {
+                    const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error al crear reserva.');
+                    this.showAlmToast(msg, 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+            finally { this.reserveSubmitting = false; }
+        },
+
+        async releaseReserve(reserve) {
+            if (!confirm(`¿Liberar la reserva de ${reserve.quantity} uds para "${reserve.dropshipper?.name ?? 'este vendedor'}"? El stock volverá a estar disponible.`)) return;
+            try {
+                const res = await fetch(`/warehouses/${reserve.warehouse_id}/reserves/${reserve.id}/release`, {
+                    method: 'PATCH',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() }
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message, 'success');
+                    await this.loadReserves();
+                    await this.loadProducts();
+                } else {
+                    this.showAlmToast(data.message || 'Error al liberar reserva.', 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+        },
+
+        // =================================================================
+        // TRASPASO (reutiliza endpoint de InventoryController)
+        // =================================================================
+        async submitTraspaso() {
+            if (this.traspasoForm.from_warehouse_id === this.traspasoForm.to_warehouse_id) {
+                this.showAlmToast('La bodega origen y destino no pueden ser la misma.', 'error');
+                return;
+            }
+            this.traspasoSubmitting = true;
+            try {
+                const res = await fetch('/inventory/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': this.csrf() },
+                    body: JSON.stringify(this.traspasoForm)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.showAlmToast(data.message || 'Traspaso ejecutado exitosamente.', 'success');
+                    this.traspasoForm = { from_warehouse_id: '', to_warehouse_id: '', product_id: '', quantity: 1, notes: '' };
+                    await this.loadWarehouses();
+                } else {
+                    const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error en el traspaso.');
+                    this.showAlmToast(msg, 'error');
+                }
+            } catch { this.showAlmToast('Error de comunicación.', 'error'); }
+            finally { this.traspasoSubmitting = false; }
+        },
     }
 }
 </script>

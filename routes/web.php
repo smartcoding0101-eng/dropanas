@@ -46,6 +46,28 @@ Route::middleware(['auth'])->group(function () {
         return view('catalog', compact('products', 'categories'));
     })->name('catalog');
 
+    // =========================================================================
+    // MÓDULO ALMACENES — CRUD + Productos + Visibilidad + Reservas de Stock
+    // =========================================================================
+    Route::prefix('warehouses')->name('warehouses.')->group(function () {
+        Route::get('/',                                             [\App\Http\Controllers\Web\WarehouseController::class, 'index'])               ->name('index');
+        Route::post('/',                                            [\App\Http\Controllers\Web\WarehouseController::class, 'store'])               ->name('store');
+        Route::put('/{id}',                                         [\App\Http\Controllers\Web\WarehouseController::class, 'update'])              ->name('update');
+        Route::delete('/{id}',                                      [\App\Http\Controllers\Web\WarehouseController::class, 'destroy'])             ->name('destroy');
+
+        // Productos e inventario del almacén
+        Route::get('/{id}/products',                                [\App\Http\Controllers\Web\WarehouseController::class, 'products'])            ->name('products');
+
+        // Visibilidad por almacén (individual y lote)
+        Route::patch('/{warehouseId}/products/{inventoryId}/visibility', [\App\Http\Controllers\Web\WarehouseController::class, 'toggleVisibility'])  ->name('visibility');
+        Route::patch('/{warehouseId}/products/batch-visibility',    [\App\Http\Controllers\Web\WarehouseController::class, 'batchToggleVisibility'])->name('batch.visibility');
+
+        // Reservas de stock para vendedores
+        Route::get('/{id}/reserves',                                [\App\Http\Controllers\Web\WarehouseController::class, 'reserves'])            ->name('reserves');
+        Route::post('/{id}/reserves',                               [\App\Http\Controllers\Web\WarehouseController::class, 'storeReserve'])        ->name('reserves.store');
+        Route::patch('/{warehouseId}/reserves/{reserveId}/release', [\App\Http\Controllers\Web\WarehouseController::class, 'releaseReserve'])      ->name('reserves.release');
+    });
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');

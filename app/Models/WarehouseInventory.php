@@ -19,6 +19,13 @@ class WarehouseInventory extends Model
         'stock_physical',
         'stock_reserved',
         'stock_available',
+        'visible_public',
+        'visible_sellers',
+    ];
+
+    protected $casts = [
+        'visible_public'  => 'boolean',
+        'visible_sellers' => 'boolean',
     ];
 
     public function warehouse(): BelongsTo
@@ -29,6 +36,13 @@ class WarehouseInventory extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function sellerReserves()
+    {
+        return $this->hasMany(WarehouseSellerReserve::class, 'product_id', 'product_id')
+            ->where('warehouse_id', $this->warehouse_id)
+            ->active();
     }
 }
 
