@@ -28,6 +28,9 @@ Route::get('/storage/products/{filename}', function (string $filename) {
     return response()->file($path);
 })->where('filename', '.*');
 
+// Descarga de Plantilla Oficial de Carga Masiva (Excel / CSV)
+Route::get('/products/template/download', [\App\Http\Controllers\Api\ProductController::class, 'downloadTemplate'])->name('products.template.download');
+
 // =========================================================================
 // 2. ZONA PROTEGIDA ZERO-TRUST: Requiere Usuario Registrado y Autenticado
 // =========================================================================
@@ -44,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('catalog');
 
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
-    Route::get('/products/template/download', [\App\Http\Controllers\Api\ProductController::class, 'downloadTemplate'])->name('products.template.download');
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');
     Route::post('/inventory/transfer', [\App\Http\Controllers\Api\InventoryController::class, 'transfer'])->name('inventory.transfer.web');

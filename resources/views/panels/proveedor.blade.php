@@ -100,8 +100,18 @@
                         <p class="text-xs text-slate-500">Distribución física de stock disponible para despacho COD en Bolivia</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button @click="transferModalOpen = true" class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs flex items-center gap-1.5 transition">
+                <div class="flex flex-wrap items-center gap-2">
+                    <button @click="downloadAlertModalOpen = true"
+                        class="px-3.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer"
+                        title="Descargar plantilla oficial de productos e inventario">
+                        <i class="fa-solid fa-file-excel text-emerald-600"></i> Plantilla Excel
+                    </button>
+                    <button @click="bulkModalOpen = true"
+                        class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer"
+                        title="Carga masiva de inventario y productos">
+                        <i class="fa-solid fa-cloud-arrow-up text-amber-200"></i> Carga Masiva
+                    </button>
+                    <button @click="transferModalOpen = true" class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs flex items-center gap-1.5 transition cursor-pointer">
                         <i class="fa-solid fa-dolly text-[#0061f2]"></i> Transferir Stock
                     </button>
                     <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-950 border border-emerald-200/80 font-mono">
@@ -147,7 +157,12 @@
                             </div>
                         </div>
                         @empty
-                        <div class="text-xs text-slate-400 italic py-2">Sin inventario registrado</div>
+                        <div class="text-xs text-slate-400 italic py-3 px-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span>Sin inventario registrado aún en esta bodega.</span>
+                            <button type="button" @click="downloadAlertModalOpen = true" class="text-emerald-700 hover:text-emerald-800 font-bold underline text-xs cursor-pointer inline-flex items-center gap-1 self-start sm:self-auto">
+                                <i class="fa-solid fa-file-excel text-[11px]"></i> Descargar plantilla de ejemplo
+                            </button>
+                        </div>
                         @endforelse
                     </div>
                 </div>

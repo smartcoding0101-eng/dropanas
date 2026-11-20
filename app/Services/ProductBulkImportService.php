@@ -27,9 +27,9 @@ class ProductBulkImportService
     ) {}
 
     /**
-     * Genera la plantilla oficial descargable con estilos corporativos y ejemplos prácticos.
+     * Construye el libro de trabajo con las 2 hojas: plantilla de productos y guía de megabodegas/categorías.
      */
-    public function generateTemplate(string $format = 'xlsx'): array
+    public function buildTemplateSpreadsheet(): Spreadsheet
     {
         $spreadsheet = new Spreadsheet();
 
@@ -209,7 +209,35 @@ class ProductBulkImportService
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        // Guardar a archivo temporal
+        return $spreadsheet;
+    }
+
+    /**
+     * Escribe la plantilla directamente en la salida de streaming HTTP (php://output).
+     */
+    public function streamTemplate(string $format = 'xlsx'): void
+    {
+        $spreadsheet = $this->buildTemplateSpreadsheet();
+
+        if ($format === 'csv') {
+            $writer = new Csv($spreadsheet);
+            $writer->setUseBOM(true);
+            $writer->setDelimiter(';');
+            $writer->setEnclosure('"');
+            $writer->save('php://output');
+        } else {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }
+    }
+
+    /**
+     * Genera la plantilla oficial y la guarda en un archivo temporal.
+     */
+    public function generateTemplate(string $format = 'xlsx'): array
+    {
+        $spreadsheet = $this->buildTemplateSpreadsheet();
+
         $fileName = 'plantilla_carga_masiva_productos_' . date('Ymd_His') . '.' . ($format === 'csv' ? 'csv' : 'xlsx');
         $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
 

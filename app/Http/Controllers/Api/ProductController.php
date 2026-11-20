@@ -9,8 +9,6 @@ use App\Models\Warehouse;
 use App\Services\ProductBulkImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
 class ProductController extends Controller
 {
     /**
@@ -167,18 +165,23 @@ class ProductController extends Controller
     /**
      * Descarga la plantilla oficial para Carga Masiva (Excel / CSV).
      */
-    public function downloadTemplate(Request $request, ProductBulkImportService $service): BinaryFileResponse
+    public function downloadTemplate(Request $request, ProductBulkImportService $service)
     {
         $format = strtolower($request->query('format', 'xlsx'));
         if (!in_array($format, ['xlsx', 'csv'])) {
             $format = 'xlsx';
         }
 
-        $result = $service->generateTemplate($format);
+        $fileName = 'plantilla_carga_masiva_productos_' . date('Ymd_His') . '.' . ($format === 'csv' ? 'csv' : 'xlsx');
+        $mime = $format === 'csv' ? 'text/csv; charset=UTF-8' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-        return response()->download($result['path'], $result['filename'], [
-            'Content-Type' => $result['mime'],
-        ])->deleteFileAfterSend(true);
+        return response()->streamDownload(function () use ($service, $format) {
+            $service->streamTemplate($format);
+        }, $fileName, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+            'Cache-Control' => 'no-cache, private',
+        ]);
     }
 
     /**
