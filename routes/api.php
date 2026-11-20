@@ -22,9 +22,10 @@ Route::prefix('v1')->group(function () {
     // Cotización oficial del BCB en tiempo real (Pública para tiendas y cálculo de precios)
     Route::get('/exchange-rate/current', [ExchangeRateController::class, 'current']);
 
-    // Catálogo público de productos
+    // Catálogo público de productos y categorías
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
+    Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 
     // Captación pública de Leads comerciales (Formulario Landing)
     Route::post('/leads', [\App\Http\Controllers\Api\LeadController::class, 'store']);
@@ -130,8 +131,11 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     // Sincronización forzada de tasa BCB
     Route::post('/exchange-rate/sync', [ExchangeRateController::class, 'sync']);
 
-    // Publicación de productos (Proveedores)
+    // Publicación de productos y CRUD de Categorías (Proveedores / Admin)
     Route::post('/products', [ProductController::class, 'store']);
+    Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
+    Route::match(['put', 'patch'], '/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy']);
 
     // Gestión de Pedidos COD
     Route::get('/orders', [OrderController::class, 'index']);

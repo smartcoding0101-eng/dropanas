@@ -154,7 +154,7 @@ class PanelController extends Controller
         }
 
         $allWarehouses = Warehouse::all();
-        $categories    = \App\Models\Category::all();
+        $categories    = \App\Models\Category::withCount('products')->orderBy('name')->get();
 
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',

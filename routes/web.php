@@ -39,8 +39,15 @@ Route::middleware(['auth'])->group(function () {
             ->where('status', 'published')
             ->where('is_cod_available', true)
             ->get();
-        return view('catalog', compact('products'));
+        $categories = \App\Models\Category::withCount('products')->orderBy('name')->get();
+        return view('catalog', compact('products', 'categories'));
     })->name('catalog');
+
+    // CRUD Web de Categorías de Productos (JSON para Modal en Panel Proveedor / Admin)
+    Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store'])->name('categories.store');
+    Route::match(['put', 'patch'], '/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy'])->name('categories.destroy');
 
     // Checkout Demo COD + QR
     Route::get('/checkout-demo', [CheckoutController::class, 'index'])->name('checkout.demo');

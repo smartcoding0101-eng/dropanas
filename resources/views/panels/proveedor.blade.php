@@ -12,8 +12,12 @@
         badge="Panel del Proveedor / Mayorista">
         <x-slot:actions>
             <button @click="productModalOpen = true"
-                class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md">
+                class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md cursor-pointer">
                 <i class="fa-solid fa-plus"></i> Publicar Nuevo Producto
+            </button>
+            <button @click="categoryModalOpen = true"
+                class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs inline-flex items-center gap-2 backdrop-blur-sm transition cursor-pointer">
+                <i class="fa-solid fa-tags text-indigo-300"></i> Categorías (<span x-text="categoriesList.length">{{ $categories->count() }}</span>)
             </button>
             <a href="{{ url('/catalogo') }}"
                 class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs inline-flex items-center gap-2 backdrop-blur-sm transition">
@@ -427,9 +431,13 @@
                 <i class="fa-solid fa-boxes-stacked text-[#0061f2]"></i>
                 <h3 class="font-bold text-slate-900 text-sm font-heading">Mis Productos Publicados</h3>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <button @click="categoryModalOpen = true"
+                    class="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200/80 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-solid fa-tags"></i> Gestionar Categorías
+                </button>
                 <button @click="productModalOpen = true"
-                    class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5">
+                    class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Producto
                 </button>
                 <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-slate-900 border border-slate-200 font-mono">
@@ -732,13 +740,21 @@
                                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-emerald-500 focus:bg-white transition">
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-700 mb-1">Categoría:</label>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label class="block font-bold text-slate-700">Categoría:</label>
+                                    <button type="button" @click="categoryModalOpen = true"
+                                        class="text-[10px] font-extrabold text-[#4F46E5] hover:text-[#312E81] flex items-center gap-1 transition cursor-pointer"
+                                        title="Crear, editar o eliminar categorías">
+                                        <i class="fa-solid fa-gear text-[10px]"></i>
+                                        <span>+ Gestionar</span>
+                                    </button>
+                                </div>
                                 <select x-model="form.category_id" required
-                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-500 focus:bg-white transition">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-[#4F46E5] focus:bg-white transition">
                                     <option value="">Seleccionar categoría...</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
+                                    <template x-for="cat in categoriesList" :key="cat.id">
+                                        <option :value="cat.id" x-text="cat.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -867,20 +883,171 @@
         </div>
     </div>
 
+    <!-- ===================================================================== -->
+    <!-- MODAL CRUD COMPLETO DE CATEGORÍAS DE PRODUCTOS (LISTAR, CREAR, EDITAR, ELIMINAR) -->
+    <!-- ===================================================================== -->
+    <div x-show="categoryModalOpen" x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-[60] bg-[#0F172A]/65 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 my-auto"
+            @click.away="categoryModalOpen = false">
+
+            <!-- Encabezado del Modal de Categorías -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-[#4F46E5] border border-indigo-200/80 flex items-center justify-center font-bold text-lg shadow-xs">
+                        <i class="fa-solid fa-tags"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-[#0F172A] font-heading text-lg leading-tight">Gestión de Categorías de Productos</h3>
+                        <p class="text-xs text-slate-500">Crea, edita, lista o elimina categorías para la Megabodega Mayorista</p>
+                    </div>
+                </div>
+                <button type="button" @click="categoryModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Formulario Insertar / Editar Categoría -->
+            <form @submit.prevent="saveCategory()" class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3 mb-5 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="font-extrabold uppercase tracking-wider text-[11px] text-[#4F46E5] flex items-center gap-1.5">
+                        <i class="fa-solid" :class="categoryForm.id ? 'fa-pen-to-square' : 'fa-plus-circle'"></i>
+                        <span x-text="categoryForm.id ? 'Editar Categoría Seleccionada' : 'Insertar Nueva Categoría'"></span>
+                    </span>
+                    <button type="button" x-show="categoryForm.id" x-cloak @click="resetCategoryForm()"
+                        class="text-[11px] font-bold text-slate-500 hover:text-rose-600 flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-rotate-left"></i> Cancelar edición
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-slate-700 mb-1">Nombre de Categoría:</label>
+                        <input type="text" x-model="categoryForm.name" required placeholder="Ej: Deportes y Fitness"
+                            class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-[#0F172A] text-xs font-semibold focus:outline-none focus:border-[#4F46E5] transition">
+                    </div>
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-slate-700 mb-1">Descripción:</label>
+                        <input type="text" x-model="categoryForm.description" placeholder="Ej: Artículos deportivos, suplementos y gimnasio"
+                            class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-[#0F172A] text-xs focus:outline-none focus:border-[#4F46E5] transition">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <button type="submit" :disabled="categorySubmitting"
+                            class="w-full btn-scarlet py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+                            <i class="fa-solid" :class="categorySubmitting ? 'fa-spinner animate-spin' : (categoryForm.id ? 'fa-check' : 'fa-plus')"></i>
+                            <span x-text="categoryForm.id ? 'Actualizar' : 'Guardar'"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Buscador y Tabla CRUD de Categorías -->
+            <div class="space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="text-xs font-bold text-[#0F172A] flex items-center gap-2">
+                        <span>Listado de Categorías Registradas</span>
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] border border-indigo-200 font-mono text-[11px]"
+                              x-text="categoriesList.length + ' categorías'"></span>
+                    </div>
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+                        <input type="text" x-model="categorySearch" placeholder="Filtrar categoría..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-2xl overflow-hidden max-h-64 overflow-y-auto">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-[10px] uppercase font-extrabold text-slate-500 border-b border-slate-200 sticky top-0">
+                            <tr>
+                                <th class="py-2.5 px-4">Categoría / Slug</th>
+                                <th class="py-2.5 px-4">Descripción</th>
+                                <th class="py-2.5 px-4 text-center">Productos</th>
+                                <th class="py-2.5 px-4 text-right">Acciones CRUD</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-for="cat in filteredCategories()" :key="cat.id">
+                                <tr class="hover:bg-indigo-50/40 transition">
+                                    <td class="py-2.5 px-4">
+                                        <div class="font-bold text-[#0F172A]" x-text="cat.name"></div>
+                                        <div class="text-[10px] font-mono text-slate-400" x-text="cat.slug"></div>
+                                    </td>
+                                    <td class="py-2.5 px-4 text-slate-500 max-w-xs truncate" x-text="cat.description || 'Sin descripción'"></td>
+                                    <td class="py-2.5 px-4 text-center">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200"
+                                              x-text="(cat.products_count || 0) + ' uds'"></span>
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5">
+                                            <button type="button" @click="selectCategoryForProduct(cat)"
+                                                class="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-[10px] transition cursor-pointer"
+                                                title="Elegir esta categoría para el producto">
+                                                <i class="fa-solid fa-check mr-0.5"></i> Usar
+                                            </button>
+                                            <button type="button" @click="editCategory(cat)"
+                                                class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200 transition cursor-pointer"
+                                                title="Editar Categoría">
+                                                <i class="fa-solid fa-pen text-[10px]"></i>
+                                            </button>
+                                            <button type="button" @click="deleteCategory(cat)"
+                                                class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition cursor-pointer"
+                                                title="Eliminar Categoría">
+                                                <i class="fa-solid fa-trash text-[10px]"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <tr x-show="filteredCategories().length === 0">
+                                <td colspan="4" class="py-6 text-center text-slate-400 italic">
+                                    No se encontraron categorías con ese criterio.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end pt-4 mt-4 border-t border-slate-100">
+                <button type="button" @click="categoryModalOpen = false"
+                    class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#0F172A] font-bold text-xs transition cursor-pointer">
+                    Cerrar Gestor de Categorías
+                </button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
 function proveedorDashboard() {
     return {
         productModalOpen: false,
+        categoryModalOpen: false,
         transferModalOpen: false,
         alertModalOpen: false,
         submitting: false,
+        categorySubmitting: false,
         transferring: false,
         alertSubmitting: false,
         toast: { show: false, message: '', type: 'success' },
         imageFile: null,
         imagePreview: null,
+        categorySearch: '',
+        categoriesList: @json($categories),
+        categoryForm: {
+            id: null,
+            name: '',
+            description: ''
+        },
         form: {
             name: '',
             sku: '',
@@ -1013,6 +1180,106 @@ function proveedorDashboard() {
             this.toast.type = type;
             this.toast.show = true;
             setTimeout(() => { this.toast.show = false; }, 5000);
+        },
+
+        filteredCategories() {
+            const q = this.categorySearch.toLowerCase().trim();
+            if (!q) return this.categoriesList;
+            return this.categoriesList.filter(c =>
+                (c.name || '').toLowerCase().includes(q) ||
+                (c.slug || '').toLowerCase().includes(q) ||
+                (c.description || '').toLowerCase().includes(q)
+            );
+        },
+
+        resetCategoryForm() {
+            this.categoryForm = { id: null, name: '', description: '' };
+        },
+
+        editCategory(cat) {
+            this.categoryForm = {
+                id: cat.id,
+                name: cat.name,
+                description: cat.description || ''
+            };
+        },
+
+        selectCategoryForProduct(cat) {
+            this.form.category_id = cat.id;
+            this.categoryModalOpen = false;
+            this.productModalOpen = true;
+            this.showToast(`Categoría "${cat.name}" seleccionada para el producto.`, 'success');
+        },
+
+        async saveCategory() {
+            if (!this.categoryForm.name.trim()) return;
+            this.categorySubmitting = true;
+            try {
+                const isEdit = Boolean(this.categoryForm.id);
+                const url = isEdit ? `/categories/${this.categoryForm.id}` : '/categories';
+                const method = isEdit ? 'PUT' : 'POST';
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf
+                    },
+                    body: JSON.stringify({
+                        name: this.categoryForm.name,
+                        description: this.categoryForm.description
+                    })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    const savedCat = result.data;
+                    if (isEdit) {
+                        const idx = this.categoriesList.findIndex(c => c.id === savedCat.id);
+                        if (idx !== -1) this.categoriesList[idx] = savedCat;
+                    } else {
+                        this.categoriesList.push(savedCat);
+                        this.form.category_id = savedCat.id;
+                    }
+                    this.resetCategoryForm();
+                    this.showToast(result.message || 'Categoría guardada con éxito.', 'success');
+                } else {
+                    this.showToast(result.message || 'No se pudo guardar la categoría.', 'error');
+                }
+            } catch (err) {
+                this.showToast('Error de comunicación al guardar la categoría.', 'error');
+            } finally {
+                this.categorySubmitting = false;
+            }
+        },
+
+        async deleteCategory(cat) {
+            if (!confirm(`¿Estás seguro de eliminar la categoría "${cat.name}"?`)) return;
+            try {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch(`/categories/${cat.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf
+                    }
+                });
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    this.categoriesList = this.categoriesList.filter(c => c.id !== cat.id);
+                    if (this.form.category_id === cat.id) {
+                        this.form.category_id = this.categoriesList[0]?.id || '';
+                    }
+                    this.showToast(result.message || 'Categoría eliminada correctamente.', 'success');
+                } else {
+                    this.showToast(result.message || 'No se puede eliminar la categoría porque tiene productos asociados.', 'error');
+                }
+            } catch (err) {
+                this.showToast('Error al intentar eliminar la categoría.', 'error');
+            }
         },
 
         async submitProduct() {

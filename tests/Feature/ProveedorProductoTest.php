@@ -181,6 +181,49 @@ class ProveedorProductoTest extends TestCase
         $this->assertNotEmpty($product->images);
         $this->assertStringContainsString('/storage/products/', $product->images[0]);
     }
+
+    /** CRUD completo de Categorías de Productos (Listar, Insertar, Editar, Eliminar) */
+    public function test_category_crud_list_create_update_and_delete(): void
+    {
+        $provider = User::where('role', 'provider')->first();
+        $this->actingAs($provider);
+
+        // 1. Insertar nueva categoría
+        $createRes = $this->postJson('/categories', [
+            'name'        => 'Deportes y Fitness',
+            'description' => 'Equipos de entrenamiento y aire libre',
+        ]);
+        $createRes->assertStatus(201)
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.name', 'Deportes y Fitness');
+
+        $catId = $createRes->json('data.id');
+        $this->assertDatabaseHas('categories', ['id' => $catId, 'name' => 'Deportes y Fitness']);
+
+        // 2. Listar categorías
+        $listRes = $this->getJson('/categories');
+        $listRes->assertStatus(200)
+            ->assertJsonPath('status', 'success');
+
+        // 3. Editar categoría
+        $updateRes = $this->putJson("/categories/{$catId}", [
+            'name'        => 'Deportes, Fitness y Camping',
+            'description' => 'Descripción actualizada',
+        ]);
+        $updateRes->assertStatus(200)
+            ->assertJsonPath('data.name', 'Deportes, Fitness y Camping');
+
+        // 4. Intentar eliminar categoría que sí tiene productos (debe proteger integridad 422)
+        $catWithProducts = Category::has('products')->first();
+        $failDelete = $this->deleteJson("/categories/{$catWithProducts->id}");
+        $failDelete->assertStatus(422);
+
+        // 5. Eliminar categoría sin productos
+        $deleteRes = $this->deleteJson("/categories/{$catId}");
+        $deleteRes->assertStatus(200)
+            ->assertJsonPath('status', 'success');
+        $this->assertDatabaseMissing('categories', ['id' => $catId]);
+    }
 }
 
 
