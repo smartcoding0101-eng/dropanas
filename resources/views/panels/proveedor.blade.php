@@ -1646,7 +1646,7 @@
     <!-- MODAL DE ALERTA TAILWIND: CONFIRMAR DESCARGA DE PLANTILLA      -->
     <!-- ============================================================== -->
     <div x-show="downloadAlertModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+        class="fixed inset-0 z-[60] overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -1654,7 +1654,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0">
 
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 text-left transform transition-all"
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 text-left transform transition-all relative z-[70]"
             @click.away="downloadAlertModalOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
@@ -1692,14 +1692,16 @@
                     class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
                     Cancelar
                 </button>
-                <button type="button" @click="triggerDownload('csv')"
-                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer inline-flex items-center justify-center gap-1.5">
+                <a href="{{ route('products.template.download', ['format' => 'csv']) }}"
+                    @click="downloadAlertModalOpen = false"
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition cursor-pointer inline-flex items-center justify-center gap-1.5 text-decoration-none">
                     <i class="fa-solid fa-file-csv text-slate-500"></i> Descargar CSV
-                </button>
-                <button type="button" @click="triggerDownload('xlsx')"
-                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition cursor-pointer inline-flex items-center justify-center gap-2">
+                </a>
+                <a href="{{ route('products.template.download', ['format' => 'xlsx']) }}"
+                    @click="downloadAlertModalOpen = false"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition cursor-pointer inline-flex items-center justify-center gap-2 text-decoration-none">
                     <i class="fa-solid fa-download"></i> Descargar Excel (.xlsx)
-                </button>
+                </a>
             </div>
         </div>
     </div>
