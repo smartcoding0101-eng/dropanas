@@ -38,7 +38,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Catálogo Mayorista de Productos (Megabodega Nacional)
     Route::get('/catalogo', function () {
-        $products = Product::with(['category', 'warehouseInventories.warehouse'])
+        $products = Product::with(['provider', 'category', 'warehouseInventories.warehouse'])
             ->where('status', 'published')
             ->where('is_cod_available', true)
             ->get();
