@@ -80,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/reserves/{id}/release', [\App\Http\Controllers\Web\ProviderNetworkController::class, 'releaseReserve'])->name('reserves.release');
     });
 
+    // Exportación de Kardex del Proveedor (CSV con UTF-8 BOM para Excel)
+    Route::get('/panel/proveedor/kardex/export', [\App\Http\Controllers\Web\PanelController::class, 'exportProviderKardex'])->name('provider.kardex.export');
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');

@@ -1051,7 +1051,7 @@
 
             <!-- STRIPE & LINEAR EXECUTIVE FOOTER -->
             <footer class="bg-white border-t border-slate-200/80 px-6 sm:px-10 py-6 pb-20 md:pb-6 text-xs text-[#64748B]">
-                <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                         <span>Copyright &copy; <strong class="text-[#0F172A]">Bolidrop Bolivia</strong> {{ date('Y') }}</span>
                         <span>•</span>

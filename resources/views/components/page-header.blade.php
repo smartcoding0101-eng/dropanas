@@ -45,7 +45,7 @@
     <div class="absolute -bottom-24 left-1/4 w-64 h-64 rounded-full bg-[#4F46E5]/20 blur-3xl pointer-events-none"></div>
 
     <!-- Barra Contextual Integrada dentro del Hero (Wayfinding + Salto Rápido) -->
-    <div class="max-w-7xl mx-auto relative z-10 mb-4 pb-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-indigo-200/90">
+    <div class="w-full relative z-10 mb-4 pb-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-indigo-200/90">
         <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 font-medium">
             <a href="{{ $dashUrl }}" class="text-indigo-200 hover:text-white transition flex items-center gap-1.5 group/home">
                 <i class="fa-solid fa-house-chimney text-[10px] text-[#38BDF8] group-hover/home:scale-110 transition-transform"></i>
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="w-full relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1.5 min-w-0">
             @if($badge)
                 <div class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-indigo-100 mb-1 backdrop-blur-xs badge-pulse-glow max-w-full">
@@ -93,7 +93,7 @@
     </div>
 
     <!-- Live Operational Telemetry Strip (Alpine.js Auto-Rotating Stream) -->
-    <div class="max-w-7xl mx-auto relative z-10 mt-4 sm:mt-5 pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] sm:text-[11px] text-indigo-100/90"
+    <div class="w-full relative z-10 mt-4 sm:mt-5 pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] sm:text-[11px] text-indigo-100/90"
          x-data="{
             idx: 0,
             events: [

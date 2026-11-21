@@ -1434,88 +1434,525 @@
         </div>
 
         <!-- Historial y Trazabilidad Kardex de Movimientos de Inventario del Proveedor -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-clipboard-list text-[#0061f2]"></i>
+        @php
+            $providerKardexJson = $recentKardex->map(function($k) {
+                $order = $k->order;
+                return [
+                    'id' => (string) $k->id,
+                    'created_at' => $k->created_at->format('d/m/Y H:i'),
+                    'date_raw' => $k->created_at->format('Y-m-d'),
+                    'product_id' => (string) $k->product_id,
+                    'product_name' => $k->product?->name ?? 'Producto',
+                    'sku' => $k->product?->sku ?? '',
+                    'warehouse_id' => (string) $k->warehouse_id,
+                    'warehouse_name' => $k->warehouse?->name ?? 'Bodega',
+                    'warehouse_city' => $k->warehouse?->city ?? 'Santa Cruz',
+                    'movement_category' => $k->movement_category,
+                    'movement_type' => $k->movement_type,
+                    'quantity' => (int) $k->quantity,
+                    'unit_cost_bob' => (float) $k->unit_cost_bob,
+                    'total_cost_bob' => (float) $k->total_cost_bob,
+                    'stock_physical_before' => (int) $k->stock_physical_before,
+                    'stock_physical_after' => (int) $k->stock_physical_after,
+                    'stock_available_before' => (int) $k->stock_available_before,
+                    'stock_available_after' => (int) $k->stock_available_after,
+                    'stock_reserved_before' => (int) $k->stock_reserved_before,
+                    'stock_reserved_after' => (int) $k->stock_reserved_after,
+                    'condition' => $k->condition ?? 'optimal',
+                    'notes' => $k->notes ?? '',
+                    'document_number' => $k->document_number ?? ($order?->order_number ?? 'S/N'),
+                    'provider_name' => $k->product?->provider?->company_or_store_name ?? $k->product?->provider?->name ?? 'Megabodega Bolivia S.A.',
+                    'seller_name' => $order?->dropshipper?->company_or_store_name ?? $order?->dropshipper?->name ?? 'Operación Directa / Almacén',
+                    'seller_email' => $order?->dropshipper?->email ?? '',
+                    'buyer_name' => $order?->customer_name ?? 'Almacén Central / Stock',
+                    'buyer_phone' => $order?->customer_phone ?? '',
+                    'buyer_city' => $order ? ($order->shipping_city . ' (' . $order->shipping_department . ')') : ($k->warehouse?->city ?? 'N/A'),
+                    'buyer_address' => $order?->shipping_address ?? '',
+                    'courier_name' => $order?->carrier?->name ?? 'DEX Express Bolivia',
+                    'order_status' => $order?->status ?? '',
+                ];
+            })->values();
+
+            $totalInboundUnits = $recentKardex->where('quantity', '>', 0)->sum('quantity');
+            $totalInboundBob   = $recentKardex->where('quantity', '>', 0)->sum('total_cost_bob');
+            $totalOutboundUnits = abs($recentKardex->where('quantity', '<', 0)->where('movement_category', 'outbound')->sum('quantity'));
+            $totalOutboundBob   = abs($recentKardex->where('quantity', '<', 0)->where('movement_category', 'outbound')->sum('total_cost_bob'));
+            $totalHoldUnits    = abs($recentKardex->where('movement_category', 'hold')->sum('quantity'));
+            $totalHoldBob      = abs($recentKardex->where('movement_category', 'hold')->sum('total_cost_bob'));
+        @endphp
+
+        <div id="kardex" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-20"
+             x-data="{
+                records: {{ Js::from($providerKardexJson) }},
+                filterProduct: 'all',
+                filterWarehouse: 'all',
+                filterCategory: 'all',
+                searchDoc: '',
+                selectedItem: null,
+                detailModalOpen: false,
+
+                get filteredRecords() {
+                    return this.records.filter(r => {
+                        const matchProd = this.filterProduct === 'all' || r.product_id === this.filterProduct;
+                        const matchWh   = this.filterWarehouse === 'all' || r.warehouse_id === this.filterWarehouse;
+                        const matchCat  = this.filterCategory === 'all' || r.movement_category === this.filterCategory;
+                        const q = this.searchDoc.toLowerCase().trim();
+                        const matchText = !q || r.document_number.toLowerCase().includes(q) ||
+                                          r.product_name.toLowerCase().includes(q) ||
+                                          r.sku.toLowerCase().includes(q) ||
+                                          r.buyer_name.toLowerCase().includes(q) ||
+                                          r.seller_name.toLowerCase().includes(q);
+                        return matchProd && matchWh && matchCat && matchText;
+                    });
+                },
+
+                get inCount() {
+                    return this.filteredRecords.filter(r => r.quantity > 0).reduce((acc, r) => acc + r.quantity, 0);
+                },
+                get inVal() {
+                    return this.filteredRecords.filter(r => r.quantity > 0).reduce((acc, r) => acc + r.total_cost_bob, 0);
+                },
+                get outCount() {
+                    return Math.abs(this.filteredRecords.filter(r => r.quantity < 0 && r.movement_category === 'outbound').reduce((acc, r) => acc + r.quantity, 0));
+                },
+                get outVal() {
+                    return Math.abs(this.filteredRecords.filter(r => r.quantity < 0 && r.movement_category === 'outbound').reduce((acc, r) => acc + r.total_cost_bob, 0));
+                },
+                get holdCount() {
+                    return Math.abs(this.filteredRecords.filter(r => r.movement_category === 'hold').reduce((acc, r) => acc + r.quantity, 0));
+                },
+
+                openDetail(item) {
+                    this.selectedItem = item;
+                    this.detailModalOpen = true;
+                },
+                closeDetail() {
+                    this.detailModalOpen = false;
+                    this.selectedItem = null;
+                },
+                exportUrl() {
+                    let u = '{{ route('provider.kardex.export') }}?';
+                    if (this.filterProduct !== 'all') u += '&product_id=' + encodeURIComponent(this.filterProduct);
+                    if (this.filterWarehouse !== 'all') u += '&warehouse_id=' + encodeURIComponent(this.filterWarehouse);
+                    if (this.filterCategory !== 'all') u += '&category=' + encodeURIComponent(this.filterCategory);
+                    return u;
+                }
+             }">
+
+            <!-- Encabezado Principal del Kardex -->
+            <div class="p-5 sm:p-6 border-b border-slate-200/90 bg-gradient-to-r from-slate-50 via-indigo-50/20 to-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-[#4F46E5] flex items-center justify-center text-xl shadow-xs shrink-0">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
                     <div>
-                        <h3 class="font-bold text-slate-900 text-sm font-heading">Trazabilidad Kardex de Mis Productos</h3>
-                        <p class="text-xs text-slate-500">Historial inmutable de entradas por saldo inicial, salidas por despacho COD y transferencias</p>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100 text-[#4F46E5]">
+                                <i class="fa-solid fa-layer-group text-[9px]"></i> Kardex Físico-Valorado
+                            </span>
+                            <span class="text-slate-300">•</span>
+                            <span class="text-xs font-semibold text-slate-500">Trazabilidad Tripartita (Proveedor ↔ Vendedor ↔ Comprador)</span>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-[#0F172A] font-heading mt-1">
+                            Control Analítico de Entradas y Salidas de Inventario
+                        </h3>
                     </div>
                 </div>
-                <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200">
-                    Últimos {{ $recentKardex->count() }} registros
-                </span>
+
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <a :href="exportUrl()"
+                       class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 text-xs font-bold transition flex items-center gap-2 shadow-2xs">
+                        <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                        <span>Exportar Excel (CSV)</span>
+                    </a>
+                </div>
             </div>
 
+            <!-- Resumen Gráfico y Métricas de Flujo (Inbound vs Outbound vs Reservas) -->
+            <div class="p-5 sm:p-6 bg-slate-50/60 border-b border-slate-200/80">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    
+                    <!-- KPI Entradas (Inbound) -->
+                    <div class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">Entradas (Inbound)</span>
+                            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl font-black font-mono text-emerald-700" x-text="'+' + inCount + ' uds'"></div>
+                            <div class="text-[11px] text-slate-500 font-mono mt-0.5" x-text="'Valuación: Bs ' + inVal.toFixed(2)"></div>
+                        </div>
+                        <!-- Mini Barra Visual -->
+                        <div class="w-full bg-emerald-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="bg-emerald-500 h-full rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Salidas Despachadas (Outbound) -->
+                    <div class="bg-white rounded-2xl p-4 border border-rose-100 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">Salidas Despachadas</span>
+                            <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl font-black font-mono text-rose-700" x-text="'-' + outCount + ' uds'"></div>
+                            <div class="text-[11px] text-slate-500 font-mono mt-0.5" x-text="'Costo Despachado: Bs ' + outVal.toFixed(2)"></div>
+                        </div>
+                        <!-- Mini Barra Visual -->
+                        <div class="w-full bg-rose-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="bg-rose-500 h-full rounded-full" :style="'width: ' + (inCount > 0 ? Math.min(100, Math.round((outCount/inCount)*100)) : 0) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Reservas Activas (Hold) -->
+                    <div class="bg-white rounded-2xl p-4 border border-indigo-100 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#4F46E5]">Reservas Activas</span>
+                            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4F46E5] flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-bookmark"></i>
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl font-black font-mono text-[#4F46E5]" x-text="holdCount + ' uds'"></div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Retenidas para vendedores COD</div>
+                        </div>
+                        <div class="w-full bg-indigo-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="bg-[#4F46E5] h-full rounded-full" :style="'width: ' + (inCount > 0 ? Math.min(100, Math.round((holdCount/inCount)*100)) : 0) + '%'"></div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Invariante y Estado -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Tasa de Rotación</span>
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-2xl font-black font-mono text-[#0F172A]" x-text="(inCount > 0 ? Math.round((outCount / inCount) * 100) : 0) + '%'"></div>
+                            <div class="text-[11px] text-emerald-600 font-semibold mt-0.5">
+                                <i class="fa-solid fa-shield-check"></i> Invariante Auditada
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="bg-[#0F172A] h-full rounded-full" :style="'width: ' + (inCount > 0 ? Math.min(100, Math.round((outCount/inCount)*100)) : 0) + '%'"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Filtros Reactivos en Tiempo Real (Producto + Bodega + Categoría + Buscador) -->
+            <div class="p-4 sm:p-5 border-b border-slate-200 bg-white">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    
+                    <!-- Filtro por Producto -->
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Filtrar Producto</label>
+                        <select x-model="filterProduct" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                            <option value="all">Todos los Productos ({{ $products->count() }})</option>
+                            @foreach($products as $p)
+                                <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->sku }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Bodega -->
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Filtrar Bodega</label>
+                        <select x-model="filterWarehouse" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                            <option value="all">Todas las Bodegas ({{ $allWarehouses->count() }})</option>
+                            @foreach($allWarehouses as $w)
+                                <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->city }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filtro por Flujo / Categoría -->
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Tipo de Flujo</label>
+                        <select x-model="filterCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                            <option value="all">Todos los Movimientos</option>
+                            <option value="inbound">Entradas (+ Inbound)</option>
+                            <option value="outbound">Salidas (- Outbound)</option>
+                            <option value="hold">Reservas de Venta (Hold)</option>
+                            <option value="release">Liberaciones de Stock</option>
+                        </select>
+                    </div>
+
+                    <!-- Buscador Instantáneo -->
+                    <div>
+                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Buscar Orden, Guía o Actor</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" x-model="searchDoc" placeholder="ORD-2026, cliente, SKU..."
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Tabla Detallada con Trazabilidad Proveedor ↔ Vendedor ↔ Comprador -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
                     <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
                         <tr>
                             <th class="py-3 px-4">Fecha / Movimiento</th>
                             <th class="py-3 px-4">Producto & SKU</th>
-                            <th class="py-3 px-4">Bodega</th>
-                            <th class="py-3 px-4">Cantidad</th>
-                            <th class="py-3 px-4">Costo (BOB)</th>
-                            <th class="py-3 px-4">Saldo Físico</th>
-                            <th class="py-3 px-4">Referencia / Motivo</th>
+                            <th class="py-3 px-4">Bodega Origen</th>
+                            <th class="py-3 px-4 text-center">Variación</th>
+                            <th class="py-3 px-4">Proveedor / Abastecedor</th>
+                            <th class="py-3 px-4">Vendedor (Dropshipper)</th>
+                            <th class="py-3 px-4">Comprador Final COD</th>
+                            <th class="py-3 px-4 text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @forelse($recentKardex as $kardex)
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-bold text-slate-900">{{ $kardex->created_at->format('d/m/Y H:i') }}</div>
-                                <div>
-                                    @if(in_array($kardex->movement_type, ['opening_balance', 'purchase_receipt', 'return_optimal', 'transfer_in']))
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                            <i class="fa-solid fa-arrow-down"></i> {{ ucfirst(str_replace('_', ' ', $kardex->movement_type)) }}
-                                        </span>
-                                    @elseif(in_array($kardex->movement_type, ['order_dispatch_delivered', 'transfer_out', 'return_damaged']))
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
-                                            <i class="fa-solid fa-arrow-up"></i> {{ ucfirst(str_replace('_', ' ', $kardex->movement_type)) }}
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                                            <i class="fa-solid fa-hand"></i> {{ ucfirst(str_replace('_', ' ', $kardex->movement_type)) }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="py-3 px-4">
-                                <div class="font-bold text-slate-800">{{ $kardex->product->name ?? 'Producto' }}</div>
-                                <div class="text-[11px] text-slate-400 font-mono">{{ $kardex->product->sku ?? '' }}</div>
-                            </td>
-                            <td class="py-3 px-4 font-medium text-slate-700 whitespace-nowrap">
-                                {{ $kardex->warehouse->name ?? 'Bodega' }}
-                            </td>
-                            <td class="py-3 px-4 font-mono font-bold whitespace-nowrap">
-                                <span class="{{ $kardex->quantity >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                    {{ $kardex->quantity > 0 ? '+' : '' }}{{ $kardex->quantity }} uds
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 font-mono font-semibold text-slate-700 whitespace-nowrap">
-                                Bs {{ number_format((float)$kardex->unit_cost_bob, 2) }}
-                            </td>
-                            <td class="py-3 px-4 font-mono whitespace-nowrap">
-                                <div class="font-bold text-slate-900">{{ $kardex->stock_physical_after }} uds</div>
-                                <div class="text-[10px] text-slate-400">{{ $kardex->stock_available_after }} disponibles</div>
-                            </td>
-                            <td class="py-3 px-4 max-w-xs">
-                                <div class="font-mono text-[11px] font-bold text-slate-800">{{ $kardex->document_number ?? '-' }}</div>
-                                <div class="text-[11px] text-slate-500 truncate" title="{{ $kardex->notes }}">{{ $kardex->notes ?? '-' }}</div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400 italic">
-                                No hay movimientos de kardex registrados para este inventario.
-                            </td>
-                        </tr>
-                        @endforelse
+                        <template x-for="item in filteredRecords" :key="item.id">
+                            <tr class="hover:bg-indigo-50/40 transition cursor-pointer group" @click="openDetail(item)">
+                                
+                                <!-- Fecha y Tipo Movimiento -->
+                                <td class="py-3 px-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-900" x-text="item.created_at"></div>
+                                    <div class="mt-0.5">
+                                        <template x-if="item.movement_category === 'inbound'">
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase">
+                                                <i class="fa-solid fa-arrow-down"></i> Entrada
+                                            </span>
+                                        </template>
+                                        <template x-if="item.movement_category === 'outbound'">
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 uppercase">
+                                                <i class="fa-solid fa-arrow-up"></i> Salida COD
+                                            </span>
+                                        </template>
+                                        <template x-if="item.movement_category === 'hold'">
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-[#4F46E5] bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 uppercase">
+                                                <i class="fa-solid fa-bookmark"></i> Reserva
+                                            </span>
+                                        </template>
+                                        <template x-if="item.movement_category !== 'inbound' && item.movement_category !== 'outbound' && item.movement_category !== 'hold'">
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 uppercase">
+                                                <i class="fa-solid fa-rotate"></i> Ajuste
+                                            </span>
+                                        </template>
+                                    </div>
+                                </td>
+
+                                <!-- Producto & SKU -->
+                                <td class="py-3 px-4">
+                                    <div class="font-bold text-slate-900 group-hover:text-[#4F46E5] transition" x-text="item.product_name"></div>
+                                    <div class="text-[10px] text-slate-400 font-mono" x-text="'SKU: ' + item.sku"></div>
+                                </td>
+
+                                <!-- Bodega -->
+                                <td class="py-3 px-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-800" x-text="item.warehouse_name"></div>
+                                    <div class="text-[10px] text-slate-400" x-text="item.warehouse_city"></div>
+                                </td>
+
+                                <!-- Cantidad y Variación -->
+                                <td class="py-3 px-4 text-center whitespace-nowrap">
+                                    <span class="font-mono font-black text-xs px-2 py-0.5 rounded-lg"
+                                          :class="item.quantity > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'"
+                                          x-text="(item.quantity > 0 ? '+' : '') + item.quantity + ' uds'"></span>
+                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5" x-text="'Bs ' + item.total_cost_bob.toFixed(2)"></div>
+                                </td>
+
+                                <!-- Rol 1: Proveedor -->
+                                <td class="py-3 px-4">
+                                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold">
+                                        <i class="fa-solid fa-warehouse text-slate-400 text-[9px]"></i>
+                                        <span class="truncate max-w-[130px]" x-text="item.provider_name"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Rol 2: Vendedor (Dropshipper) -->
+                                <td class="py-3 px-4">
+                                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50/70 text-[#4F46E5] border border-indigo-200/80 text-[10px] font-bold">
+                                        <i class="fa-solid fa-store text-indigo-400 text-[9px]"></i>
+                                        <span class="truncate max-w-[130px]" x-text="item.seller_name"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Rol 3: Comprador Final COD -->
+                                <td class="py-3 px-4">
+                                    <div class="font-bold text-slate-900 truncate max-w-[140px]" x-text="item.buyer_name"></div>
+                                    <div class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                                        <i class="fa-solid fa-location-dot text-[9px]"></i>
+                                        <span class="truncate max-w-[120px]" x-text="item.buyer_city"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Acción de Inspección -->
+                                <td class="py-3 px-4 text-center whitespace-nowrap">
+                                    <button type="button" @click.stop="openDetail(item)"
+                                            class="w-7 h-7 rounded-xl bg-slate-100 group-hover:bg-[#4F46E5] text-slate-600 group-hover:text-white transition flex items-center justify-center cursor-pointer shadow-2xs mx-auto">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </button>
+                                </td>
+
+                            </tr>
+                        </template>
+
+                        <template x-if="filteredRecords.length === 0">
+                            <tr>
+                                <td colspan="8" class="py-12 text-center text-slate-400 space-y-2">
+                                    <i class="fa-solid fa-boxes-packing text-3xl text-slate-300"></i>
+                                    <p class="text-xs font-semibold">No se encontraron movimientos en el Kardex con los filtros aplicados.</p>
+                                </td>
+                            </tr>
+                        </template>
                     </tbody>
                 </table>
             </div>
+
+            <!-- Footer Informativo de la Tabla -->
+            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+                <div>
+                    Mostrando <strong class="text-[#0F172A]" x-text="filteredRecords.length"></strong> registros de <strong class="text-[#0F172A]" x-text="records.length"></strong> totales
+                </div>
+                <div class="text-[11px] text-slate-400">
+                    Kardex inmutable sincronizado con Ledger Nacional Bolidrop
+                </div>
+            </div>
+
+            <!-- Modal de Trazabilidad 360° del Movimiento -->
+            <div x-show="detailModalOpen" x-cloak
+                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                 @keydown.escape.window="closeDetail()">
+                
+                <div @click.away="closeDetail()"
+                     x-show="detailModalOpen"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="relative w-full max-w-2xl bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
+                    
+                    <!-- Top Beam Gradient -->
+                    <div class="h-1.5 w-full bg-gradient-to-r from-[#4F46E5] via-[#38BDF8] to-[#10B981]"></div>
+
+                    <!-- Header Modal -->
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 text-[#4F46E5] flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-[#0F172A] font-heading text-sm">Auditoría de Trazabilidad Kardex 360°</h4>
+                                <span class="text-[10px] text-slate-400 font-mono" x-text="'ID: ' + selectedItem?.id"></span>
+                            </div>
+                        </div>
+                        <button type="button" @click="closeDetail()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Body Modal -->
+                    <div class="p-6 space-y-5 overflow-y-auto max-h-[78vh]" x-show="selectedItem">
+                        
+                        <!-- Tarjetas de los 3 Actores de la Transacción -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            
+                            <!-- 1. Proveedor -->
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-warehouse text-[#4F46E5]"></i> 1. Proveedor
+                                </span>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.provider_name"></div>
+                                <div class="text-[10px] text-slate-500" x-text="selectedItem?.warehouse_name"></div>
+                            </div>
+
+                            <!-- 2. Vendedor / Dropshipper -->
+                            <div class="p-3.5 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-1">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-800 flex items-center gap-1">
+                                    <i class="fa-solid fa-store text-indigo-600"></i> 2. Vendedor
+                                </span>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.seller_name"></div>
+                                <div class="text-[10px] text-indigo-600 truncate" x-text="selectedItem?.seller_email || 'Tienda Conectada'"></div>
+                            </div>
+
+                            <!-- 3. Comprador Final COD -->
+                            <div class="p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
+                                <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1">
+                                    <i class="fa-solid fa-user-check text-emerald-600"></i> 3. Comprador
+                                </span>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.buyer_name"></div>
+                                <div class="text-[10px] text-emerald-700 truncate" x-text="selectedItem?.buyer_city"></div>
+                            </div>
+
+                        </div>
+
+                        <!-- Balanza de Stock (Invariante Contable) -->
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                                <span>Invariante de Inventario (Antes → Variación → Después)</span>
+                                <span class="font-mono text-[#0F172A]" x-text="'SKU: ' + selectedItem?.sku"></span>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 text-center">
+                                <div class="bg-white rounded-xl p-2.5 border border-slate-200/80 shadow-2xs">
+                                    <div class="text-[9px] text-slate-400 uppercase font-semibold">Físico Anterior</div>
+                                    <div class="text-sm font-extrabold font-mono text-slate-700 mt-0.5" x-text="selectedItem?.stock_physical_before + ' uds'"></div>
+                                </div>
+                                <div class="bg-white rounded-xl p-2.5 border border-indigo-200/80 shadow-2xs ring-1 ring-[#4F46E5]/10">
+                                    <div class="text-[9px] text-[#4F46E5] uppercase font-semibold">Variación</div>
+                                    <div class="text-sm font-black font-mono mt-0.5"
+                                         :class="selectedItem?.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'"
+                                         x-text="(selectedItem?.quantity > 0 ? '+' : '') + selectedItem?.quantity + ' uds'"></div>
+                                </div>
+                                <div class="bg-white rounded-xl p-2.5 border border-slate-200/80 shadow-2xs">
+                                    <div class="text-[9px] text-slate-400 uppercase font-semibold">Físico Resultante</div>
+                                    <div class="text-sm font-extrabold font-mono text-[#0F172A] mt-0.5" x-text="selectedItem?.stock_physical_after + ' uds'"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-[11px]">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Costo Unitario:</span>
+                                    <strong class="font-mono text-[#0F172A]" x-text="'Bs ' + Number(selectedItem?.unit_cost_bob || 0).toFixed(2)"></strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Total Valuado:</span>
+                                    <strong class="font-mono text-emerald-600" x-text="'Bs ' + Number(selectedItem?.total_cost_bob || 0).toFixed(2)"></strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Referencia de Orden y Courier -->
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2 text-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-slate-500">Documento / Guía:</span>
+                                <span class="font-mono font-bold text-[#4F46E5]" x-text="selectedItem?.document_number"></span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-slate-500">Operador Logístico:</span>
+                                <span class="font-bold text-slate-800" x-text="selectedItem?.courier_name"></span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold text-slate-500">Glosa / Motivo:</span>
+                                <span class="text-slate-600 italic text-right max-w-xs" x-text="selectedItem?.notes || 'Sin observaciones'"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Modal -->
+                    <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+                        <button type="button" @click="closeDetail()"
+                                class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition cursor-pointer">
+                            Cerrar Auditoría
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
         <!-- Ventas y Pedidos Relacionados con el Proveedor -->

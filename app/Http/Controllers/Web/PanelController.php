@@ -131,12 +131,12 @@ class PanelController extends Controller
                 ->limit(20)
                 ->get();
 
-            // Historial de Trazabilidad Kardex de sus productos en bodegas
+            // Historial de Trazabilidad Kardex de sus productos en bodegas con relaciones completas
             $recentKardex = \App\Models\InventoryKardex::withoutGlobalScopes()
                 ->whereIn('product_id', $products->pluck('id'))
-                ->with(['warehouse', 'product', 'user'])
+                ->with(['warehouse', 'product.provider', 'user', 'order.dropshipper', 'order.carrier'])
                 ->latest('created_at')
-                ->limit(25)
+                ->limit(100)
                 ->get();
 
             // Transferencias entre bodegas de sus productos
@@ -339,6 +339,120 @@ class PanelController extends Controller
         $record = $exchangeService->setManualRate($sellRate, $buyRate, $user->tenant_id, $user->name);
 
         return back()->with('status', "Tasa de cambio configurada manualmente: Compra Bs " . number_format((float) $record->buy_rate, 2) . " / Venta Bs " . number_format((float) $record->sell_rate, 2));
+    }
+
+    /**
+     * Exportación filtrada del Kardex de Inventario del Proveedor en CSV con BOM UTF-8 para Excel.
+     */
+    public function exportProviderKardex(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $provider = auth()->user() && auth()->user()->role === 'provider' 
+            ? auth()->user() 
+            : User::where('role', 'provider')->first();
+
+        if (!$provider) {
+            abort(403, 'Proveedor no encontrado');
+        }
+
+        $productIds = Product::where('provider_id', $provider->id)->pluck('id');
+
+        $query = \App\Models\InventoryKardex::withoutGlobalScopes()
+            ->whereIn('product_id', $productIds)
+            ->with(['warehouse', 'product.provider', 'user', 'order.dropshipper', 'order.carrier'])
+            ->orderBy('created_at', 'desc');
+
+        if ($request->filled('warehouse_id')) {
+            $query->where('warehouse_id', $request->warehouse_id);
+        }
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->product_id);
+        }
+        if ($request->filled('category')) {
+            $query->where('movement_category', $request->category);
+        }
+        if ($request->filled('movement_type')) {
+            $query->where('movement_type', $request->movement_type);
+        }
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $filename = 'kardex_proveedor_' . ($provider->company_or_store_name ? \Illuminate\Support\Str::slug($provider->company_or_store_name) : 'bolidrop') . '_' . date('Ymd_His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM UTF-8
+
+            fputcsv($handle, [
+                'ID Kardex',
+                'Fecha / Hora',
+                'Flujo (Entrada/Salida/Hold)',
+                'Tipo de Movimiento',
+                'Producto',
+                'SKU',
+                'Bodega',
+                'Ciudad',
+                'Cantidad (Uds)',
+                'Costo Unitario (BOB)',
+                'Total Valuado (BOB)',
+                'Fisico Antes',
+                'Fisico Despues',
+                'Disponible Antes',
+                'Disponible Despues',
+                'Proveedor Abastecedor',
+                'Vendedor / Dropshipper',
+                'Comprador Final COD',
+                'Ciudad Destino',
+                'Guia / Doc Ref',
+                'Transportadora / Courier',
+                'Operador / Usuario',
+                'Glosa / Notas',
+            ]);
+
+            $query->chunk(500, function ($rows) use ($handle) {
+                foreach ($rows as $row) {
+                    $order = $row->order;
+                    $providerName = $row->product?->provider?->company_or_store_name ?? $row->product?->provider?->name ?? 'Megabodega Bolidrop';
+                    $sellerName   = $order?->dropshipper?->company_or_store_name ?? $order?->dropshipper?->name ?? 'Operación Directa / Almacén';
+                    $buyerName    = $order?->customer_name ?? 'Almacén Central / Stock';
+                    $buyerCity    = $order ? ($order->shipping_city . ' (' . $order->shipping_department . ')') : ($row->warehouse?->city ?? 'N/A');
+                    $courierName  = $order?->carrier?->name ?? 'DEX Express Bolivia';
+
+                    fputcsv($handle, [
+                        $row->id,
+                        $row->created_at->format('Y-m-d H:i:s'),
+                        strtoupper($row->movement_category),
+                        $row->movement_type,
+                        $row->product?->name ?? 'N/A',
+                        $row->product?->sku ?? 'N/A',
+                        $row->warehouse?->name ?? 'N/A',
+                        $row->warehouse?->city ?? 'N/A',
+                        $row->quantity,
+                        number_format((float) $row->unit_cost_bob, 2, '.', ''),
+                        number_format((float) $row->total_cost_bob, 2, '.', ''),
+                        $row->stock_physical_before,
+                        $row->stock_physical_after,
+                        $row->stock_available_before,
+                        $row->stock_available_after,
+                        $providerName,
+                        $sellerName,
+                        $buyerName,
+                        $buyerCity,
+                        $row->document_number ?? $order?->order_number ?? 'S/N',
+                        $courierName,
+                        $row->user?->name ?? 'Sistema Automático',
+                        $row->notes ?? '',
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }
 
