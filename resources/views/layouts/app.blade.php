@@ -1401,6 +1401,9 @@
         });
     </script>
 
+    <!-- Modal Global de Detalle de Producto COD (Completamente aislado del grid del catálogo) -->
+    <x-product-detail-modal />
+
     @stack('scripts')
 </body>
 </html>

@@ -13,24 +13,53 @@
                 $dept = strtolower($inv->warehouse->department ?? '');
                 $whTags[] = $city . ' ' . $dept;
                 $stockByWh[] = [
+                    'warehouse_id' => (string) $inv->warehouse_id,
+                    'name' => $inv->warehouse->name ?? 'Bodega',
                     'city' => $inv->warehouse->city ?? '',
                     'department' => $inv->warehouse->department ?? '',
                     'stock' => (int) $inv->stock_available,
                 ];
             }
         }
+        $cost = (float) $p->cost_price_bob;
+        $sug  = (float) $p->suggested_price_bob;
+        $min  = (float) $p->min_price_bob;
+        $margin = $sug - $cost;
+        $roi = $cost > 0 ? round(($margin / $cost) * 100) : 0;
+
         return [
             'id' => (string) $p->id,
-            'name' => strtolower($p->name ?? ''),
-            'sku' => strtolower($p->sku ?? ''),
-            'internal_code' => strtolower($p->internal_code ?? ''),
+            'name' => $p->name ?? '',
+            'name_lower' => strtolower($p->name ?? ''),
+            'sku' => $p->sku ?? '',
+            'sku_lower' => strtolower($p->sku ?? ''),
+            'internal_code' => $p->internal_code ?? '',
+            'internal_code_lower' => strtolower($p->internal_code ?? ''),
+            'description' => $p->description ?? 'Producto verificado para distribución nacional con garantía y cobro contra entrega (COD).',
+            'cost_price_bob' => $cost,
+            'suggested_price_bob' => $sug,
+            'min_price_bob' => $min,
+            'margin_bob' => $margin,
+            'roi_percent' => $roi,
+            'weight_kg' => (float) ($p->weight_kg ?? 0.5),
+            'is_cod_available' => (bool) $p->is_cod_available,
+            'images' => !empty($p->images) && is_array($p->images) ? array_values($p->images) : [],
             'category_id' => (string) ($p->category_id ?? ''),
-            'category_name' => strtolower($p->category->name ?? 'tecnología'),
+            'category_name' => $p->category->name ?? 'Tecnología',
+            'category_name_lower' => strtolower($p->category->name ?? 'tecnología'),
+            'provider_name' => $p->provider?->company_or_store_name ?? $p->provider?->name ?? 'Megabodega Bolidrop',
+            'provider_city' => $p->provider?->city ?? 'Santa Cruz',
+            'provider_phone' => $p->provider?->phone ?? '',
             'warehouses_str' => implode(' | ', $whTags),
             'stock_by_wh' => $stockByWh,
+            'total_stock' => array_sum(array_column($stockByWh, 'stock')),
         ];
     })->values();
 @endphp
+
+<script>
+    window.__bolidropCatalog = {{ Js::from($catalogProductsJson) }};
+</script>
 
 <div class="space-y-8" x-data="{
     searchQuery: '',
@@ -44,7 +73,7 @@
         if (!item) return true;
 
         const q = this.searchQuery.toLowerCase().trim();
-        const matchesText = !q || item.name.includes(q) || item.sku.includes(q) || item.internal_code.includes(q) || item.category_name.includes(q);
+        const matchesText = !q || item.name_lower.includes(q) || item.sku_lower.includes(q) || item.internal_code_lower.includes(q) || item.category_name_lower.includes(q);
         const matchesCat  = this.categoryFilter === 'all' || item.category_id === String(this.categoryFilter);
         const matchesWh   = this.warehouseFilter === 'all' || item.warehouses_str.includes(this.warehouseFilter);
 
@@ -186,7 +215,8 @@
                  class="interactive-card bg-[#FFFFFF] rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col hover:border-[#4F46E5] group">
                 
                 <!-- Showcase Visual del Producto -->
-                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden">
+                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden cursor-pointer"
+                     @click="$dispatch('open-product-modal', { id: '{{ $product->id }}' })">
                     @if(!empty($product->images) && count($product->images) > 0)
                         <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
                     @else
@@ -210,7 +240,7 @@
                     <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         <i class="fa-solid fa-truck-fast mr-1"></i> Contra Entrega
                     </span>
-                    <button type="button" @click="copySku('{{ $product->sku }}')"
+                    <button type="button" @click.stop="copySku('{{ $product->sku }}')"
                         title="Clic para copiar SKU"
                         class="absolute top-3.5 right-3.5 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-[#0F172A] font-mono font-bold text-[11px] px-2.5 py-0.5 rounded-lg shadow-2xs transition cursor-pointer flex items-center gap-1">
                         <span x-text="copiedSku === '{{ $product->sku }}' ? '¡Copiado!' : 'SKU: {{ $product->sku }}'">SKU: {{ $product->sku }}</span>
@@ -232,7 +262,8 @@
                                     </span>
                                 @endif
                             </div>
-                            <h3 class="text-lg font-bold text-[#0F172A] font-heading mt-0.5 group-hover:text-[#4F46E5] transition line-clamp-1">
+                            <h3 class="text-lg font-bold text-[#0F172A] font-heading mt-0.5 group-hover:text-[#4F46E5] transition line-clamp-1 cursor-pointer"
+                                @click="$dispatch('open-product-modal', { id: '{{ $product->id }}' })">
                                 {{ $product->name }}
                             </h3>
                         </div>
