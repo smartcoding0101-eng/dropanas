@@ -1028,49 +1028,6 @@
              class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out">
             
             <main id="main-content" class="px-4 py-3 sm:px-8 sm:py-5 pb-20 md:pb-6 flex-grow">
-                @if(Auth::check() && !request()->is('/'))
-                    <!-- Barra Contextual de Ubicación (UX Wayfinding Breadcrumb + Acciones Rápidas) -->
-                    @php
-                        $currentModuleTitle = match(true) {
-                            request()->is('panel/admin/kardex*')     => 'Kardex Global & Trazabilidad de Stock',
-                            request()->is('panel/admin*')            => 'Dashboard Central Administrador',
-                            request()->is('panel/dropshipper*')      => 'Panel de Vendedor Dropshipper',
-                            request()->is('panel/proveedor*')        => 'Panel de Proveedor Mayorista',
-                            request()->is('panel/carrier*')          => 'Panel de Repartidor DEX Express',
-                            request()->is('panel/fulfillment*')      => 'Panel de Cliente Fulfillment',
-                            request()->is('catalogo*')               => 'Megabodega Mayorista Nacional',
-                            request()->is('checkout-demo*')          => 'Generador de Pedidos Contra Entrega (COD)',
-                            request()->is('settlements*')            => 'Conciliación & Liquidaciones Bancarias',
-                            request()->is('reports*')                => 'Reportes Financieros & Analytics',
-                            request()->is('returns*')                => 'Logística Inversa & Novedades en Ruta',
-                            request()->is('carrier/cobro*')          => 'Terminal de Cobro en Puerta (Efectivo / QR)',
-                            request()->is('notifications/whatsapp*') => 'Centro Transaccional WhatsApp (+591)',
-                            request()->is('tracking*')               => 'Rastreo de Guías en Vivo',
-                            request()->is('soporte*')                => 'Centro de Ayuda & Soporte Técnico',
-                            request()->is('contactenos*')            => 'Red de Megabodegas & Almacenes',
-                            default                                  => 'Plataforma Operativa',
-                        };
-                    @endphp
-                    <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#64748B]">
-                        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 font-medium">
-                            <a href="{{ $dashboardUrl ?? url('/') }}" class="hover:text-[#4F46E5] transition flex items-center gap-1">
-                                <i class="fa-solid fa-house-chimney text-[10px] text-[#4F46E5]"></i>
-                                <span>Bolidrop</span>
-                            </a>
-                            <i class="fa-solid fa-chevron-right text-[8px] text-slate-300"></i>
-                            <span class="font-bold text-[#0F172A]">{{ $currentModuleTitle }}</span>
-                        </nav>
-                        <div class="flex items-center gap-2">
-                            <button type="button" @click="cmdPaletteOpen = true; $nextTick(() => $refs.cmdInput?.focus())"
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-indigo-50 text-[#4F46E5] border border-slate-200/80 font-bold text-[10px] shadow-2xs transition cursor-pointer">
-                                <i class="fa-solid fa-bolt text-[9px]"></i>
-                                <span>Salto Rápido</span>
-                                <kbd class="hidden sm:inline font-mono text-[9px] text-slate-400">Ctrl+K</kbd>
-                            </button>
-                        </div>
-                    </div>
-                @endif
-
                 @if (session('status'))
                     <div x-data="{ show: true }" x-show="show" x-cloak
                         class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-2xs">

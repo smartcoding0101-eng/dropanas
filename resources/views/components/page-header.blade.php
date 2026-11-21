@@ -3,14 +3,66 @@
     'subtitle' => null,
     'icon' => 'fa-solid fa-chart-pie',
     'badge' => null,
+    'breadcrumb' => null,
 ])
 
+@php
+    $currentModuleTitle = $breadcrumb ?? match(true) {
+        request()->is('panel/admin/kardex*')     => 'Kardex Global & Trazabilidad de Stock',
+        request()->is('panel/admin*')            => 'Dashboard Central Administrador',
+        request()->is('panel/dropshipper*')      => 'Panel de Vendedor Dropshipper',
+        request()->is('panel/proveedor*')        => 'Panel de Proveedor Mayorista',
+        request()->is('panel/carrier*')          => 'Panel de Repartidor DEX Express',
+        request()->is('panel/fulfillment*')      => 'Panel de Cliente Fulfillment',
+        request()->is('catalogo*')               => 'Megabodega Mayorista Nacional',
+        request()->is('checkout-demo*')          => 'Generador de Pedidos Contra Entrega (COD)',
+        request()->is('settlements*')            => 'Conciliación & Liquidaciones Bancarias',
+        request()->is('reports*')                => 'Reportes Financieros & Analytics',
+        request()->is('returns*')                => 'Logística Inversa & Novedades en Ruta',
+        request()->is('carrier/cobro*')          => 'Terminal de Cobro en Puerta (Efectivo / QR)',
+        request()->is('notifications/whatsapp*') => 'Centro Transaccional WhatsApp (+591)',
+        request()->is('tracking*')               => 'Rastreo de Guías en Vivo',
+        request()->is('soporte*')                => 'Centro de Ayuda & Soporte Técnico',
+        request()->is('contactenos*')            => 'Red de Megabodegas & Almacenes',
+        default                                  => $title ?? 'Plataforma Operativa',
+    };
+
+    $dashUrl = Auth::check() ? match(Auth::user()->role) {
+        'tenant_admin' => url('/panel/admin'),
+        'dropshipper' => url('/panel/dropshipper'),
+        'provider' => url('/panel/proveedor'),
+        'carrier', 'carrier_agent' => url('/panel/carrier'),
+        'fulfillment_client' => url('/panel/fulfillment'),
+        default => url('/panel/admin'),
+    } : url('/');
+@endphp
+
 <!-- Stripe & Linear Executive Signature Page Header (#0F172A -> #1E1B4B -> #312E81 -> #4F46E5 + Overlap) -->
-<header class="page-header-sb text-white pt-6 sm:pt-8 pb-16 sm:pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 mb-0 relative overflow-hidden border-b border-indigo-500/20">
+<header class="page-header-sb text-white pt-5 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 mb-0 relative overflow-hidden border-b border-indigo-500/20 shadow-xs">
     <!-- Subtle geometric & mesh glow overlay -->
     <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 18% 50%, rgba(79,70,229,0.55) 0%, transparent 50%), radial-gradient(circle at 82% 20%, rgba(56,189,248,0.40) 0%, transparent 42%);"></div>
     <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#38BDF8]/10 blur-3xl pointer-events-none hero-floating-card"></div>
     <div class="absolute -bottom-24 left-1/4 w-64 h-64 rounded-full bg-[#4F46E5]/20 blur-3xl pointer-events-none"></div>
+
+    <!-- Barra Contextual Integrada dentro del Hero (Wayfinding + Salto Rápido) -->
+    <div class="max-w-7xl mx-auto relative z-10 mb-4 pb-3 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] text-indigo-200/90">
+        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 font-medium">
+            <a href="{{ $dashUrl }}" class="text-indigo-200 hover:text-white transition flex items-center gap-1.5 group/home">
+                <i class="fa-solid fa-house-chimney text-[10px] text-[#38BDF8] group-hover/home:scale-110 transition-transform"></i>
+                <span class="tracking-wide">Bolidrop</span>
+            </a>
+            <i class="fa-solid fa-chevron-right text-[8px] text-indigo-300/50"></i>
+            <span class="font-bold text-white tracking-wide">{{ $currentModuleTitle }}</span>
+        </nav>
+        <div class="flex items-center gap-2">
+            <button type="button" @click="cmdPaletteOpen = true; $nextTick(() => $refs.cmdInput?.focus())"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/15 font-bold text-[10px] backdrop-blur-xs shadow-2xs transition cursor-pointer">
+                <i class="fa-solid fa-bolt text-[9px] text-[#38BDF8]"></i>
+                <span>Salto Rápido</span>
+                <kbd class="hidden sm:inline font-mono text-[9px] text-indigo-200/80 bg-black/25 px-1.5 py-0.5 rounded border border-white/10">Ctrl+K</kbd>
+            </button>
+        </div>
+    </div>
 
     <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-1.5 min-w-0">
