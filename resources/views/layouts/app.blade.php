@@ -63,6 +63,10 @@
             --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        html {
+            scrollbar-gutter: stable;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             background-color: #F8FAFC;
@@ -805,7 +809,7 @@
                 mobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full hidden md:translate-x-0',
                 sidenavOpen ? 'md:flex' : 'md:hidden'
             ]"
-            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
+            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] hidden md:flex flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
             
             <div class="py-2">
                 <!-- Buscador Rápido Visible en Móvil y Tablet (< 1024px) -->
@@ -1024,8 +1028,10 @@
         <div id="layoutSidenav_content"
              @if(Auth::check() && !request()->is('/'))
              :class="sidenavOpen ? 'md:ml-64' : 'md:ml-0'"
-             @endif
-             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out">
+             class="md:ml-64 flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out"
+             @else
+             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]"
+             @endif>
             
             <main id="main-content" class="px-4 py-3 sm:px-8 sm:py-5 pb-20 md:pb-6 flex-grow">
                 @if (session('status'))
