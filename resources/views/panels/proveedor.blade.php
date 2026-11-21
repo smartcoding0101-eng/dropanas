@@ -1704,13 +1704,16 @@
                     <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
                         <tr>
                             <th class="py-3 px-4">Fecha / Movimiento</th>
-                            <th class="py-3 px-4">Producto & SKU</th>
+                            <th class="py-3 px-4">Producto &amp; SKU</th>
                             <th class="py-3 px-4">Bodega Origen</th>
-                            <th class="py-3 px-4 text-center">Variación</th>
-                            <th class="py-3 px-4">Proveedor / Abastecedor</th>
-                            <th class="py-3 px-4">Vendedor (Dropshipper)</th>
-                            <th class="py-3 px-4">Comprador Final COD</th>
-                            <th class="py-3 px-4 text-center">Acción</th>
+                            <th class="py-3 px-3 text-center bg-indigo-50/40 border-x border-indigo-100">
+                                <span class="text-[#4F46E5]"><i class="fa-solid fa-hashtag mr-0.5"></i>Cant. Movida</span>
+                            </th>
+                            <th class="py-3 px-3 text-center">Variación Bs</th>
+                            <th class="py-3 px-4">Proveedor</th>
+                            <th class="py-3 px-4">Vendedor</th>
+                            <th class="py-3 px-4">Comprador COD</th>
+                            <th class="py-3 px-4 text-center">Detalle</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -1756,12 +1759,25 @@
                                     <div class="text-[10px] text-slate-400" x-text="item.warehouse_city"></div>
                                 </td>
 
-                                <!-- Cantidad y Variación -->
-                                <td class="py-3 px-4 text-center whitespace-nowrap">
-                                    <span class="font-mono font-black text-xs px-2 py-0.5 rounded-lg"
-                                          :class="item.quantity > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'"
-                                          x-text="(item.quantity > 0 ? '+' : '') + item.quantity + ' uds'"></span>
-                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5" x-text="'Bs ' + item.total_cost_bob.toFixed(2)"></div>
+                                <!-- COLUMNA CANTIDAD MOVIDA (Nueva, destacada) -->
+                                <td class="py-3 px-3 text-center whitespace-nowrap bg-indigo-50/30 border-x border-indigo-100/60">
+                                    <div class="inline-flex flex-col items-center gap-0.5">
+                                        <span class="font-mono font-black text-sm px-2.5 py-1 rounded-xl shadow-xs"
+                                              :class="item.quantity > 0
+                                                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                                        : item.movement_category === 'hold'
+                                                          ? 'bg-indigo-100 text-indigo-800 border border-indigo-300'
+                                                          : 'bg-rose-100 text-rose-800 border border-rose-300'"
+                                              x-text="(item.quantity > 0 ? '+' : '') + item.quantity + ' uds'"></span>
+                                        <span class="text-[9px] text-slate-400 font-mono" x-text="'× Bs ' + Number(item.unit_cost_bob).toFixed(0)"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Variación valorizada -->
+                                <td class="py-3 px-3 text-center whitespace-nowrap">
+                                    <div class="font-mono font-bold text-xs"
+                                         :class="item.quantity > 0 ? 'text-emerald-700' : 'text-rose-700'"
+                                         x-text="'Bs ' + Number(item.total_cost_bob).toFixed(2)"></div>
                                 </td>
 
                                 <!-- Rol 1: Proveedor -->
@@ -1792,8 +1808,9 @@
                                 <!-- Acción de Inspección -->
                                 <td class="py-3 px-4 text-center whitespace-nowrap">
                                     <button type="button" @click.stop="openDetail(item)"
-                                            class="w-7 h-7 rounded-xl bg-slate-100 group-hover:bg-[#4F46E5] text-slate-600 group-hover:text-white transition flex items-center justify-center cursor-pointer shadow-2xs mx-auto">
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 group-hover:bg-[#4F46E5] text-slate-600 group-hover:text-white transition cursor-pointer shadow-2xs mx-auto text-[10px] font-bold">
                                         <i class="fa-solid fa-eye text-xs"></i>
+                                        <span class="hidden group-hover:inline">Ver</span>
                                     </button>
                                 </td>
 
@@ -1802,7 +1819,7 @@
 
                         <template x-if="filteredRecords.length === 0">
                             <tr>
-                                <td colspan="8" class="py-12 text-center text-slate-400 space-y-2">
+                                <td colspan="9" class="py-12 text-center text-slate-400 space-y-2">
                                     <i class="fa-solid fa-boxes-packing text-3xl text-slate-300"></i>
                                     <p class="text-xs font-semibold">No se encontraron movimientos en el Kardex con los filtros aplicados.</p>
                                 </td>
@@ -1827,7 +1844,7 @@
                  class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                  @keydown.escape.window="closeDetail()">
                 
-                <div @click.away="closeDetail()"
+                <div @click.stop
                      x-show="detailModalOpen"
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 scale-95"
@@ -1845,7 +1862,7 @@
                             </div>
                             <div>
                                 <h4 class="font-extrabold text-[#0F172A] font-heading text-sm">Auditoría de Trazabilidad Kardex 360°</h4>
-                                <span class="text-[10px] text-slate-400 font-mono" x-text="'ID: ' + selectedItem?.id"></span>
+                                <span class="text-[10px] text-slate-400 font-mono" x-text="'Movimiento #' + (selectedItem ? selectedItem.id : '—') + '  •  ' + (selectedItem ? selectedItem.created_at : '')"></span>
                             </div>
                         </div>
                         <button type="button" @click="closeDetail()" class="w-8 h-8 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
@@ -1853,9 +1870,52 @@
                         </button>
                     </div>
 
-                    <!-- Body Modal -->
-                    <div class="p-6 space-y-5 overflow-y-auto max-h-[78vh]" x-show="selectedItem">
-                        
+                    <!-- Body Modal (always visible when modal is open; selectedItem guaranteed set by openDetail) -->
+                    <div class="p-6 space-y-5 overflow-y-auto max-h-[78vh]">
+
+                        <!-- Cantidad Movida — Banner Principal -->
+                        <div class="rounded-2xl border flex items-center gap-5 px-5 py-4"
+                             :class="selectedItem && selectedItem.quantity > 0
+                                       ? 'bg-emerald-50 border-emerald-200'
+                                       : selectedItem && selectedItem.movement_category === 'hold'
+                                         ? 'bg-indigo-50 border-indigo-200'
+                                         : 'bg-rose-50 border-rose-200'">
+                            <!-- Icono grande -->
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-xs"
+                                 :class="selectedItem && selectedItem.quantity > 0
+                                           ? 'bg-emerald-100 text-emerald-700'
+                                           : selectedItem && selectedItem.movement_category === 'hold'
+                                             ? 'bg-indigo-100 text-indigo-700'
+                                             : 'bg-rose-100 text-rose-700'">
+                                <i :class="selectedItem && selectedItem.quantity > 0
+                                             ? 'fa-solid fa-arrow-down'
+                                             : selectedItem && selectedItem.movement_category === 'hold'
+                                               ? 'fa-solid fa-bookmark'
+                                               : 'fa-solid fa-arrow-up'"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-[10px] font-extrabold uppercase tracking-wider mb-0.5"
+                                     :class="selectedItem && selectedItem.quantity > 0
+                                               ? 'text-emerald-700'
+                                               : selectedItem && selectedItem.movement_category === 'hold'
+                                                 ? 'text-indigo-700'
+                                                 : 'text-rose-700'"
+                                     x-text="selectedItem ? (selectedItem.movement_category === 'inbound' ? 'Entrada de Stock' : selectedItem.movement_category === 'outbound' ? 'Salida / Despacho COD' : selectedItem.movement_category === 'hold' ? 'Reserva de Venta (Hold)' : 'Ajuste de Inventario') : ''"></div>
+                                <!-- Cantidad en unidades —PRINCIPAL— -->
+                                <div class="text-3xl font-black font-mono leading-none"
+                                     :class="selectedItem && selectedItem.quantity > 0 ? 'text-emerald-800' : selectedItem && selectedItem.movement_category === 'hold' ? 'text-indigo-800' : 'text-rose-800'"
+                                     x-text="selectedItem ? (selectedItem.quantity > 0 ? '+' : '') + selectedItem.quantity + ' unidades' : '—'"></div>
+                                <div class="text-xs font-semibold mt-1 text-slate-600"
+                                     x-text="selectedItem ? selectedItem.product_name + '  ·  SKU: ' + selectedItem.sku : ''"></div>
+                            </div>
+                            <!-- Valorización -->
+                            <div class="ml-auto text-right shrink-0">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wide">Valuación</div>
+                                <div class="text-xl font-black font-mono text-[#0F172A]" x-text="selectedItem ? 'Bs ' + Number(selectedItem.total_cost_bob).toFixed(2) : '—'"></div>
+                                <div class="text-[10px] text-slate-400 font-mono" x-text="selectedItem ? 'c/u Bs ' + Number(selectedItem.unit_cost_bob).toFixed(2) : ''"></div>
+                            </div>
+                        </div>
+
                         <!-- Tarjetas de los 3 Actores de la Transacción -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             
@@ -1864,8 +1924,8 @@
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                                     <i class="fa-solid fa-warehouse text-[#4F46E5]"></i> 1. Proveedor
                                 </span>
-                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.provider_name"></div>
-                                <div class="text-[10px] text-slate-500" x-text="selectedItem?.warehouse_name"></div>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? selectedItem.provider_name : '—'"></div>
+                                <div class="text-[10px] text-slate-500" x-text="selectedItem ? selectedItem.warehouse_name + ' — ' + selectedItem.warehouse_city : ''"></div>
                             </div>
 
                             <!-- 2. Vendedor / Dropshipper -->
@@ -1873,8 +1933,8 @@
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-800 flex items-center gap-1">
                                     <i class="fa-solid fa-store text-indigo-600"></i> 2. Vendedor
                                 </span>
-                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.seller_name"></div>
-                                <div class="text-[10px] text-indigo-600 truncate" x-text="selectedItem?.seller_email || 'Tienda Conectada'"></div>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? selectedItem.seller_name : '—'"></div>
+                                <div class="text-[10px] text-indigo-600 truncate" x-text="selectedItem ? (selectedItem.seller_email || 'Tienda Conectada') : ''"></div>
                             </div>
 
                             <!-- 3. Comprador Final COD -->
@@ -1882,68 +1942,83 @@
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1">
                                     <i class="fa-solid fa-user-check text-emerald-600"></i> 3. Comprador
                                 </span>
-                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem?.buyer_name"></div>
-                                <div class="text-[10px] text-emerald-700 truncate" x-text="selectedItem?.buyer_city"></div>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? selectedItem.buyer_name : '—'"></div>
+                                <div class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-location-dot text-[9px]"></i>
+                                    <span class="truncate" x-text="selectedItem ? selectedItem.buyer_city : ''"></span>
+                                </div>
+                                <div class="text-[10px] text-slate-500" x-text="selectedItem && selectedItem.buyer_phone ? '📞 ' + selectedItem.buyer_phone : ''"></div>
                             </div>
 
                         </div>
 
-                        <!-- Balanza de Stock (Invariante Contable) -->
+                        <!-- Invariante Contable de Inventario -->
                         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                             <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                                <span>Invariante de Inventario (Antes → Variación → Después)</span>
-                                <span class="font-mono text-[#0F172A]" x-text="'SKU: ' + selectedItem?.sku"></span>
+                                <span><i class="fa-solid fa-scale-balanced mr-1 text-[#4F46E5]"></i>Invariante de Stock (Físico Antes → Movimiento → Físico Después)</span>
                             </div>
                             
                             <div class="grid grid-cols-3 gap-2 text-center">
-                                <div class="bg-white rounded-xl p-2.5 border border-slate-200/80 shadow-2xs">
+                                <div class="bg-white rounded-xl p-3 border border-slate-200/80 shadow-2xs">
                                     <div class="text-[9px] text-slate-400 uppercase font-semibold">Físico Anterior</div>
-                                    <div class="text-sm font-extrabold font-mono text-slate-700 mt-0.5" x-text="selectedItem?.stock_physical_before + ' uds'"></div>
+                                    <div class="text-lg font-extrabold font-mono text-slate-700 mt-1" x-text="selectedItem ? selectedItem.stock_physical_before + ' uds' : '—'"></div>
                                 </div>
-                                <div class="bg-white rounded-xl p-2.5 border border-indigo-200/80 shadow-2xs ring-1 ring-[#4F46E5]/10">
-                                    <div class="text-[9px] text-[#4F46E5] uppercase font-semibold">Variación</div>
-                                    <div class="text-sm font-black font-mono mt-0.5"
-                                         :class="selectedItem?.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'"
-                                         x-text="(selectedItem?.quantity > 0 ? '+' : '') + selectedItem?.quantity + ' uds'"></div>
+                                <div class="bg-white rounded-xl p-3 border border-indigo-200/80 shadow-2xs ring-2 ring-[#4F46E5]/15">
+                                    <div class="text-[9px] text-[#4F46E5] uppercase font-semibold">Cantidad Movida</div>
+                                    <div class="text-lg font-black font-mono mt-1"
+                                         :class="selectedItem && selectedItem.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'"
+                                         x-text="selectedItem ? (selectedItem.quantity > 0 ? '+' : '') + selectedItem.quantity + ' uds' : '—'"></div>
                                 </div>
-                                <div class="bg-white rounded-xl p-2.5 border border-slate-200/80 shadow-2xs">
+                                <div class="bg-white rounded-xl p-3 border border-slate-200/80 shadow-2xs">
                                     <div class="text-[9px] text-slate-400 uppercase font-semibold">Físico Resultante</div>
-                                    <div class="text-sm font-extrabold font-mono text-[#0F172A] mt-0.5" x-text="selectedItem?.stock_physical_after + ' uds'"></div>
+                                    <div class="text-lg font-extrabold font-mono text-[#0F172A] mt-1" x-text="selectedItem ? selectedItem.stock_physical_after + ' uds' : '—'"></div>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/80 text-[11px]">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500">Costo Unitario:</span>
-                                    <strong class="font-mono text-[#0F172A]" x-text="'Bs ' + Number(selectedItem?.unit_cost_bob || 0).toFixed(2)"></strong>
+                            <!-- Disponible y Reservado (sub-filas) -->
+                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/60 text-[11px]">
+                                <div class="flex items-center justify-between bg-white rounded-lg px-3 py-1.5 border border-slate-200/70">
+                                    <span class="text-slate-500">Disponible antes / después:</span>
+                                    <span class="font-mono font-bold text-slate-700"
+                                          x-text="selectedItem ? selectedItem.stock_available_before + ' → ' + selectedItem.stock_available_after + ' uds' : '—'"></span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-500">Total Valuado:</span>
-                                    <strong class="font-mono text-emerald-600" x-text="'Bs ' + Number(selectedItem?.total_cost_bob || 0).toFixed(2)"></strong>
+                                <div class="flex items-center justify-between bg-white rounded-lg px-3 py-1.5 border border-slate-200/70">
+                                    <span class="text-slate-500">Reservado antes / después:</span>
+                                    <span class="font-mono font-bold text-indigo-600"
+                                          x-text="selectedItem ? selectedItem.stock_reserved_before + ' → ' + selectedItem.stock_reserved_after + ' uds' : '—'"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Referencia de Orden y Courier -->
-                        <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2 text-xs">
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-slate-500">Documento / Guía:</span>
-                                <span class="font-mono font-bold text-[#4F46E5]" x-text="selectedItem?.document_number"></span>
+                        <!-- Referencia de Orden, Courier y Notas -->
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2.5 text-xs">
+                            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                                <i class="fa-solid fa-file-lines mr-1 text-[#4F46E5]"></i>Referencia del Movimiento
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-slate-500">Operador Logístico:</span>
-                                <span class="font-bold text-slate-800" x-text="selectedItem?.courier_name"></span>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                                <span class="font-semibold text-slate-500">N° Documento / Guía:</span>
+                                <span class="font-mono font-bold text-[#4F46E5]" x-text="selectedItem ? selectedItem.document_number : '—'"></span>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-slate-500">Glosa / Motivo:</span>
-                                <span class="text-slate-600 italic text-right max-w-xs" x-text="selectedItem?.notes || 'Sin observaciones'"></span>
+                            <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                                <span class="font-semibold text-slate-500">Operador Logístico (Courier):</span>
+                                <span class="font-bold text-slate-800 flex items-center gap-1">
+                                    <i class="fa-solid fa-truck-fast text-[#38BDF8] text-[10px]"></i>
+                                    <span x-text="selectedItem ? selectedItem.courier_name : '—'"></span>
+                                </span>
+                            </div>
+                            <div class="flex items-start justify-between py-1">
+                                <span class="font-semibold text-slate-500 shrink-0">Glosa / Motivo:</span>
+                                <span class="text-slate-600 italic text-right max-w-xs" x-text="selectedItem ? (selectedItem.notes || 'Sin observaciones adicionales') : '—'"></span>
                             </div>
                         </div>
 
                     </div>
 
                     <!-- Footer Modal -->
-                    <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+                    <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+                        <span class="text-[10px] text-slate-400 font-mono">
+                            <i class="fa-solid fa-shield-check text-emerald-500 mr-1"></i>Registro inmutable · Bolidrop Ledger Nacional
+                        </span>
                         <button type="button" @click="closeDetail()"
                                 class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition cursor-pointer">
                             Cerrar Auditoría
@@ -1951,6 +2026,8 @@
                     </div>
 
                 </div>
+                <!-- Cierre al hacer click en el overlay -->
+                <div class="absolute inset-0 -z-10 cursor-default" @click="closeDetail()"></div>
             </div>
 
         </div>
