@@ -13,51 +13,21 @@
                 $dept = strtolower($inv->warehouse->department ?? '');
                 $whTags[] = $city . ' ' . $dept;
                 $stockByWh[] = [
-                    'warehouse_id' => (string) $inv->warehouse_id,
-                    'name' => $inv->warehouse->name ?? 'Bodega',
-                    'code' => $inv->warehouse->code ?? '',
                     'city' => $inv->warehouse->city ?? '',
                     'department' => $inv->warehouse->department ?? '',
-                    'address' => $inv->warehouse->address ?? '',
                     'stock' => (int) $inv->stock_available,
-                    'stock_physical' => (int) $inv->stock_physical,
                 ];
             }
         }
-
-        $cost = (float) $p->cost_price_bob;
-        $sug  = (float) $p->suggested_price_bob;
-        $min  = (float) $p->min_price_bob;
-        $margin = $sug - $cost;
-        $roi = $cost > 0 ? round(($margin / $cost) * 100) : 0;
-
         return [
             'id' => (string) $p->id,
-            'name' => $p->name,
-            'name_lower' => strtolower($p->name ?? ''),
-            'slug' => $p->slug,
-            'sku' => $p->sku,
-            'sku_lower' => strtolower($p->sku ?? ''),
-            'internal_code' => $p->internal_code,
-            'internal_code_lower' => strtolower($p->internal_code ?? ''),
-            'description' => $p->description ?? 'Producto verificado para distribución nacional con garantía y cobro contra entrega (COD).',
-            'cost_price_bob' => $cost,
-            'suggested_price_bob' => $sug,
-            'min_price_bob' => $min,
-            'margin_bob' => $margin,
-            'roi_percent' => $roi,
-            'weight_kg' => (float) ($p->weight_kg ?? 0.5),
-            'is_cod_available' => (bool) $p->is_cod_available,
-            'images' => !empty($p->images) && is_array($p->images) ? array_values($p->images) : [],
+            'name' => strtolower($p->name ?? ''),
+            'sku' => strtolower($p->sku ?? ''),
+            'internal_code' => strtolower($p->internal_code ?? ''),
             'category_id' => (string) ($p->category_id ?? ''),
-            'category_name' => $p->category->name ?? 'Tecnología',
-            'category_name_lower' => strtolower($p->category->name ?? 'tecnología'),
-            'provider_name' => $p->provider?->company_or_store_name ?? $p->provider?->name ?? 'Megabodega Bolidrop',
-            'provider_city' => $p->provider?->city ?? 'Santa Cruz',
-            'provider_phone' => $p->provider?->phone ?? '',
+            'category_name' => strtolower($p->category->name ?? 'tecnología'),
             'warehouses_str' => implode(' | ', $whTags),
             'stock_by_wh' => $stockByWh,
-            'total_stock' => array_sum(array_column($stockByWh, 'stock')),
         ];
     })->values();
 @endphp
@@ -67,64 +37,14 @@
     warehouseFilter: 'all',
     categoryFilter: 'all',
     copiedSku: null,
-    copiedModalSku: false,
     catalogItems: {{ Js::from($catalogProductsJson) }},
-
-    // Estado del Modal
-    modalOpen: false,
-    selectedProduct: null,
-    activeImageIdx: 0,
-    selectedWarehouseId: '',
-
-    openProductModal(id) {
-        const prod = this.catalogItems.find(i => i.id === String(id));
-        if (!prod) return;
-        this.selectedProduct = prod;
-        this.activeImageIdx = 0;
-        this.copiedModalSku = false;
-        if (prod.stock_by_wh && prod.stock_by_wh.length > 0) {
-            this.selectedWarehouseId = prod.stock_by_wh[0].warehouse_id;
-        } else {
-            this.selectedWarehouseId = '';
-        }
-        this.modalOpen = true;
-    },
-
-    closeProductModal() {
-        this.modalOpen = false;
-        this.selectedProduct = null;
-    },
-
-    switchProduct(id) {
-        this.openProductModal(id);
-    },
-
-    getCheckoutUrl() {
-        if (!this.selectedProduct) return '{{ url("/checkout-demo") }}';
-        let url = '{{ url("/checkout-demo") }}?product_id=' + encodeURIComponent(this.selectedProduct.id);
-        if (this.selectedWarehouseId) {
-            url += '&warehouse_id=' + encodeURIComponent(this.selectedWarehouseId);
-        }
-        return url;
-    },
-
-    getRelatedProducts() {
-        if (!this.selectedProduct) return [];
-        // Filtra otros productos excluyendo el actual
-        let related = this.catalogItems.filter(p => p.id !== this.selectedProduct.id);
-        // Prioriza la misma categoría
-        let sameCat = related.filter(p => p.category_id === this.selectedProduct.category_id);
-        let otherCat = related.filter(p => p.category_id !== this.selectedProduct.category_id);
-        let list = [...sameCat, ...otherCat];
-        return list.slice(0, 4);
-    },
 
     isProductVisible(id) {
         const item = this.catalogItems.find(i => i.id === String(id));
         if (!item) return true;
 
         const q = this.searchQuery.toLowerCase().trim();
-        const matchesText = !q || item.name_lower.includes(q) || item.sku_lower.includes(q) || item.internal_code_lower.includes(q) || item.category_name_lower.includes(q);
+        const matchesText = !q || item.name.includes(q) || item.sku.includes(q) || item.internal_code.includes(q) || item.category_name.includes(q);
         const matchesCat  = this.categoryFilter === 'all' || item.category_id === String(this.categoryFilter);
         const matchesWh   = this.warehouseFilter === 'all' || item.warehouses_str.includes(this.warehouseFilter);
 
@@ -150,14 +70,8 @@
         navigator.clipboard.writeText(sku);
         this.copiedSku = sku;
         setTimeout(() => { if (this.copiedSku === sku) this.copiedSku = null; }, 1800);
-    },
-
-    copyModalSkuText(sku) {
-        navigator.clipboard.writeText(sku);
-        this.copiedModalSku = true;
-        setTimeout(() => { this.copiedModalSku = false; }, 2000);
     }
-}" @keydown.escape.window="closeProductModal()">
+}">
 
     <x-page-header
         title="Catálogo Mayorista de Productos COD"
@@ -272,12 +186,11 @@
                  class="interactive-card bg-[#FFFFFF] rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col hover:border-[#4F46E5] group">
                 
                 <!-- Showcase Visual del Producto -->
-                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden cursor-pointer group/img"
-                     @click="openProductModal('{{ $product->id }}')">
+                <div class="relative bg-slate-50 h-60 flex items-center justify-center p-4 border-b border-slate-200 overflow-hidden">
                     @if(!empty($product->images) && count($product->images) > 0)
-                        <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-contain p-2 group-hover/img:scale-105 transition duration-300">
+                        <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-105 transition duration-300">
                     @else
-                        <div class="w-24 h-24 rounded-2xl bg-indigo-50 border border-indigo-200/80 text-[#4F46E5] flex items-center justify-center text-4xl shadow-inner group-hover/img:scale-105 transition duration-300">
+                        <div class="w-24 h-24 rounded-2xl bg-indigo-50 border border-indigo-200/80 text-[#4F46E5] flex items-center justify-center text-4xl shadow-inner group-hover:scale-105 transition duration-300">
                             @if(str_contains($product->slug, 'audifono'))
                                 <i class="fa-solid fa-headphones"></i>
                             @elseif(str_contains($product->slug, 'smartwatch'))
@@ -293,21 +206,13 @@
                             @endif
                         </div>
                     @endif
-
-                    <!-- Overlay sutil con indicador de vista rápida -->
-                    <div class="absolute inset-0 bg-slate-900/15 backdrop-blur-[1px] opacity-0 group-hover/img:opacity-100 transition duration-200 flex items-center justify-center pointer-events-none">
-                        <span class="px-3 py-1.5 rounded-xl bg-white/95 text-[#0F172A] font-bold text-[11px] shadow-md border border-slate-200 inline-flex items-center gap-1.5 transform translate-y-1 group-hover/img:translate-y-0 transition duration-200">
-                            <i class="fa-solid fa-eye text-[#4F46E5]"></i>
-                            <span>Ver Ficha Completa</span>
-                        </span>
-                    </div>
                     
-                    <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider pointer-events-none">
+                    <span class="absolute top-3.5 left-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                         <i class="fa-solid fa-truck-fast mr-1"></i> Contra Entrega
                     </span>
-                    <button type="button" @click.stop="copySku('{{ $product->sku }}')"
+                    <button type="button" @click="copySku('{{ $product->sku }}')"
                         title="Clic para copiar SKU"
-                        class="absolute top-3.5 right-3.5 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-[#0F172A] font-mono font-bold text-[11px] px-2.5 py-0.5 rounded-lg shadow-2xs transition cursor-pointer flex items-center gap-1 z-10">
+                        class="absolute top-3.5 right-3.5 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-[#0F172A] font-mono font-bold text-[11px] px-2.5 py-0.5 rounded-lg shadow-2xs transition cursor-pointer flex items-center gap-1">
                         <span x-text="copiedSku === '{{ $product->sku }}' ? '¡Copiado!' : 'SKU: {{ $product->sku }}'">SKU: {{ $product->sku }}</span>
                         <i class="fa-regular text-[10px] text-[#4F46E5]" :class="copiedSku === '{{ $product->sku }}' ? 'fa-circle-check text-emerald-600' : 'fa-copy'"></i>
                     </button>
@@ -327,11 +232,7 @@
                                     </span>
                                 @endif
                             </div>
-                            <h3 class="text-lg font-bold text-[#0F172A] font-heading mt-0.5 group-hover:text-[#4F46E5] transition line-clamp-1 cursor-pointer"
-                                @click="openProductModal('{{ $product->id }}')">
-                                {{ $product->name }}
-                            </h3>
-                        </div>
+                            <h3 class="text-lg font-bold text-[#0F172A] font-heading mt-0.5 group-hover:text-[#4F46E5] transition line-clamp-1">
                                 {{ $product->name }}
                             </h3>
                         </div>
@@ -425,9 +326,6 @@
             </button>
         </div>
     </div>
-
-    <!-- Inclusión del Modal Modular de Detalle & Productos Relacionados -->
-    @include('components.product-detail-modal')
 
 </div>
 @endsection
