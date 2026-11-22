@@ -2541,7 +2541,7 @@
                 </button>
             </div>
 
-            <form @submit.prevent="submitProduct()" class="text-xs space-y-4">
+            <form novalidate @submit.prevent="submitProduct()" class="text-xs space-y-4">
                 
                 <!-- PESTAÑA 1: DATOS COMERCIALES Y BODEGA -->
                 <div x-show="productModalTab === 'general'" class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
@@ -2616,7 +2616,7 @@
 
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-[9px] text-slate-400 font-bold uppercase shrink-0">O URL:</span>
-                                        <input type="url" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg"
+                                        <input type="text" x-model="form.image_url" @input="handleUrlChange()" placeholder="https://ejemplo.com/foto.jpg o /storage/..."
                                             class="w-full bg-white border border-slate-200 rounded-lg px-2 py-1 text-slate-800 text-[10px] focus:outline-none focus:border-emerald-500">
                                     </div>
                                 </div>
@@ -2754,7 +2754,7 @@
                         <label class="block font-bold text-slate-700 mb-1">
                             <i class="fa-brands fa-youtube text-red-500 mr-1"></i> Video Demostrativo / Enlace Publicitario (Opcional):
                         </label>
-                        <input type="url" x-model="form.video_url" placeholder="https://youtube.com/watch?v=... o enlace de TikTok / Google Drive"
+                        <input type="text" x-model="form.video_url" placeholder="https://youtube.com/watch?v=... o enlace de TikTok / Google Drive"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5] focus:bg-white transition">
                     </div>
                 </div>
@@ -2775,7 +2775,7 @@
                         <button type="button" @click="closeProductModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
                             Cancelar
                         </button>
-                        <button type="submit" :disabled="submitting"
+                        <button type="button" @click="submitProduct()" :disabled="submitting"
                             class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50">
                             <span x-show="!submitting" class="flex items-center gap-1.5">
                                 <i class="fa-solid" :class="productModalMode === 'edit' ? 'fa-floppy-disk' : 'fa-cloud-arrow-up'" :style="productModalMode !== 'edit' ? 'color: #fcd34d' : ''"></i>
@@ -3730,6 +3730,38 @@ function proveedorDashboard() {
         },
 
         async submitProduct() {
+            // Validación amigable previa
+            if (!this.form.name || !String(this.form.name).trim()) {
+                this.productModalTab = 'general';
+                window.$toast('Ingresa el nombre del producto.', 'warning', 'Campo Requerido');
+                return;
+            }
+            if (!this.form.sku || !String(this.form.sku).trim()) {
+                this.productModalTab = 'general';
+                window.$toast('Ingresa el SKU o código único del producto.', 'warning', 'Campo Requerido');
+                return;
+            }
+            if (!this.form.category_id) {
+                this.productModalTab = 'general';
+                window.$toast('Selecciona una categoría para el producto.', 'warning', 'Campo Requerido');
+                return;
+            }
+            if (!this.form.cost_price_bob || Number(this.form.cost_price_bob) <= 0) {
+                this.productModalTab = 'general';
+                window.$toast('El costo del producto debe ser mayor a 0 BOB.', 'warning', 'Campo Requerido');
+                return;
+            }
+            if (!this.form.suggested_price_bob || Number(this.form.suggested_price_bob) <= Number(this.form.cost_price_bob)) {
+                this.productModalTab = 'general';
+                window.$toast('El precio sugerido debe ser mayor al costo mayorista.', 'warning', 'Validación de Precios');
+                return;
+            }
+            if (!this.form.min_price_bob || Number(this.form.min_price_bob) < Number(this.form.cost_price_bob)) {
+                this.productModalTab = 'general';
+                window.$toast('El precio mínimo no puede ser menor al costo mayorista.', 'warning', 'Validación de Precios');
+                return;
+            }
+
             this.submitting = true;
             try {
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
