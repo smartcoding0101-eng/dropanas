@@ -3,7 +3,7 @@
 @section('title', 'Panel Proveedor | Megabodega Bolidrop Bolivia')
 
 @section('content')
-<div class="space-y-8" x-data="proveedorDashboard()">
+<div class="space-y-8" x-data="proveedorDashboard()" @warehouses-updated.window="handleWarehousesUpdated($event.detail.warehouses)">
 
     <x-page-header
         :title="$provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega'"
@@ -15,7 +15,7 @@
                 class="px-4 py-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-2 shadow-md transition cursor-pointer">
                 <i class="fa-solid fa-file-excel text-amber-200"></i> Carga Masiva Excel
             </button>
-            <button @click="productModalOpen = true"
+            <button @click="openProductModal()"
                 class="btn-scarlet inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs shadow-md cursor-pointer">
                 <i class="fa-solid fa-plus"></i> Publicar Nuevo Producto
             </button>
@@ -2158,7 +2158,7 @@
                     class="px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200/80 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
                     <i class="fa-solid fa-tags"></i> Gestionar Categorías
                 </button>
-                <button @click="productModalOpen = true"
+                <button @click="openProductModal()"
                     class="btn-scarlet px-3.5 py-1.5 rounded-lg font-bold text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-plus text-amber-200"></i> Nuevo Producto
                 </button>
@@ -2490,7 +2490,7 @@
             @click.away="productModalOpen = false">
             
             <!-- Encabezado del Modal -->
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-boxes-packing"></i>
@@ -2500,15 +2500,32 @@
                         <p class="text-xs text-slate-500">Disponible para miles de dropshippers en Bolivia</p>
                     </div>
                 </div>
-                <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+                <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
                     <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Navegación de Pestañas (Tabs) -->
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+                <button type="button" @click="productModalTab = 'general'"
+                    :class="productModalTab === 'general' ? 'bg-[#4F46E5] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-cube text-[11px]"></i>
+                    <span>1. Datos Comerciales & Stock</span>
+                </button>
+                <button type="button" @click="productModalTab = 'specs'"
+                    :class="productModalTab === 'specs' ? 'bg-[#4F46E5] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                    class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-file-lines text-[11px]"></i>
+                    <span>2. Ficha Técnica & Detalles</span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400" x-show="form.description"></span>
                 </button>
             </div>
 
             <form @submit.prevent="submitProduct()" class="text-xs space-y-4">
                 
-                <!-- Cuadrícula Horizontal de 2 Columnas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                <!-- PESTAÑA 1: DATOS COMERCIALES Y BODEGA -->
+                <div x-show="productModalTab === 'general'" class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
                     
                     <!-- COLUMNA IZQUIERDA: Datos Básicos y Fotografía -->
                     <div class="space-y-3">
@@ -2554,7 +2571,7 @@
                                         <div class="w-full h-full relative">
                                             <img :src="imagePreview" class="w-full h-full object-cover">
                                             <button type="button" @click="removeImage()"
-                                                class="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow hover:bg-red-700">
+                                                class="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow hover:bg-red-700 cursor-pointer">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </button>
                                         </div>
@@ -2571,7 +2588,7 @@
                                 <div class="flex-1 space-y-1.5">
                                     <div class="flex items-center gap-2">
                                         <button type="button" @click="$refs.fileInput.click()"
-                                            class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] inline-flex items-center gap-1.5 shadow-sm transition">
+                                            class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[11px] inline-flex items-center gap-1.5 shadow-sm transition cursor-pointer">
                                             <i class="fa-solid fa-upload text-[#0061f2]"></i> Subir Foto
                                         </button>
                                         <span class="text-[10px] text-slate-500 truncate max-w-[140px]" x-text="imageFile ? imageFile.name : 'PNG, JPG (Máx 5MB)'"></span>
@@ -2611,7 +2628,7 @@
                             </div>
                         </div>
 
-                        <!-- Asignación Inicial de Inventario Físico -->
+                        <!-- Asignación Inicial de Inventario Físico (100% Reactiva en Vivo) -->
                         <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
                             <div class="font-bold text-slate-900 flex items-center justify-between">
                                 <span class="flex items-center gap-1.5 text-[11px]">
@@ -2626,10 +2643,15 @@
                                     <select x-model="form.initial_warehouse_id"
                                         class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
                                         <option value="">Sin inventario inicial</option>
-                                        @foreach($warehouses as $wh)
-                                            <option value="{{ $wh->id }}">{{ $wh->name }} ({{ $wh->city }})</option>
-                                        @endforeach
+                                        <template x-for="wh in warehousesList" :key="wh.id">
+                                            <option :value="wh.id" x-text="wh.name + ' (' + (wh.city || wh.department || '') + ')'"></option>
+                                        </template>
                                     </select>
+                                    <template x-if="warehousesList.length === 0">
+                                        <p class="text-[10px] text-amber-600 mt-1 font-semibold flex items-center gap-1">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> No tienes bodegas creadas aún.
+                                        </p>
+                                    </template>
                                 </div>
                                 <div>
                                     <label class="block font-medium text-slate-600 mb-1 text-[10px]">Cantidad Inicial (Uds):</label>
@@ -2648,20 +2670,101 @@
 
                 </div>
 
+                <!-- PESTAÑA 2: FICHA TÉCNICA, DESCRIPCIÓN Y ESPECIFICACIONES -->
+                <div x-show="productModalTab === 'specs'" class="space-y-4">
+                    <!-- Descripción Detallada y Argumentos de Venta -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                            <span>Descripción y Argumentos de Venta:</span>
+                            <span class="text-[10px] text-slate-400 font-normal">Visible en Catálogo Mayorista</span>
+                        </label>
+                        <textarea x-model="form.description" rows="3"
+                            placeholder="Describe los beneficios principales del producto, calidad de materiales, modos de uso y por qué los dropshippers deben comercializarlo..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5] focus:bg-white transition resize-none"></textarea>
+                    </div>
+
+                    <!-- Ficha Técnica / Especificaciones (Clave - Valor Dinámico) -->
+                    <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <label class="font-bold text-slate-800 text-[11px] flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders text-[#4F46E5]"></i>
+                                Ficha Técnica / Especificaciones (Clave - Valor):
+                            </label>
+                            <button type="button" @click="addSpec()" class="text-[10px] font-bold text-[#4F46E5] hover:text-[#312E81] flex items-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-plus"></i> + Agregar Atributo
+                            </button>
+                        </div>
+                        <div class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                            <template x-for="(s, sIdx) in form.specs" :key="sIdx">
+                                <div class="flex items-center gap-2">
+                                    <input type="text" x-model="s.key" placeholder="Característica (Ej: Marca, Modelo, Color)"
+                                        class="w-1/3 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5]">
+                                    <input type="text" x-model="s.value" placeholder="Detalle (Ej: Canon, G3180, Negro)"
+                                        class="flex-1 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5]">
+                                    <button type="button" @click="removeSpec(sIdx)" class="text-slate-400 hover:text-rose-600 p-1.5 text-xs transition cursor-pointer" title="Eliminar atributo">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Grid 2 Columnas: En la caja y Garantía -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">
+                                <i class="fa-solid fa-box-open text-[#4F46E5] mr-1"></i> ¿Qué incluye el paquete / caja?
+                            </label>
+                            <textarea x-model="form.box_content" rows="2"
+                                placeholder="Ej: 1x Impresora Canon G3180, 1x Cable de poder, 4x Botellas de tinta, 1x Manual en español"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5] focus:bg-white transition resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">
+                                <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> Garantía y Cobertura:
+                            </label>
+                            <textarea x-model="form.warranty_info" rows="2"
+                                placeholder="Ej: Garantía de 6 meses por fallas de fábrica con reposición inmediata si llega defectuoso."
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5] focus:bg-white transition resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Video URL Demostrativo -->
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <i class="fa-brands fa-youtube text-red-500 mr-1"></i> Video Demostrativo / Enlace Publicitario (Opcional):
+                        </label>
+                        <input type="url" x-model="form.video_url" placeholder="https://youtube.com/watch?v=... o enlace de TikTok / Google Drive"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-[#4F46E5] focus:bg-white transition">
+                    </div>
+                </div>
+
                 <!-- Botones Inferiores -->
-                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                    <button type="button" @click="productModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition">
-                        Cancelar
-                    </button>
-                    <button type="submit" :disabled="submitting"
-                        class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition">
-                        <span x-show="!submitting" class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-cloud-arrow-up text-amber-200"></i> Publicar en Catálogo
-                        </span>
-                        <span x-show="submitting" class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-spinner animate-spin"></i> Guardando...
-                        </span>
-                    </button>
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <div>
+                        <button type="button" x-show="productModalTab === 'specs'" @click="productModalTab = 'general'"
+                            class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 font-bold text-slate-700 transition cursor-pointer flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-left text-[10px]"></i> Volver a Datos Básicos
+                        </button>
+                        <button type="button" x-show="productModalTab === 'general'" @click="productModalTab = 'specs'"
+                            class="px-4 py-2 rounded-xl border border-slate-200 bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] font-bold transition cursor-pointer flex items-center gap-1.5">
+                            <span>Ficha Técnica y Detalles</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="productModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" :disabled="submitting"
+                            class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50">
+                            <span x-show="!submitting" class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-cloud-arrow-up text-amber-200"></i> Publicar en Catálogo
+                            </span>
+                            <span x-show="submitting" class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-spinner animate-spin"></i> Guardando...
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </form>
 
@@ -3130,17 +3233,29 @@ function proveedorDashboard() {
             name: '',
             description: ''
         },
+        productModalTab: 'general',
+        warehousesList: @json($warehouses),
         form: {
             name: '',
             sku: '',
             category_id: '{{ $categories->first()?->id ?? "" }}',
+            description: '',
             cost_price_bob: 120,
             suggested_price_bob: 199,
             min_price_bob: 140,
             initial_warehouse_id: '{{ $warehouses->first()?->id ?? "" }}',
             initial_stock: 50,
             is_cod_available: true,
-            image_url: ''
+            image_url: '',
+            box_content: '',
+            warranty_info: 'Garantía oficial de 3 meses por fallas de fábrica.',
+            video_url: '',
+            specs: [
+                { key: 'Marca', value: '' },
+                { key: 'Modelo', value: '' },
+                { key: 'Color', value: '' },
+                { key: 'Garantía', value: '3 meses' }
+            ]
         },
         transferForm: {
             from_warehouse_id: '{{ $allWarehouses->first()?->id ?? "" }}',
@@ -3412,6 +3527,37 @@ function proveedorDashboard() {
             }
         },
 
+        async openProductModal() {
+            this.productModalTab = 'general';
+            try {
+                const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                if (data.status === 'success' && Array.isArray(data.data)) {
+                    this.warehousesList = data.data;
+                }
+            } catch (e) {}
+
+            if (!this.form.initial_warehouse_id || !this.warehousesList.find(w => w.id === this.form.initial_warehouse_id)) {
+                this.form.initial_warehouse_id = this.warehousesList[0]?.id || '';
+            }
+            this.productModalOpen = true;
+        },
+
+        handleWarehousesUpdated(warehouses) {
+            this.warehousesList = Array.isArray(warehouses) ? warehouses : [];
+            if (!this.warehousesList.find(w => w.id === this.form.initial_warehouse_id)) {
+                this.form.initial_warehouse_id = this.warehousesList[0]?.id || '';
+            }
+        },
+
+        addSpec() {
+            this.form.specs.push({ key: '', value: '' });
+        },
+
+        removeSpec(idx) {
+            this.form.specs.splice(idx, 1);
+        },
+
         async submitProduct() {
             this.submitting = true;
             try {
@@ -3420,6 +3566,9 @@ function proveedorDashboard() {
                 // Crear FormData para soportar carga de imagen física y normalizar booleanos
                 const formData = new FormData();
                 for (const key in this.form) {
+                    if (['specs', 'box_content', 'warranty_info', 'video_url'].includes(key)) {
+                        continue;
+                    }
                     if (this.form[key] !== null && this.form[key] !== undefined && this.form[key] !== '') {
                         if (typeof this.form[key] === 'boolean') {
                             formData.append(key, this.form[key] ? '1' : '0');
@@ -3428,6 +3577,23 @@ function proveedorDashboard() {
                         }
                     }
                 }
+
+                // Construir objeto attributes estructurado (Ficha técnica, contenido y garantía)
+                const cleanSpecs = {};
+                (this.form.specs || []).forEach(s => {
+                    if (s.key && s.key.trim() && s.value && s.value.trim()) {
+                        cleanSpecs[s.key.trim()] = s.value.trim();
+                    }
+                });
+
+                const attributesData = {
+                    specs: cleanSpecs,
+                    box_content: this.form.box_content || '',
+                    warranty_info: this.form.warranty_info || '',
+                    video_url: this.form.video_url || ''
+                };
+                formData.append('attributes', JSON.stringify(attributesData));
+
                 if (this.imageFile) {
                     formData.append('image', this.imageFile);
                 }
@@ -3444,17 +3610,17 @@ function proveedorDashboard() {
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    this.showToast(result.message || 'Producto publicado con éxito en Catálogo e Inventarios.', 'success');
+                    window.$toast(result.message || 'Producto publicado con éxito en Catálogo e Inventarios.', 'success', 'Producto Publicado');
                     this.productModalOpen = false;
                     setTimeout(() => { window.location.reload(); }, 900);
                 } else {
                     const errMsg = result.errors
                         ? Object.values(result.errors).flat().join(' ')
                         : (result.message || 'Error al guardar el producto.');
-                    this.showToast(errMsg, 'error');
+                    window.$toast(errMsg, 'error', 'Error al Publicar');
                 }
             } catch (err) {
-                this.showToast('Error de comunicación con el servidor.', 'error');
+                window.$toast('Error de comunicación con el servidor.', 'error');
             } finally {
                 this.submitting = false;
             }
@@ -3643,7 +3809,10 @@ function almacenModule() {
             try {
                 const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
                 const data = await res.json();
-                if (data.status === 'success') this.warehouseList = data.data;
+                if (data.status === 'success') {
+                    this.warehouseList = data.data;
+                    window.dispatchEvent(new CustomEvent('warehouses-updated', { detail: { warehouses: data.data } }));
+                }
             } catch { this.showAlmToast('Error al cargar almacenes.', 'error'); }
             finally { this.loadingWarehouses = false; }
         },

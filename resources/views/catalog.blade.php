@@ -44,6 +44,7 @@
             'weight_kg' => (float) ($p->weight_kg ?? 0.5),
             'is_cod_available' => (bool) $p->is_cod_available,
             'images' => !empty($p->images) && is_array($p->images) ? array_values($p->images) : [],
+            'attributes' => $p->attributes ?? null,
             'category_id' => (string) ($p->category_id ?? ''),
             'category_name' => $p->category->name ?? 'Tecnología',
             'category_name_lower' => strtolower($p->category->name ?? 'tecnología'),

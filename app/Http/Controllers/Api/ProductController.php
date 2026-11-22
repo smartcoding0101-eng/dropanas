@@ -98,7 +98,19 @@ class ProductController extends Controller
             'is_cod_available' => 'nullable|boolean',
             'initial_warehouse_id' => 'nullable|exists:warehouses,id',
             'initial_stock' => 'nullable|integer|min:0',
+            'attributes' => 'nullable',
         ]);
+
+        // Normalizar attributes en caso de que llegue como JSON string desde multipart FormData
+        if ($request->has('attributes')) {
+            $rawAttrs = $request->input('attributes');
+            if (is_string($rawAttrs)) {
+                $decoded = json_decode($rawAttrs, true);
+                $validated['attributes'] = is_array($decoded) ? $decoded : null;
+            } elseif (is_array($rawAttrs)) {
+                $validated['attributes'] = $rawAttrs;
+            }
+        }
 
         $images = $validated['images'] ?? [];
 

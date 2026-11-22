@@ -10,6 +10,7 @@
     activeImg: 0,
     selectedWh: '',
     skuCopied: false,
+    infoTab: 'desc',
 
     init() {
         this.catalog = window.__bolidropCatalog || [];
@@ -21,6 +22,7 @@
         this.product = p;
         this.activeImg = 0;
         this.skuCopied = false;
+        this.infoTab = 'desc';
         this.selectedWh = (p.stock_by_wh && p.stock_by_wh.length > 0) ? p.stock_by_wh[0].warehouse_id : '';
         this.open = true;
         document.body.style.overflow = 'hidden';
@@ -167,12 +169,81 @@
                     {{-- Right: Product Details --}}
                     <div class="lg:col-span-7 space-y-4">
 
-                        {{-- Title & Description --}}
-                        <div class="space-y-2">
-                            <h2 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] font-heading leading-tight" x-text="product?.name"></h2>
-                            <div class="bg-slate-50/80 rounded-xl p-3 border border-slate-200/80 text-xs text-slate-600 leading-relaxed max-h-28 overflow-y-auto">
-                                <div class="font-bold text-[10px] uppercase text-slate-400 mb-1">Descripción y Detalles:</div>
-                                <span x-text="product?.description"></span>
+                        {{-- Title & Rich Information Tabs --}}
+                        <div class="space-y-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] font-heading leading-tight" x-text="product?.name"></h2>
+                                <template x-if="product?.attributes?.video_url">
+                                    <a :href="product.attributes.video_url" target="_blank" rel="noopener"
+                                       class="shrink-0 px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[10px] font-bold flex items-center gap-1 shadow-2xs transition">
+                                        <i class="fa-brands fa-youtube"></i> Ver Video
+                                    </a>
+                                </template>
+                            </div>
+
+                            {{-- Pestañas de Detalle y Ficha Técnica --}}
+                            <div class="bg-slate-50/90 rounded-2xl p-3 border border-slate-200/90 space-y-2.5 shadow-2xs">
+                                <div class="flex items-center gap-1.5 border-b border-slate-200/80 pb-2 overflow-x-auto text-[11px] font-bold">
+                                    <button type="button" @click="infoTab = 'desc'"
+                                            :class="infoTab === 'desc' ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'"
+                                            class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0">
+                                        <i class="fa-solid fa-align-left text-[9px]"></i> Descripción
+                                    </button>
+                                    <template x-if="product?.attributes?.specs && Object.keys(product.attributes.specs).length > 0">
+                                        <button type="button" @click="infoTab = 'specs'"
+                                                :class="infoTab === 'specs' ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'"
+                                                class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0">
+                                            <i class="fa-solid fa-sliders text-[9px]"></i> Ficha Técnica
+                                        </button>
+                                    </template>
+                                    <template x-if="product?.attributes?.box_content">
+                                        <button type="button" @click="infoTab = 'box'"
+                                                :class="infoTab === 'box' ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'"
+                                                class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0">
+                                            <i class="fa-solid fa-box-open text-[9px]"></i> En la Caja
+                                        </button>
+                                    </template>
+                                    <template x-if="product?.attributes?.warranty_info">
+                                        <button type="button" @click="infoTab = 'warranty'"
+                                                :class="infoTab === 'warranty' ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-200/60'"
+                                                class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0">
+                                            <i class="fa-solid fa-shield-halved text-[9px]"></i> Garantía
+                                        </button>
+                                    </template>
+                                </div>
+
+                                {{-- Tab: Descripción --}}
+                                <div x-show="infoTab === 'desc'" class="text-xs text-slate-600 leading-relaxed max-h-28 overflow-y-auto pr-1">
+                                    <p class="whitespace-pre-line" x-text="product?.description || 'Producto verificado para distribución nacional con garantía y cobro contra entrega (COD).'"></p>
+                                </div>
+
+                                {{-- Tab: Ficha Técnica (Key-Value) --}}
+                                <div x-show="infoTab === 'specs'" class="max-h-28 overflow-y-auto pr-1">
+                                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                                        <template x-for="(val, key) in (product?.attributes?.specs || {})" :key="key">
+                                            <div class="flex items-center justify-between px-2.5 py-1 bg-white rounded-lg border border-slate-200/80">
+                                                <span class="text-slate-500 font-semibold" x-text="key + ':'"></span>
+                                                <span class="font-bold text-slate-800" x-text="val"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                {{-- Tab: En la Caja --}}
+                                <div x-show="infoTab === 'box'" class="text-xs text-slate-600 leading-relaxed max-h-28 overflow-y-auto pr-1">
+                                    <div class="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-slate-200/80">
+                                        <i class="fa-solid fa-circle-check text-emerald-600 text-xs mt-0.5"></i>
+                                        <p class="whitespace-pre-line text-[11px] text-slate-700 font-medium" x-text="product?.attributes?.box_content"></p>
+                                    </div>
+                                </div>
+
+                                {{-- Tab: Garantía --}}
+                                <div x-show="infoTab === 'warranty'" class="text-xs text-slate-600 leading-relaxed max-h-28 overflow-y-auto pr-1">
+                                    <div class="flex items-start gap-2 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/80">
+                                        <i class="fa-solid fa-shield-check text-emerald-600 text-xs mt-0.5"></i>
+                                        <p class="whitespace-pre-line text-[11px] text-emerald-950 font-medium" x-text="product?.attributes?.warranty_info"></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
