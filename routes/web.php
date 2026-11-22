@@ -86,6 +86,9 @@ Route::middleware(['auth'])->group(function () {
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');
+    Route::post('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update.post.web');
+    Route::match(['put', 'patch'], '/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update.web');
+    Route::delete('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'destroy'])->name('products.destroy.web');
     Route::post('/inventory/transfer', [\App\Http\Controllers\Api\InventoryController::class, 'transfer'])->name('inventory.transfer.web');
     Route::post('/inventory/alerts', [\App\Http\Controllers\Api\InventoryController::class, 'setAlert'])->name('inventory.alerts.web');
     Route::get('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->name('categories.index');

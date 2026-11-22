@@ -2178,6 +2178,7 @@
                         <th class="py-3 px-5">Precio Sugerido</th>
                         <th class="py-3 px-5">Stock Total</th>
                         <th class="py-3 px-5">Estado</th>
+                        <th class="py-3 px-5 text-right">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-xs">
@@ -2228,10 +2229,26 @@
                             </span>
                             @endif
                         </td>
+                        <td class="py-3.5 px-5">
+                            <div class="flex items-center justify-end gap-1.5">
+                                <button type="button"
+                                    @click="openEditProductModal('{{ $product->id }}', @json($product))"
+                                    class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1"
+                                    title="Editar producto">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </button>
+                                <button type="button"
+                                    @click="deleteProduct('{{ $product->id }}', '{{ addslashes($product->name) }}')"
+                                    class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1"
+                                    title="Eliminar / Despublicar producto">
+                                    <i class="fa-solid fa-trash-can"></i> Eliminar
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-slate-400">
+                        <td colspan="7" class="py-8 text-center text-slate-400">
                             No tienes productos registrados aún.
                         </td>
                     </tr>
@@ -2496,8 +2513,10 @@
                         <i class="fa-solid fa-boxes-packing"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-slate-900 font-heading text-lg leading-tight">Publicar Producto Mayorista</h3>
-                        <p class="text-xs text-slate-500">Disponible para miles de dropshippers en Bolivia</p>
+                        <h3 class="font-bold text-slate-900 font-heading text-lg leading-tight"
+                            x-text="productModalMode === 'edit' ? 'Editar Producto' : 'Publicar Producto Mayorista'"></h3>
+                        <p class="text-xs text-slate-500"
+                            x-text="productModalMode === 'edit' ? 'Modifica los datos del producto publicado' : 'Disponible para miles de dropshippers en Bolivia'"></p>
                     </div>
                 </div>
                 <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
@@ -2629,7 +2648,8 @@
                         </div>
 
                         <!-- Asignación Inicial de Inventario Físico (100% Reactiva en Vivo) -->
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2"
+                            x-show="productModalMode === 'create'">
                             <div class="font-bold text-slate-900 flex items-center justify-between">
                                 <span class="flex items-center gap-1.5 text-[11px]">
                                     <i class="fa-solid fa-warehouse text-[#0061f2]"></i>
@@ -2758,7 +2778,8 @@
                         <button type="submit" :disabled="submitting"
                             class="btn-scarlet px-6 py-2 rounded-xl font-bold flex items-center gap-2 shadow-sm transition cursor-pointer disabled:opacity-50">
                             <span x-show="!submitting" class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-cloud-arrow-up text-amber-200"></i> Publicar en Catálogo
+                                <i class="fa-solid" :class="productModalMode === 'edit' ? 'fa-floppy-disk' : 'fa-cloud-arrow-up'" :style="productModalMode !== 'edit' ? 'color: #fcd34d' : ''"></i>
+                                <span x-text="productModalMode === 'edit' ? 'Guardar Cambios' : 'Publicar en Catálogo'"></span>
                             </span>
                             <span x-show="submitting" class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-spinner animate-spin"></i> Guardando...
@@ -3209,6 +3230,8 @@
 function proveedorDashboard() {
     return {
         productModalOpen: false,
+        productModalMode: 'create',
+        editingProductId: null,
         categoryModalOpen: false,
         transferModalOpen: false,
         alertModalOpen: false,
@@ -3528,7 +3551,34 @@ function proveedorDashboard() {
         },
 
         async openProductModal() {
+            this.productModalMode = 'create';
+            this.editingProductId = null;
             this.productModalTab = 'general';
+            this.imageFile = null;
+            this.imagePreview = null;
+            // Reset form
+            this.form = {
+                name: '',
+                sku: '',
+                category_id: this.categoriesList[0]?.id ?? '',
+                description: '',
+                cost_price_bob: 120,
+                suggested_price_bob: 199,
+                min_price_bob: 140,
+                initial_warehouse_id: this.warehousesList[0]?.id ?? '',
+                initial_stock: 50,
+                is_cod_available: true,
+                image_url: '',
+                box_content: '',
+                warranty_info: 'Garantía oficial de 3 meses por fallas de fábrica.',
+                video_url: '',
+                specs: [
+                    { key: 'Marca', value: '' },
+                    { key: 'Modelo', value: '' },
+                    { key: 'Color', value: '' },
+                    { key: 'Garantía', value: '3 meses' }
+                ]
+            };
             try {
                 const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
                 const data = await res.json();
@@ -3541,6 +3591,93 @@ function proveedorDashboard() {
                 this.form.initial_warehouse_id = this.warehousesList[0]?.id || '';
             }
             this.productModalOpen = true;
+        },
+
+        async openEditProductModal(productId, product) {
+            this.productModalMode = 'edit';
+            this.editingProductId = productId;
+            this.productModalTab = 'general';
+            this.imageFile = null;
+            this.imagePreview = null;
+
+            // Parsear attributes si existe
+            let attrs = {};
+            try {
+                if (product.attributes) {
+                    attrs = typeof product.attributes === 'string'
+                        ? JSON.parse(product.attributes)
+                        : product.attributes;
+                }
+            } catch (e) {}
+
+            // Convertir specs object a array [{key, value}]
+            const specsObj = attrs.specs || {};
+            const specsArray = Object.entries(specsObj).map(([key, value]) => ({ key, value }));
+            if (specsArray.length === 0) {
+                specsArray.push({ key: '', value: '' });
+            }
+
+            this.form = {
+                name: product.name || '',
+                sku: product.sku || '',
+                category_id: product.category_id || (this.categoriesList[0]?.id ?? ''),
+                description: product.description || '',
+                cost_price_bob: product.cost_price_bob || 0,
+                suggested_price_bob: product.suggested_price_bob || 0,
+                min_price_bob: product.min_price_bob || 0,
+                initial_warehouse_id: this.warehousesList[0]?.id ?? '',
+                initial_stock: 0,
+                is_cod_available: product.is_cod_available ? true : false,
+                image_url: (product.images && product.images[0]) ? product.images[0] : '',
+                box_content: attrs.box_content || '',
+                warranty_info: attrs.warranty_info || '',
+                video_url: attrs.video_url || '',
+                specs: specsArray
+            };
+
+            // Cargar bodegas actualizadas
+            try {
+                const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                if (data.status === 'success' && Array.isArray(data.data)) {
+                    this.warehousesList = data.data;
+                }
+            } catch (e) {}
+
+            this.productModalOpen = true;
+        },
+
+        async deleteProduct(productId, productName) {
+            const ok = await window.$confirm(
+                `¿Eliminar "${productName}" del catálogo? Si tiene historial de pedidos o kardex, se archivará en lugar de eliminarse permanentemente.`,
+                {
+                    title: 'Eliminar / Despublicar Producto',
+                    type: 'danger',
+                    confirmText: 'Sí, Eliminar'
+                }
+            );
+            if (!ok) return;
+
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            try {
+                const res = await fetch(`/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf
+                    }
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    const title = data.action === 'archived' ? 'Producto Archivado' : 'Producto Eliminado';
+                    window.$toast(data.message, 'success', title);
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    window.$toast(data.message || 'Error al eliminar el producto.', 'error', 'Error');
+                }
+            } catch (err) {
+                window.$toast('Error de comunicación con el servidor.', 'error');
+            }
         },
 
         handleWarehousesUpdated(warehouses) {
@@ -3565,9 +3702,21 @@ function proveedorDashboard() {
 
                 // Crear FormData para soportar carga de imagen física y normalizar booleanos
                 const formData = new FormData();
+
+                // En modo edición, forzar método PUT para Laravel
+                if (this.productModalMode === 'edit') {
+                    formData.append('_method', 'PUT');
+                }
+
                 for (const key in this.form) {
-                    if (['specs', 'box_content', 'warranty_info', 'video_url'].includes(key)) {
-                        continue;
+                    if (['specs', 'box_content', 'warranty_info', 'video_url', 'initial_warehouse_id', 'initial_stock'].includes(key)) {
+                        // initial_warehouse_id e initial_stock solo en creación
+                        if (['initial_warehouse_id', 'initial_stock'].includes(key) && this.productModalMode === 'edit') {
+                            continue;
+                        }
+                        if (['specs', 'box_content', 'warranty_info', 'video_url'].includes(key)) {
+                            continue;
+                        }
                     }
                     if (this.form[key] !== null && this.form[key] !== undefined && this.form[key] !== '') {
                         if (typeof this.form[key] === 'boolean') {
@@ -3598,7 +3747,12 @@ function proveedorDashboard() {
                     formData.append('image', this.imageFile);
                 }
 
-                const response = await fetch('/products', {
+                // URL y método según modo
+                const url = this.productModalMode === 'edit'
+                    ? `/products/${this.editingProductId}`
+                    : '/products';
+
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -3610,14 +3764,20 @@ function proveedorDashboard() {
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    window.$toast(result.message || 'Producto publicado con éxito en Catálogo e Inventarios.', 'success', 'Producto Publicado');
+                    const msg = this.productModalMode === 'edit'
+                        ? (result.message || 'Producto actualizado correctamente.')
+                        : (result.message || 'Producto publicado con éxito en Catálogo e Inventarios.');
+                    const title = this.productModalMode === 'edit' ? 'Producto Actualizado' : 'Producto Publicado';
+                    window.$toast(msg, 'success', title);
                     this.productModalOpen = false;
+                    this.productModalMode = 'create';
+                    this.editingProductId = null;
                     setTimeout(() => { window.location.reload(); }, 900);
                 } else {
                     const errMsg = result.errors
                         ? Object.values(result.errors).flat().join(' ')
                         : (result.message || 'Error al guardar el producto.');
-                    window.$toast(errMsg, 'error', 'Error al Publicar');
+                    window.$toast(errMsg, 'error', 'Error al Guardar');
                 }
             } catch (err) {
                 window.$toast('Error de comunicación con el servidor.', 'error');

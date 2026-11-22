@@ -175,6 +175,137 @@ class ProductController extends Controller
     }
 
     /**
+     * Actualizar producto existente (Proveedor dueño o Admin).
+     */
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user || (!$user->isProvider() && !$user->isTenantAdmin())) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tienes permisos para modificar productos.',
+            ], 403);
+        }
+
+        $product = Product::withoutGlobalScopes()->findOrFail($id);
+
+        if (!$user->isTenantAdmin() && $product->provider_id !== $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Solo puedes modificar productos de tu propiedad.',
+            ], 403);
+        }
+
+        if ($request->has('is_cod_available')) {
+            $request->merge([
+                'is_cod_available' => filter_var($request->input('is_cod_available'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
+            ]);
+        }
+
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:200',
+            'sku' => 'required|string|max:50',
+            'description' => 'nullable|string',
+            'cost_price_bob' => 'required|numeric|min:1',
+            'suggested_price_bob' => 'required|numeric|gt:cost_price_bob',
+            'min_price_bob' => 'required|numeric|gte:cost_price_bob',
+            'weight_kg' => 'nullable|numeric|min:0.01',
+            'status' => 'nullable|in:published,draft,archived',
+            'images' => 'nullable|array',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+            'image_url' => 'nullable|string|max:500',
+            'is_cod_available' => 'nullable|boolean',
+            'attributes' => 'nullable',
+        ]);
+
+        if ($request->has('attributes')) {
+            $rawAttrs = $request->input('attributes');
+            if (is_string($rawAttrs)) {
+                $decoded = json_decode($rawAttrs, true);
+                $validated['attributes'] = is_array($decoded) ? $decoded : null;
+            } elseif (is_array($rawAttrs)) {
+                $validated['attributes'] = $rawAttrs;
+            }
+        }
+
+        $images = $product->images ?? [];
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $images = ['/storage/' . $path];
+        } elseif ($request->filled('image_url')) {
+            $images = [$request->input('image_url')];
+        }
+
+        if (!empty($images)) {
+            $validated['images'] = $images;
+        }
+        unset($validated['image'], $validated['image_url']);
+
+        $product->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Producto actualizado correctamente.',
+            'data' => $product->fresh(['category', 'warehouseInventories.warehouse']),
+        ]);
+    }
+
+    /**
+     * Eliminar o despublicar producto (Proveedor dueño o Admin).
+     */
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user || (!$user->isProvider() && !$user->isTenantAdmin())) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No tienes permisos para eliminar productos.',
+            ], 403);
+        }
+
+        $product = Product::withoutGlobalScopes()->findOrFail($id);
+
+        if (!$user->isTenantAdmin() && $product->provider_id !== $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Solo puedes eliminar productos de tu propiedad.',
+            ], 403);
+        }
+
+        $hasOrders = \App\Models\OrderItem::where('product_id', $product->id)->exists();
+        $hasKardex = \App\Models\InventoryKardex::withoutGlobalScopes()->where('product_id', $product->id)->exists();
+        $hasPhysicalStock = \App\Models\WarehouseInventory::where('product_id', $product->id)->where('stock_physical', '>', 0)->exists();
+
+        if ($hasPhysicalStock) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No se puede eliminar el producto porque tiene stock físico activo en bodega. Debes ajustar el inventario a 0 primero.',
+            ], 422);
+        }
+
+        if ($hasOrders || $hasKardex) {
+            // El producto tiene historial comercial o contable: Despublicar / Archivar para no romper el historial
+            $product->update(['status' => 'archived']);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'El producto tiene historial comercial o kardex. Ha sido despublicado y archivado del catálogo para preservar los registros.',
+                'action' => 'archived',
+            ]);
+        }
+
+        // Si no tiene pedidos ni kardex ni stock activo, eliminar limpiamente
+        $product->warehouseInventories()->delete();
+        $product->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Producto eliminado correctamente de la base de datos.',
+            'action' => 'deleted',
+        ]);
+    }
+
+    /**
      * Descarga la plantilla oficial para Carga Masiva (Excel / CSV).
      */
     public function downloadTemplate(Request $request, ProductBulkImportService $service)

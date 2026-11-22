@@ -135,6 +135,8 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::get('/products/template/download', [ProductController::class, 'downloadTemplate']);
     Route::post('/products/bulk-upload', [ProductController::class, 'bulkUpload']);
     Route::post('/products', [ProductController::class, 'store']);
+    Route::match(['put', 'patch', 'post'], '/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     Route::post('/categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
     Route::match(['put', 'patch'], '/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy']);
