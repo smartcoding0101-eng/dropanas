@@ -9,6 +9,8 @@ use App\Models\Warehouse;
 use App\Services\ProductBulkImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 class ProductController extends Controller
 {
     /**
@@ -205,7 +207,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:200',
-            'sku' => 'required|string|max:50',
+            'sku' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('products', 'sku')->where('tenant_id', $product->tenant_id)->ignore($product->id),
+            ],
             'description' => 'nullable|string',
             'cost_price_bob' => 'required|numeric|min:1',
             'suggested_price_bob' => 'required|numeric|gt:cost_price_bob',
@@ -218,6 +225,10 @@ class ProductController extends Controller
             'is_cod_available' => 'nullable|boolean',
             'attributes' => 'nullable',
         ]);
+
+        if (isset($validated['name']) && $product->name !== $validated['name']) {
+            $validated['slug'] = Str::slug($validated['name']) . '-' . rand(1000, 9999);
+        }
 
         if ($request->has('attributes')) {
             $rawAttrs = $request->input('attributes');

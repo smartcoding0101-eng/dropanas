@@ -259,6 +259,98 @@ class ProveedorProductoTest extends TestCase
             ->assertSee('Impresora Multifuncional Epson EcoTank L4150')
             ->assertSee('IMPR-EPSON-01');
     }
+
+    /** Proveedor puede obtener detalle de producto vía GET /products/{id} */
+    public function test_provider_can_view_product_detail_json(): void
+    {
+        $provider = User::where('role', 'provider')->first();
+        $product  = Product::where('provider_id', $provider->id)->first();
+
+        $response = $this->actingAs($provider)->getJson("/products/{$product->id}");
+        $response->assertStatus(200)
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.id', $product->id);
+    }
+
+    /** Proveedor puede editar su producto vía PUT /products/{id} o POST con _method=PUT */
+    public function test_provider_can_update_product_via_web_route(): void
+    {
+        $provider = User::where('role', 'provider')->first();
+        $product  = Product::where('provider_id', $provider->id)->first();
+        $category = Category::first();
+
+        $updateData = [
+            'name'                => 'Impresora Canon G3180 Actualizada',
+            'sku'                 => $product->sku,
+            'category_id'         => $category->id,
+            'cost_price_bob'      => 130.00,
+            'suggested_price_bob' => 220.00,
+            'min_price_bob'       => 150.00,
+            'is_cod_available'    => true,
+            'description'         => 'Nueva descripción detallada con garantía',
+            'attributes'          => json_encode([
+                'specs'         => ['Marca' => 'Canon', 'Modelo' => 'G3180'],
+                'box_content'   => 'Caja original completa',
+                'warranty_info' => '6 meses de garantía',
+            ]),
+        ];
+
+        // 1. Vía PUT
+        $response = $this->actingAs($provider)->putJson("/products/{$product->id}", $updateData);
+        $response->assertStatus(200)
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.name', 'Impresora Canon G3180 Actualizada');
+
+        $this->assertDatabaseHas('products', [
+            'id'   => $product->id,
+            'name' => 'Impresora Canon G3180 Actualizada',
+        ]);
+
+        // 2. Vía POST con _method = PUT (como lo hace FormData)
+        $postData = array_merge($updateData, [
+            '_method' => 'PUT',
+            'name'    => 'Impresora Canon G3180 Editada Por FormData',
+        ]);
+
+        $postResponse = $this->actingAs($provider)->post("/products/{$product->id}", $postData, [
+            'Accept' => 'application/json',
+        ]);
+        $postResponse->assertStatus(200)
+            ->assertJsonPath('status', 'success');
+
+        $this->assertDatabaseHas('products', [
+            'id'   => $product->id,
+            'name' => 'Impresora Canon G3180 Editada Por FormData',
+        ]);
+    }
+
+    /** Proveedor puede eliminar producto sin inventario ni kardex activo */
+    public function test_provider_can_delete_clean_product(): void
+    {
+        $provider = User::where('role', 'provider')->first();
+        $category = Category::first();
+
+        // Crear producto limpio sin stock
+        $cleanProduct = Product::create([
+            'tenant_id'           => $provider->tenant_id,
+            'provider_id'         => $provider->id,
+            'category_id'         => $category->id,
+            'name'                => 'Producto Prueba Borrado',
+            'slug'                => 'prod-test-del-' . uniqid(),
+            'sku'                 => 'DEL-TEST-001',
+            'cost_price_bob'      => 50.00,
+            'suggested_price_bob' => 100.00,
+            'min_price_bob'       => 60.00,
+            'status'              => 'published',
+            'is_cod_available'    => true,
+        ]);
+
+        $response = $this->actingAs($provider)->deleteJson("/products/{$cleanProduct->id}");
+        $response->assertStatus(200)
+            ->assertJsonPath('status', 'success');
+
+        $this->assertDatabaseMissing('products', ['id' => $cleanProduct->id]);
+    }
 }
 
 

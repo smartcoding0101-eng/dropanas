@@ -1119,7 +1119,7 @@
                     </div>
                 @endif
 
-                @if ($errors->any())
+                @if (isset($errors) && $errors->any())
                     <div x-data="{ show: true }" x-show="show" x-cloak
                         x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="opacity-100 scale-100"

@@ -2232,13 +2232,13 @@
                         <td class="py-3.5 px-5">
                             <div class="flex items-center justify-end gap-1.5">
                                 <button type="button"
-                                    @click="openEditProductModal('{{ $product->id }}', @json($product))"
+                                    @click="openEditProductModal('{{ $product->id }}')"
                                     class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1"
                                     title="Editar producto">
                                     <i class="fa-solid fa-pen-to-square"></i> Editar
                                 </button>
                                 <button type="button"
-                                    @click="deleteProduct('{{ $product->id }}', '{{ addslashes($product->name) }}')"
+                                    @click="deleteProduct('{{ $product->id }}')"
                                     class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-[11px] font-bold transition cursor-pointer inline-flex items-center gap-1"
                                     title="Eliminar / Despublicar producto">
                                     <i class="fa-solid fa-trash-can"></i> Eliminar
@@ -2504,7 +2504,7 @@
         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         
         <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 my-auto"
-            @click.away="productModalOpen = false">
+            @click.away="closeProductModal()">
             
             <!-- Encabezado del Modal -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
@@ -2519,7 +2519,7 @@
                             x-text="productModalMode === 'edit' ? 'Modifica los datos del producto publicado' : 'Disponible para miles de dropshippers en Bolivia'"></p>
                     </div>
                 </div>
-                <button @click="productModalOpen = false" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+                <button @click="closeProductModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -2772,7 +2772,7 @@
                         </button>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button type="button" @click="productModalOpen = false" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                        <button type="button" @click="closeProductModal()" class="px-4 py-2 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">
                             Cancelar
                         </button>
                         <button type="submit" :disabled="submitting"
@@ -3232,6 +3232,7 @@ function proveedorDashboard() {
         productModalOpen: false,
         productModalMode: 'create',
         editingProductId: null,
+        myProducts: @json($products),
         categoryModalOpen: false,
         transferModalOpen: false,
         alertModalOpen: false,
@@ -3550,6 +3551,15 @@ function proveedorDashboard() {
             }
         },
 
+        closeProductModal() {
+            this.productModalOpen = false;
+            this.productModalMode = 'create';
+            this.editingProductId = null;
+            this.imageFile = null;
+            this.imagePreview = null;
+            this.productModalTab = 'general';
+        },
+
         async openProductModal() {
             this.productModalMode = 'create';
             this.editingProductId = null;
@@ -3593,14 +3603,32 @@ function proveedorDashboard() {
             this.productModalOpen = true;
         },
 
-        async openEditProductModal(productId, product) {
+        async openEditProductModal(productId) {
             this.productModalMode = 'edit';
             this.editingProductId = productId;
             this.productModalTab = 'general';
             this.imageFile = null;
-            this.imagePreview = null;
 
-            // Parsear attributes si existe
+            // Buscar en colección local primero
+            let product = (this.myProducts || []).find(p => String(p.id) === String(productId));
+
+            // Si no está en memoria, consultar endpoint
+            if (!product) {
+                try {
+                    const res = await fetch(`/products/${productId}`, { headers: { 'Accept': 'application/json' } });
+                    const data = await res.json();
+                    if (data.status === 'success' && data.data) {
+                        product = data.data;
+                    }
+                } catch (e) {}
+            }
+
+            if (!product) {
+                window.$toast('No se encontró la información del producto a editar.', 'error', 'Error');
+                return;
+            }
+
+            // Parsear attributes si existe (como string o como object)
             let attrs = {};
             try {
                 if (product.attributes) {
@@ -3617,18 +3645,21 @@ function proveedorDashboard() {
                 specsArray.push({ key: '', value: '' });
             }
 
+            const imgUrl = (product.images && product.images[0]) ? product.images[0] : '';
+            this.imagePreview = imgUrl || null;
+
             this.form = {
                 name: product.name || '',
                 sku: product.sku || '',
                 category_id: product.category_id || (this.categoriesList[0]?.id ?? ''),
                 description: product.description || '',
-                cost_price_bob: product.cost_price_bob || 0,
-                suggested_price_bob: product.suggested_price_bob || 0,
-                min_price_bob: product.min_price_bob || 0,
+                cost_price_bob: parseFloat(product.cost_price_bob) || 0,
+                suggested_price_bob: parseFloat(product.suggested_price_bob) || 0,
+                min_price_bob: parseFloat(product.min_price_bob) || 0,
                 initial_warehouse_id: this.warehousesList[0]?.id ?? '',
                 initial_stock: 0,
-                is_cod_available: product.is_cod_available ? true : false,
-                image_url: (product.images && product.images[0]) ? product.images[0] : '',
+                is_cod_available: !!product.is_cod_available,
+                image_url: imgUrl,
                 box_content: attrs.box_content || '',
                 warranty_info: attrs.warranty_info || '',
                 video_url: attrs.video_url || '',
@@ -3647,9 +3678,12 @@ function proveedorDashboard() {
             this.productModalOpen = true;
         },
 
-        async deleteProduct(productId, productName) {
+        async deleteProduct(productId, productName = null) {
+            const product = (this.myProducts || []).find(p => String(p.id) === String(productId));
+            const name = productName || product?.name || 'este producto';
+
             const ok = await window.$confirm(
-                `¿Eliminar "${productName}" del catálogo? Si tiene historial de pedidos o kardex, se archivará en lugar de eliminarse permanentemente.`,
+                `¿Eliminar "${name}" del catálogo? Si tiene historial de pedidos o kardex, se archivará en lugar de eliminarse permanentemente.`,
                 {
                     title: 'Eliminar / Despublicar Producto',
                     type: 'danger',

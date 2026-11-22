@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
 
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
+    Route::get('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'show'])->name('products.show.web');
     Route::post('/products', [\App\Http\Controllers\Api\ProductController::class, 'store'])->name('products.store.web');
     Route::post('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update.post.web');
     Route::match(['put', 'patch'], '/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update.web');
