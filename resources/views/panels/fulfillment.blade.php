@@ -216,12 +216,13 @@ function fulfillmentPanel() {
         },
         async createOrder() {
             if (!this.order.customer_name || !this.order.customer_phone || !this.order.address) {
-                alert('Completa los campos obligatorios.');
+                window.$toast('Por favor completa todos los campos obligatorios del destinatario.', 'warning', 'Campos Incompletos');
                 return;
             }
             this.creating = true;
-            await new Promise(r => setTimeout(r, 1200));
-            alert('✅ Pedido COD creado. Guía asignada: DRP-2026-' + Math.floor(Math.random()*9000+1000));
+            await new Promise(r => setTimeout(r, 1000));
+            const guide = 'DRP-2026-' + Math.floor(Math.random()*9000+1000);
+            window.$toast(`Pedido COD creado exitosamente. Guía asignada: ${guide}`, 'success', 'Despacho Registrado');
             this.order = { customer_name: '', customer_phone: '+591 ', address: '', cod_amount: '', department: 'Santa Cruz' };
             this.creating = false;
         }

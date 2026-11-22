@@ -291,10 +291,14 @@
                                 <a href="{{ route('settlements.show', $batch->id) }}" class="btn btn-ghost btn-sm">👁</a>
 
                                 @if($batch->isPending())
-                                    <form method="POST" action="{{ route('settlements.processing', $batch->id) }}" style="display:inline;">
+                                    <form method="POST" action="{{ route('settlements.processing', $batch->id) }}" style="display:inline;"
+                                          data-confirm="¿Marcar el lote {{ $batch->batch_number }} como en proceso de transferencia bancaria?"
+                                          data-confirm-title="Iniciar Procesamiento de Lote"
+                                          data-confirm-type="primary"
+                                          data-confirm-button="Marcar en Proceso">
                                         @csrf @method('PATCH')
                                         <button type="submit" class="btn btn-sm" style="background:rgba(59,130,246,.15);color:#93C5FD;border:1px solid rgba(59,130,246,.3);"
-                                                onclick="return confirm('¿Marcar como en proceso?')">🔄</button>
+                                                title="Marcar como en proceso">🔄</button>
                                     </form>
 
                                     <button class="btn btn-sm btn-danger"

@@ -1034,15 +1034,112 @@
              @endif>
             
             <main id="main-content" class="px-4 py-3 sm:px-8 sm:py-5 pb-20 md:pb-6 flex-grow">
+                {{-- Tarjetas de Notificaciones y Alertas Flash del Servidor (Tailwind CSS) --}}
+                @if (session('success'))
+                    <div x-data="{ show: true }" x-show="show" x-cloak
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/90 text-emerald-900 text-xs font-semibold flex items-start justify-between shadow-xs ring-1 ring-emerald-500/10">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-100 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 text-sm">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div class="pt-0.5 leading-relaxed">
+                                <span class="font-bold text-emerald-950 block text-xs">Operación Exitosa</span>
+                                <span>{{ session('success') }}</span>
+                            </div>
+                        </div>
+                        <button type="button" @click="show = false" class="text-emerald-600 hover:text-emerald-900 w-7 h-7 rounded-lg hover:bg-emerald-100 flex items-center justify-center transition cursor-pointer shrink-0">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                @endif
+
                 @if (session('status'))
                     <div x-data="{ show: true }" x-show="show" x-cloak
-                        class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-2xs">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                            <span>{{ session('status') }}</span>
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="mb-4 p-4 rounded-2xl bg-indigo-50 border border-indigo-200/90 text-indigo-950 text-xs font-semibold flex items-start justify-between shadow-xs ring-1 ring-[#4F46E5]/10">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-100 border border-indigo-200 text-[#4F46E5] flex items-center justify-center shrink-0 text-sm">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </div>
+                            <div class="pt-0.5 leading-relaxed">
+                                <span class="font-bold text-indigo-950 block text-xs">Información del Sistema</span>
+                                <span>{{ session('status') }}</span>
+                            </div>
                         </div>
-                        <button type="button" @click="show = false" class="text-emerald-600 hover:text-emerald-800 cursor-pointer">
-                            <i class="fa-solid fa-xmark"></i>
+                        <button type="button" @click="show = false" class="text-indigo-600 hover:text-indigo-900 w-7 h-7 rounded-lg hover:bg-indigo-100 flex items-center justify-center transition cursor-pointer shrink-0">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div x-data="{ show: true }" x-show="show" x-cloak
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-950 text-xs font-semibold flex items-start justify-between shadow-xs ring-1 ring-amber-500/10">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 text-sm">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="pt-0.5 leading-relaxed">
+                                <span class="font-bold text-amber-950 block text-xs">Advertencia</span>
+                                <span>{{ session('warning') }}</span>
+                            </div>
+                        </div>
+                        <button type="button" @click="show = false" class="text-amber-600 hover:text-amber-900 w-7 h-7 rounded-lg hover:bg-amber-100 flex items-center justify-center transition cursor-pointer shrink-0">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div x-data="{ show: true }" x-show="show" x-cloak
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="mb-4 p-4 rounded-2xl bg-rose-50 border border-rose-200/90 text-rose-950 text-xs font-semibold flex items-start justify-between shadow-xs ring-1 ring-rose-500/10">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 text-sm">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                            </div>
+                            <div class="pt-0.5 leading-relaxed">
+                                <span class="font-bold text-rose-950 block text-xs">Error en la Solicitud</span>
+                                <span>{{ session('error') }}</span>
+                            </div>
+                        </div>
+                        <button type="button" @click="show = false" class="text-rose-600 hover:text-rose-900 w-7 h-7 rounded-lg hover:bg-rose-100 flex items-center justify-center transition cursor-pointer shrink-0">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div x-data="{ show: true }" x-show="show" x-cloak
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="mb-4 p-4 rounded-2xl bg-rose-50 border border-rose-200/90 text-rose-950 text-xs font-semibold flex items-start justify-between shadow-xs ring-1 ring-rose-500/10">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 text-sm">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+                            <div class="pt-0.5 leading-relaxed">
+                                <span class="font-bold text-rose-950 block text-xs">Revisa las siguientes observaciones:</span>
+                                <ul class="list-disc list-inside mt-1 space-y-0.5 text-rose-800">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" @click="show = false" class="text-rose-600 hover:text-rose-900 w-7 h-7 rounded-lg hover:bg-rose-100 flex items-center justify-center transition cursor-pointer shrink-0">
+                            <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
                 @endif
@@ -1366,6 +1463,9 @@
 
     <!-- Modal Global de Detalle de Producto COD (Completamente aislado del grid del catálogo) -->
     <x-product-detail-modal />
+
+    <!-- Sistema Global de Alertas, Toasts y Modales Tailwind (Reemplaza los cuadros nativos 'localhost dice') -->
+    <x-global-alerts />
 
     @stack('scripts')
 </body>

@@ -3381,7 +3381,12 @@ function proveedorDashboard() {
         },
 
         async deleteCategory(cat) {
-            if (!confirm(`¿Estás seguro de eliminar la categoría "${cat.name}"?`)) return;
+            const ok = await window.$confirm(`¿Estás seguro de eliminar la categoría "${cat.name}"? Esta acción no se puede deshacer.`, {
+                title: 'Eliminar Categoría',
+                type: 'danger',
+                confirmText: 'Eliminar'
+            });
+            if (!ok) return;
             try {
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 const response = await fetch(`/categories/${cat.id}`, {
@@ -3690,7 +3695,12 @@ function almacenModule() {
         },
 
         async confirmDeleteWarehouse(wh) {
-            if (!confirm(`¿Eliminar el almacén "${wh.name}"?\nSolo se puede eliminar si no tiene stock activo.`)) return;
+            const ok = await window.$confirm(`¿Eliminar el almacén "${wh.name}"? Solo se puede eliminar si no tiene inventario o stock activo.`, {
+                title: 'Eliminar Almacén / Bodega',
+                type: 'danger',
+                confirmText: 'Eliminar Almacén'
+            });
+            if (!ok) return;
             try {
                 const res = await fetch(`/warehouses/${wh.id}`, {
                     method: 'DELETE',
@@ -3851,7 +3861,12 @@ function almacenModule() {
         },
 
         async releaseReserve(reserve) {
-            if (!confirm(`¿Liberar la reserva de ${reserve.quantity} uds para "${reserve.dropshipper?.name ?? 'este vendedor'}"? El stock volverá a estar disponible.`)) return;
+            const ok = await window.$confirm(`¿Liberar la reserva de ${reserve.quantity} uds para "${reserve.dropshipper?.name ?? 'este vendedor'}"? El stock volverá a estar disponible en bodega.`, {
+                title: 'Liberar Reserva de Stock',
+                type: 'warning',
+                confirmText: 'Liberar Stock'
+            });
+            if (!ok) return;
             try {
                 const res = await fetch(`/warehouses/${reserve.warehouse_id}/reserves/${reserve.id}/release`, {
                     method: 'PATCH',
@@ -4179,7 +4194,12 @@ function networkModule() {
                 ? (reserve.dropshipper?.company_or_store_name || reserve.dropshipper?.name)
                 : reserve.customer?.full_name;
 
-            if (!confirm(`¿Deseas liberar las ${reserve.quantity} unidades apartadas para "${dest}"? El stock volverá a estar disponible en bodega.`)) return;
+            const ok = await window.$confirm(`¿Deseas liberar las ${reserve.quantity} unidades apartadas para "${dest}"? El stock volverá a estar disponible en bodega.`, {
+                title: 'Liberar Stock Apartado',
+                type: 'warning',
+                confirmText: 'Liberar Unidades'
+            });
+            if (!ok) return;
 
             try {
                 const res = await fetch(`/provider/network/reserves/${reserve.id}/release`, {

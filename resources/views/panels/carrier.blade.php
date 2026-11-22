@@ -262,7 +262,12 @@ function carrierPanelApp() {
         },
 
         async markAsDelivered(orderId, orderNumber) {
-            if (!confirm(`¿Confirmas que el pedido ${orderNumber} fue entregado y se recaudó el monto COD?`)) return;
+            const ok = await window.$confirm(`¿Confirmas que el pedido ${orderNumber} fue entregado con éxito al cliente y se recaudó el monto COD en efectivo/QR?`, {
+                title: 'Confirmar Entrega y Cobro COD',
+                type: 'success',
+                confirmText: 'Sí, Entregado'
+            });
+            if (!ok) return;
 
             try {
                 const response = await fetch(`/api/v1/orders/${orderId}/status`, {

@@ -300,19 +300,32 @@ function carrieroCobroPanel() {
         },
 
         async confirmDelivery() {
-            if (!this.paymentMethod) { alert('Selecciona el método de cobro.'); return; }
+            if (!this.paymentMethod) {
+                window.$toast('Por favor selecciona un método de cobro (Efectivo o QR Simple).', 'warning');
+                return;
+            }
+            const ok = await window.$confirm(`¿Confirmas la entrega de la guía ${this.currentOrder.guide_number} y la recaudación de Bs ${this.currentOrder.total_bob}?`, {
+                title: 'Confirmar Entrega y Cobro COD',
+                type: 'success',
+                confirmText: 'Confirmar Entrega'
+            });
+            if (!ok) return;
+
             this.confirming = true;
-            await new Promise(r => setTimeout(r, 1500));
-            alert('✅ Entrega confirmada. La guía ' + this.currentOrder.guide_number + ' ha sido marcada como ENTREGADA. Las ganancias del dropshipper se han acreditado a su billetera.');
+            await new Promise(r => setTimeout(r, 1200));
+            window.$toast(`Guía ${this.currentOrder.guide_number} marcada como ENTREGADA. Las ganancias se han acreditado a la billetera del dropshipper.`, 'success', 'Entrega Confirmada');
             this.currentOrder = null;
             this.searchGuide = '';
             this.confirming = false;
         },
 
-        reportNovedad() {
-            const reason = prompt('Motivo de la novedad:\n1. Cliente ausente\n2. Dirección incorrecta\n3. Rechazo del cliente\n4. Zona de difícil acceso\n\nEscribe el motivo:');
-            if (reason) {
-                alert('⚠️ Novedad registrada: "' + reason + '"\nSe programará un 2do intento de entrega mañana.');
+        async reportNovedad() {
+            const reason = await window.$prompt('Ingresa el motivo de la novedad (Ej: Cliente ausente, Dirección incorrecta, Rechazo):', '', {
+                title: 'Reportar Novedad de Entrega',
+                placeholder: 'Describe detalladamente el motivo...'
+            });
+            if (reason && reason.trim()) {
+                window.$toast(`Novedad registrada: "${reason.trim()}". Se programará un 2do intento de entrega.`, 'warning', 'Novedad Registrada');
                 this.currentOrder = null;
                 this.searchGuide = '';
             }

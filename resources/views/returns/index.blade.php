@@ -117,7 +117,11 @@
                                             </button>
 
                                             <!-- Confirmar Retorno -->
-                                            <form action="{{ route('returns.process', $order->id) }}" method="POST" onsubmit="return confirm('¿Confirmas el reingreso físico a bodega y cobro de flete al dropshipper?')">
+                                            <form action="{{ route('returns.process', $order->id) }}" method="POST"
+                                                  data-confirm="¿Confirmas el reingreso físico a bodega y cobro de flete al dropshipper?"
+                                                  data-confirm-title="Confirmar Reingreso a Bodega"
+                                                  data-confirm-type="warning"
+                                                  data-confirm-button="Reingresar">
                                                 @csrf
                                                 <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-[#212832] font-bold border border-red-200 text-[11px] transition">
                                                     <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Reingresar a Bodega
