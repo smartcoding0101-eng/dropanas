@@ -857,6 +857,10 @@
                             <i class="fa-solid fa-chart-line w-4 text-center {{ request()->is('reports*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportes & Analytics</span>
                         </a>
+                        <a href="{{ url('/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                            <span>Métricas Proveedor & Valorado</span>
+                        </a>
 
                         <div class="px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Logística & Operaciones
@@ -926,6 +930,10 @@
                         <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Catálogo Publicado</span>
+                        </a>
+                        <a href="{{ url('/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                            <span>Reportes & Métricas</span>
                         </a>
                         <a href="{{ url('/panel/proveedor') }}#inventario" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
                             <i class="fa-solid fa-warehouse w-4 text-center text-[#a7aeb8]"></i>
@@ -1244,6 +1252,7 @@
                         ['label' => 'Rastreo de Guías en Vivo', 'desc' => 'Consultar estatus logístico DRP-2026-XXXXXX', 'url' => url('/tracking'), 'icon' => 'fa-solid fa-magnifying-glass-location', 'tag' => 'Tracking'],
                         ['label' => 'Logística Inversa & Novedades en Ruta', 'desc' => 'Reprogramar entregas fallidas o procesar devoluciones', 'url' => url('/returns'), 'icon' => 'fa-solid fa-rotate-left', 'tag' => 'Logística'],
                         ['label' => 'Terminal de Cobro Repartidor (QR / Efectivo)', 'desc' => 'Cobrar entrega en puerta con QR Simple o Binance USDT', 'url' => url('/carrier/cobro'), 'icon' => 'fa-solid fa-qrcode', 'tag' => 'Courier DEX'],
+                        ['label' => 'Centro de Reportes & Métricas de Proveedor', 'desc' => 'Rotación ABC, inventario valorado y flujo COD por fechas', 'url' => url('/reportes'), 'icon' => 'fa-solid fa-chart-pie', 'tag' => 'Métricas'],
                     ];
                     if (in_array(Auth::user()->role, ['tenant_admin', 'admin', 'superadmin'])) {
                         $quickActions[] = ['label' => 'Liquidaciones Bancarias & Lotes BNB', 'desc' => 'Aprobar retiros a vendedores y proveedores', 'url' => url('/settlements'), 'icon' => 'fa-solid fa-building-columns', 'tag' => 'Finanzas'];

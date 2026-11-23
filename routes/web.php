@@ -87,6 +87,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/panel/proveedor/reports/metrics', [\App\Http\Controllers\Web\PanelController::class, 'providerMetricsJson'])->name('provider.reports.metrics');
     Route::get('/panel/proveedor/reports/export', [\App\Http\Controllers\Web\PanelController::class, 'exportProviderMetrics'])->name('provider.reports.export');
 
+    // =========================================================================
+    // MÓDULO REPORTES DEDICADO — /reportes (nueva sección con menú propio)
+    // =========================================================================
+    Route::prefix('reportes')->name('reportes.')->group(function () {
+        Route::get('/',                   [\App\Http\Controllers\Web\ReportesController::class, 'index'])              ->name('index');
+        Route::get('/metricas',          [\App\Http\Controllers\Web\ReportesController::class, 'providerMetricsJson'])->name('metricas');
+        Route::get('/exportar',          [\App\Http\Controllers\Web\ReportesController::class, 'exportProveedor'])    ->name('exportar');
+        Route::get('/proveedor',          [\App\Http\Controllers\Web\ReportesController::class, 'proveedor'])          ->name('proveedor');
+        Route::get('/proveedor/metricas', [\App\Http\Controllers\Web\ReportesController::class, 'providerMetricsJson'])->name('proveedor.metricas');
+        Route::get('/proveedor/exportar', [\App\Http\Controllers\Web\ReportesController::class, 'exportProveedor'])    ->name('proveedor.exportar');
+    });
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::get('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'show'])->name('products.show.web');
