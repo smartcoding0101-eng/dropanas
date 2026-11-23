@@ -26,20 +26,47 @@
                 </div>
                 <div class="p-5 space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Seleccionar Producto</label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-semibold text-slate-600">Seleccionar Producto</label>
+                            <span class="text-[11px] text-slate-400 font-medium">
+                                {{ $products->count() }} {{ $products->count() === 1 ? 'producto disponible' : 'productos disponibles' }}
+                            </span>
+                        </div>
                         <select x-model="form.product_id" @change="onProductChange()"
                             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
                             <option value="">— Seleccionar producto del catálogo —</option>
                             @foreach($products as $p)
+                            @php
+                                $totalStock = $p->warehouseInventories->sum('stock_available');
+                                $providerName = $p->provider?->company_or_store_name ?: ($p->provider?->name ?: 'Proveedor Mayorista');
+                                $pWarehouses = $p->warehouseInventories->filter(fn($wi) => $wi->stock_available > 0)->map(fn($wi) => [
+                                    'id' => (string) $wi->warehouse_id,
+                                    'name' => $wi->warehouse?->name,
+                                    'city' => $wi->warehouse?->city,
+                                    'stock' => (int) $wi->stock_available,
+                                ])->values();
+                            @endphp
                             <option value="{{ $p->id }}"
                                 data-cost="{{ $p->cost_price_bob }}"
                                 data-suggested="{{ $p->suggested_price_bob }}"
                                 data-min="{{ $p->min_price_bob }}"
-                                data-name="{{ $p->name }}">
+                                data-name="{{ $p->name }}"
+                                data-provider="{{ $providerName }}"
+                                data-stock="{{ $totalStock }}"
+                                data-warehouses='@json($pWarehouses)'>
                                 {{ $p->name }} — Costo: {{ number_format($p->cost_price_bob, 2) }} BOB
                             </option>
                             @endforeach
                         </select>
+                        <template x-if="selectedProduct.provider">
+                            <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-500">
+                                <i class="fa-solid fa-store text-indigo-500"></i>
+                                <span>Proveedor: <strong class="text-slate-700" x-text="selectedProduct.provider"></strong></span>
+                                <span class="text-slate-300">•</span>
+                                <i class="fa-solid fa-boxes-stacked text-emerald-500"></i>
+                                <span>Stock en bodegas: <strong class="text-slate-700" x-text="selectedProduct.stock + ' uds'"></strong></span>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4" x-show="form.product_id">
@@ -80,11 +107,19 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bodega de Origen</label>
                             <select x-model="form.warehouse_id"
                                 class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:border-emerald-500 outline-none bg-white">
-                                <option value="">— Seleccionar bodega —</option>
-                                @foreach($warehouses as $w)
-                                <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->city }})</option>
-                                @endforeach
+                                <option value="">— Seleccionar bodega con stock —</option>
+                                <template x-for="wh in availableWarehouses" :key="wh.id">
+                                    <option :value="wh.id" x-text="wh.name + ' (' + wh.city + ') — ' + wh.stock + ' uds disponibles'"></option>
+                                </template>
+                                <template x-if="availableWarehouses.length === 0">
+                                    @foreach($warehouses as $w)
+                                    <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->city }})</option>
+                                    @endforeach
+                                </template>
                             </select>
+                            <p class="text-[10px] text-slate-400 mt-1" x-show="availableWarehouses.length > 0">
+                                <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>Stock físico disponible verificado en bodega
+                            </p>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Transportadora COD</label>
@@ -570,7 +605,8 @@ function checkoutDemo() {
         result: null,
         errorMsg: null,
         priceError: false,
-        selectedProduct: { name: '', cost: 0, suggested: 0, min_price: 0 },
+        availableWarehouses: [],
+        selectedProduct: { name: '', cost: 0, suggested: 0, min_price: 0, provider: '', stock: 0 },
         totalAmount: 0,
         profit: 0,
         commission: 0,
@@ -604,15 +640,32 @@ function checkoutDemo() {
         onProductChange() {
             const sel = document.querySelector(`select[x-model="form.product_id"] option[value="${this.form.product_id}"]`);
             if (sel) {
+                let whs = [];
+                try {
+                    whs = JSON.parse(sel.getAttribute('data-warehouses') || '[]');
+                } catch(e) { whs = []; }
+                this.availableWarehouses = whs;
+
                 this.selectedProduct = {
                     name:      sel.getAttribute('data-name') || '',
                     cost:      parseFloat(sel.getAttribute('data-cost')) || 0,
                     suggested: parseFloat(sel.getAttribute('data-suggested')) || 0,
                     min_price: parseFloat(sel.getAttribute('data-min')) || 0,
+                    provider:  sel.getAttribute('data-provider') || '',
+                    stock:     parseInt(sel.getAttribute('data-stock')) || 0,
                 };
                 if (!this.form.selling_price || this.form.selling_price === 0) {
                     this.form.selling_price = this.selectedProduct.suggested;
                 }
+
+                // Autoseleccionar la bodega si hay bodegas disponibles con stock
+                if (whs.length > 0) {
+                    const exists = whs.some(w => w.id === this.form.warehouse_id);
+                    if (!exists) {
+                        this.form.warehouse_id = whs[0].id;
+                    }
+                }
+
                 this.calcTotals();
             }
         },

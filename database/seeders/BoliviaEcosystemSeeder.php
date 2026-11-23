@@ -261,129 +261,134 @@ class BoliviaEcosystemSeeder extends Seeder
             ]
         );
 
-        // 7. Catálogo Completo de Productos Ganadores
-        $productsData = [
-            [
-                'name' => 'Audífonos Bluetooth Inalámbricos F9 Pro',
-                'slug' => 'audifonos-bluetooth-f9-pro',
-                'sku' => 'AUD-F9-PRO-BO',
-                'category_id' => $catElectro->id,
-                'description' => 'Audífonos con cancelación de ruido pasiva y pantalla LED digital con batería externa.',
-                'cost_price_bob' => 38.00,
-                'suggested_price_bob' => 99.00,
-                'min_price_bob' => 85.00,
-                'weight_kg' => 0.150,
-                'stock_scz' => 350,
-                'stock_lpz' => 120,
-            ],
-            [
-                'name' => 'Smartwatch Ultra 8 Serie Titanium con Correa Naranja',
-                'slug' => 'smartwatch-ultra-8-titanium',
-                'sku' => 'SW-ULTRA8-TIT',
-                'category_id' => $catElectro->id,
-                'description' => 'Reloj inteligente con llamadas Bluetooth, monitor de ritmo cardíaco, podómetro y carga magnética.',
-                'cost_price_bob' => 85.00,
-                'suggested_price_bob' => 199.00,
-                'min_price_bob' => 170.00,
-                'weight_kg' => 0.220,
-                'stock_scz' => 210,
-                'stock_lpz' => 90,
-            ],
-            [
-                'name' => 'Depiladora Láser Portátil IPL Luz Pulsada Definitiva',
-                'slug' => 'depiladora-laser-ipl-portatil',
-                'sku' => 'DEP-IPL-990K',
-                'category_id' => $catBelleza->id,
-                'description' => 'Sistema de reducción permanente del vello corporal con 990.000 pulsaciones y 5 niveles de intensidad.',
-                'cost_price_bob' => 95.00,
-                'suggested_price_bob' => 240.00,
-                'min_price_bob' => 210.00,
-                'weight_kg' => 0.380,
-                'stock_scz' => 140,
-                'stock_lpz' => 60,
-            ],
-            [
-                'name' => 'Cepillo Secador Voluminizador 3 en 1 Cerámica Iónica',
-                'slug' => 'cepillo-secador-voluminizador-3en1',
-                'sku' => 'CEP-SEC-3IN1',
-                'category_id' => $catBelleza->id,
-                'description' => 'Alisa, seca y da volumen en un solo paso gracias a su flujo de aire 360 y revestimiento de titanio.',
-                'cost_price_bob' => 45.00,
-                'suggested_price_bob' => 120.00,
-                'min_price_bob' => 99.00,
-                'weight_kg' => 0.450,
-                'stock_scz' => 300,
-                'stock_lpz' => 150,
-            ],
-            [
-                'name' => 'Mini Licuadora Portátil USB Recargable 6 Cuchillas',
-                'slug' => 'mini-licuadora-portatil-usb-6-cuchillas',
-                'sku' => 'LIC-MINI-USB6',
-                'category_id' => $catHogar->id,
-                'description' => 'Prepara batidos y jugos frescos al instante en el gimnasio o la oficina. Batería recargable USB de 2000mAh.',
-                'cost_price_bob' => 35.00,
-                'suggested_price_bob' => 89.00,
-                'min_price_bob' => 75.00,
-                'weight_kg' => 0.310,
-                'stock_scz' => 280,
-                'stock_lpz' => 110,
-            ],
-            [
-                'name' => 'Foco Cámara de Seguridad 360° WiFi Panorámica HD',
-                'slug' => 'foco-camara-seguridad-360-wifi',
-                'sku' => 'CAM-FOCO-360',
-                'category_id' => $catElectro->id,
-                'description' => 'Cámara de vigilancia oculta en bombilla estándar E27 con visión nocturna, audio bidireccional y sensor de movimiento.',
-                'cost_price_bob' => 60.00,
-                'suggested_price_bob' => 150.00,
-                'min_price_bob' => 130.00,
-                'weight_kg' => 0.250,
-                'stock_scz' => 190,
-                'stock_lpz' => 80,
-            ],
-        ];
-
+        // 7. Catálogo Completo de Productos Ganadores (Solo sembrar productos demo si no existen productos registrados)
+        $existingProducts = Product::where('tenant_id', $tenant->id)->get();
         $createdProducts = [];
-        foreach ($productsData as $data) {
-            $prod = Product::firstOrCreate(
-                ['sku' => $data['sku']],
-                [
-                    'tenant_id' => $tenant->id,
-                    'provider_id' => $provider->id,
-                    'category_id' => $data['category_id'],
-                    'name' => $data['name'],
-                    'slug' => $data['slug'],
-                    'description' => $data['description'],
-                    'cost_price_bob' => $data['cost_price_bob'],
-                    'suggested_price_bob' => $data['suggested_price_bob'],
-                    'min_price_bob' => $data['min_price_bob'],
-                    'weight_kg' => $data['weight_kg'],
-                    'status' => 'published',
-                    'is_cod_available' => true,
-                ]
-            );
 
-            WarehouseInventory::firstOrCreate(
-                ['warehouse_id' => $warehouseSCZ->id, 'product_id' => $prod->id],
+        if ($existingProducts->isEmpty()) {
+            $productsData = [
                 [
-                    'tenant_id' => $tenant->id,
-                    'stock_physical' => $data['stock_scz'],
-                    'stock_reserved' => 0,
-                    'stock_available' => $data['stock_scz'],
-                ]
-            );
-
-            WarehouseInventory::firstOrCreate(
-                ['warehouse_id' => $warehouseLPZ->id, 'product_id' => $prod->id],
+                    'name' => 'Audífonos Bluetooth Inalámbricos F9 Pro',
+                    'slug' => 'audifonos-bluetooth-f9-pro',
+                    'sku' => 'AUD-F9-PRO-BO',
+                    'category_id' => $catElectro->id,
+                    'description' => 'Audífonos con cancelación de ruido pasiva y pantalla LED digital con batería externa.',
+                    'cost_price_bob' => 38.00,
+                    'suggested_price_bob' => 99.00,
+                    'min_price_bob' => 85.00,
+                    'weight_kg' => 0.150,
+                    'stock_scz' => 350,
+                    'stock_lpz' => 120,
+                ],
                 [
-                    'tenant_id' => $tenant->id,
-                    'stock_physical' => $data['stock_lpz'],
-                    'stock_reserved' => 0,
-                    'stock_available' => $data['stock_lpz'],
-                ]
-            );
+                    'name' => 'Smartwatch Ultra 8 Serie Titanium con Correa Naranja',
+                    'slug' => 'smartwatch-ultra-8-titanium',
+                    'sku' => 'SW-ULTRA8-TIT',
+                    'category_id' => $catElectro->id,
+                    'description' => 'Reloj inteligente con llamadas Bluetooth, monitor de ritmo cardíaco, podómetro y carga magnética.',
+                    'cost_price_bob' => 85.00,
+                    'suggested_price_bob' => 199.00,
+                    'min_price_bob' => 170.00,
+                    'weight_kg' => 0.220,
+                    'stock_scz' => 210,
+                    'stock_lpz' => 90,
+                ],
+                [
+                    'name' => 'Depiladora Láser Portátil IPL Luz Pulsada Definitiva',
+                    'slug' => 'depiladora-laser-ipl-portatil',
+                    'sku' => 'DEP-IPL-990K',
+                    'category_id' => $catBelleza->id,
+                    'description' => 'Sistema de reducción permanente del vello corporal con 990.000 pulsaciones y 5 niveles de intensidad.',
+                    'cost_price_bob' => 95.00,
+                    'suggested_price_bob' => 240.00,
+                    'min_price_bob' => 210.00,
+                    'weight_kg' => 0.380,
+                    'stock_scz' => 140,
+                    'stock_lpz' => 60,
+                ],
+                [
+                    'name' => 'Cepillo Secador Voluminizador 3 en 1 Cerámica Iónica',
+                    'slug' => 'cepillo-secador-voluminizador-3en1',
+                    'sku' => 'CEP-SEC-3IN1',
+                    'category_id' => $catBelleza->id,
+                    'description' => 'Alisa, seca y da volumen en un solo paso gracias a su flujo de aire 360 y revestimiento de titanio.',
+                    'cost_price_bob' => 45.00,
+                    'suggested_price_bob' => 120.00,
+                    'min_price_bob' => 99.00,
+                    'weight_kg' => 0.450,
+                    'stock_scz' => 300,
+                    'stock_lpz' => 150,
+                ],
+                [
+                    'name' => 'Mini Licuadora Portátil USB Recargable 6 Cuchillas',
+                    'slug' => 'mini-licuadora-portatil-usb-6-cuchillas',
+                    'sku' => 'LIC-MINI-USB6',
+                    'category_id' => $catHogar->id,
+                    'description' => 'Prepara batidos y jugos frescos al instante en el gimnasio o la oficina. Batería recargable USB de 2000mAh.',
+                    'cost_price_bob' => 35.00,
+                    'suggested_price_bob' => 89.00,
+                    'min_price_bob' => 75.00,
+                    'weight_kg' => 0.310,
+                    'stock_scz' => 280,
+                    'stock_lpz' => 110,
+                ],
+                [
+                    'name' => 'Foco Cámara de Seguridad 360° WiFi Panorámica HD',
+                    'slug' => 'foco-camara-seguridad-360-wifi',
+                    'sku' => 'CAM-FOCO-360',
+                    'category_id' => $catElectro->id,
+                    'description' => 'Cámara de vigilancia oculta en bombilla estándar E27 con visión nocturna, audio bidireccional y sensor de movimiento.',
+                    'cost_price_bob' => 60.00,
+                    'suggested_price_bob' => 150.00,
+                    'min_price_bob' => 130.00,
+                    'weight_kg' => 0.250,
+                    'stock_scz' => 190,
+                    'stock_lpz' => 80,
+                ],
+            ];
+            foreach ($productsData as $data) {
+                $prod = Product::firstOrCreate(
+                    ['sku' => $data['sku']],
+                    [
+                        'tenant_id' => $tenant->id,
+                        'provider_id' => $provider->id,
+                        'category_id' => $data['category_id'],
+                        'name' => $data['name'],
+                        'slug' => $data['slug'],
+                        'description' => $data['description'],
+                        'cost_price_bob' => $data['cost_price_bob'],
+                        'suggested_price_bob' => $data['suggested_price_bob'],
+                        'min_price_bob' => $data['min_price_bob'],
+                        'weight_kg' => $data['weight_kg'],
+                        'status' => 'published',
+                        'is_cod_available' => true,
+                    ]
+                );
 
-            $createdProducts[] = $prod;
+                WarehouseInventory::firstOrCreate(
+                    ['warehouse_id' => $warehouseSCZ->id, 'product_id' => $prod->id],
+                    [
+                        'tenant_id' => $tenant->id,
+                        'stock_physical' => $data['stock_scz'],
+                        'stock_reserved' => 0,
+                        'stock_available' => $data['stock_scz'],
+                    ]
+                );
+
+                WarehouseInventory::firstOrCreate(
+                    ['warehouse_id' => $warehouseLPZ->id, 'product_id' => $prod->id],
+                    [
+                        'tenant_id' => $tenant->id,
+                        'stock_physical' => $data['stock_lpz'],
+                        'stock_reserved' => 0,
+                        'stock_available' => $data['stock_lpz'],
+                    ]
+                );
+
+                $createdProducts[] = $prod;
+            }
+        } else {
+            $createdProducts = $existingProducts->values()->all();
         }
 
         // 8. Pedidos COD Históricos para Dashboards y Tracking en Vivo
@@ -506,8 +511,10 @@ class BoliviaEcosystemSeeder extends Seeder
             ],
         ];
 
-        foreach ($ordersData as $oData) {
-            $selectedProduct = $createdProducts[$oData['product_index']];
+        if (Order::where('tenant_id', $tenant->id)->count() === 0 && count($createdProducts) > 0) {
+            foreach ($ordersData as $oData) {
+                $idx = $oData['product_index'] % count($createdProducts);
+                $selectedProduct = $createdProducts[$idx];
 
             $order = Order::firstOrCreate(
                 ['order_number' => $oData['order_number']],
@@ -553,6 +560,7 @@ class BoliviaEcosystemSeeder extends Seeder
                     'subtotal_bob' => $oData['total_amount_bob'],
                 ]
             );
+            }
         }
 
         // 9. Transacciones de Billetera Históricas
