@@ -18,79 +18,222 @@
         <!-- Formulario principal (2/3) -->
         <div class="lg:col-span-2 space-y-6">
 
-            <!-- PASO 1: Producto -->
+            <!-- PASO 1: Producto a Despachar -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="flex items-center gap-3 p-4 border-b border-slate-200 bg-slate-50">
-                    <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">1</div>
-                    <h2 class="font-bold text-[#212832] text-sm font-heading">Producto a Despachar</h2>
+                <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full bg-[#0061f2] text-white flex items-center justify-center text-xs font-bold">1</div>
+                        <h2 class="font-bold text-[#212832] text-sm font-heading">Producto a Despachar</h2>
+                    </div>
+                    <span class="text-[11px] text-slate-500 font-medium bg-slate-200/60 px-2.5 py-0.5 rounded-full">
+                        {{ $products->count() }} {{ $products->count() === 1 ? 'producto en catálogo' : 'productos en catálogo' }}
+                    </span>
                 </div>
                 <div class="p-5 space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-semibold text-slate-600">Seleccionar Producto</label>
-                            <span class="text-[11px] text-slate-400 font-medium">
-                                {{ $products->count() }} {{ $products->count() === 1 ? 'producto disponible' : 'productos disponibles' }}
+                    <!-- Buscador con Autocompletado al Escribir -->
+                    <div class="space-y-1.5 relative" @click.outside="productDropdownOpen = false">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-xs font-semibold text-slate-700">
+                                <i class="fa-solid fa-magnifying-glass text-[#0061f2] mr-1"></i>
+                                Buscar Producto por Nombre, SKU o Precio
+                            </label>
+                            <span class="text-[11px] text-indigo-600 font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                                Autocompletado en tiempo real
                             </span>
                         </div>
-                        <select x-model="form.product_id" @change="onProductChange()"
-                            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
-                            <option value="">— Seleccionar producto del catálogo —</option>
-                            @foreach($products as $p)
-                            @php
-                                $totalStock = $p->warehouseInventories->sum('stock_available');
-                                $providerName = $p->provider?->company_or_store_name ?: ($p->provider?->name ?: 'Proveedor Mayorista');
-                                $pWarehouses = $p->warehouseInventories->filter(fn($wi) => $wi->stock_available > 0)->map(fn($wi) => [
-                                    'id' => (string) $wi->warehouse_id,
-                                    'name' => $wi->warehouse?->name,
-                                    'city' => $wi->warehouse?->city,
-                                    'stock' => (int) $wi->stock_available,
-                                ])->values();
-                            @endphp
-                            <option value="{{ $p->id }}"
-                                data-cost="{{ $p->cost_price_bob }}"
-                                data-suggested="{{ $p->suggested_price_bob }}"
-                                data-min="{{ $p->min_price_bob }}"
-                                data-name="{{ $p->name }}"
-                                data-provider="{{ $providerName }}"
-                                data-stock="{{ $totalStock }}"
-                                data-warehouses='@json($pWarehouses)'>
-                                {{ $p->name }} — Costo: {{ number_format($p->cost_price_bob, 2) }} BOB
-                            </option>
-                            @endforeach
-                        </select>
-                        <template x-if="selectedProduct.provider">
-                            <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-500">
-                                <i class="fa-solid fa-store text-indigo-500"></i>
-                                <span>Proveedor: <strong class="text-slate-700" x-text="selectedProduct.provider"></strong></span>
-                                <span class="text-slate-300">•</span>
-                                <i class="fa-solid fa-boxes-stacked text-emerald-500"></i>
-                                <span>Stock en bodegas: <strong class="text-slate-700" x-text="selectedProduct.stock + ' uds'"></strong></span>
+
+                        <!-- Input del Buscador -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             </div>
-                        </template>
+                            <input type="text"
+                                x-model="productSearchInput"
+                                @focus="productDropdownOpen = true"
+                                @input="productDropdownOpen = true"
+                                @keydown.escape="productDropdownOpen = false"
+                                placeholder="Escribe el nombre del producto, SKU o precio para autocompletar..."
+                                class="w-full pl-9 pr-14 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#0061f2] transition bg-white text-slate-800 placeholder-slate-400">
+                            
+                            <!-- Botones limpiar y toggle -->
+                            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+                                <button type="button" x-show="productSearchInput && productSearchInput.trim() !== ''" @click="clearProductSearch()"
+                                    class="p-1 text-slate-400 hover:text-slate-600 rounded-md transition" title="Limpiar búsqueda">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                                <button type="button" @click="productDropdownOpen = !productDropdownOpen"
+                                    class="p-1 text-slate-400 hover:text-slate-600 rounded-md transition" title="Ver opciones">
+                                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="productDropdownOpen ? 'rotate-180' : ''"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown de Sugerencias de Productos -->
+                        <div x-show="productDropdownOpen" x-cloak
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 translate-y-1"
+                            class="absolute z-30 left-0 right-0 mt-1 max-h-72 overflow-y-auto bg-white rounded-xl border border-slate-200 shadow-2xl divide-y divide-slate-100">
+                            
+                            <!-- Header de resultados -->
+                            <div class="px-3.5 py-2 bg-slate-50 text-[11px] font-semibold text-slate-500 flex items-center justify-between border-b border-slate-100">
+                                <span>Coincidencias encontradas (<span x-text="filteredProducts.length"></span>)</span>
+                                <span class="text-[10px] text-slate-400">Haz clic para autocompletar precio y datos</span>
+                            </div>
+
+                            <template x-for="p in filteredProducts" :key="p.id">
+                                <button type="button" @click="selectProduct(p)"
+                                    :class="form.product_id == p.id ? 'bg-blue-50/70 border-l-4 border-[#0061f2]' : 'hover:bg-slate-50'"
+                                    class="w-full px-3.5 py-2.5 text-left transition flex flex-col gap-1.5 group cursor-pointer">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="font-semibold text-xs text-slate-800 group-hover:text-[#0061f2] transition" x-text="p.name"></div>
+                                        <template x-if="form.product_id == p.id">
+                                            <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-[#0061f2]">
+                                                <i class="fa-solid fa-check mr-1"></i>Seleccionado
+                                            </span>
+                                        </template>
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-2 text-[11px]">
+                                        <!-- Costo -->
+                                        <span class="inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2 py-0.5 rounded font-mono">
+                                            <i class="fa-solid fa-tag text-slate-400 text-[10px]"></i>
+                                            Costo: <strong>Bs <span x-text="p.cost.toFixed(2)"></span></strong>
+                                        </span>
+                                        <!-- Precio Sugerido -->
+                                        <span class="inline-flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded font-mono font-bold">
+                                            <i class="fa-solid fa-bolt text-amber-500 text-[10px]"></i>
+                                            Sugerido: Bs <span x-text="p.suggested.toFixed(2)"></span>
+                                        </span>
+                                        <!-- Precio Mínimo -->
+                                        <span class="inline-flex items-center gap-1 text-slate-500 bg-slate-50 px-2 py-0.5 rounded font-mono">
+                                            Mín: Bs <span x-text="p.min_price.toFixed(2)"></span>
+                                        </span>
+                                        <!-- Stock -->
+                                        <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold">
+                                            <i class="fa-solid fa-boxes-stacked text-emerald-500 text-[10px]"></i>
+                                            <span x-text="p.stock + ' uds'"></span>
+                                        </span>
+                                        <!-- Proveedor -->
+                                        <span class="inline-flex items-center gap-1 text-slate-500">
+                                            <i class="fa-solid fa-store text-indigo-400 text-[10px]"></i>
+                                            <span x-text="p.provider"></span>
+                                        </span>
+                                    </div>
+                                </button>
+                            </template>
+
+                            <div x-show="filteredProducts.length === 0" class="p-6 text-center text-xs text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass text-slate-300 text-xl mb-2 block"></i>
+                                No se encontraron productos coincidentes con tu búsqueda.
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4" x-show="form.product_id">
+                    <!-- Ficha del Producto Seleccionado -->
+                    <template x-if="form.product_id && selectedProduct.name">
+                        <div class="p-3 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/50 to-indigo-50/30 flex items-center justify-between gap-3 text-xs">
+                            <div class="space-y-1">
+                                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                                    <span x-text="selectedProduct.name"></span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-500">
+                                    <span><i class="fa-solid fa-store text-indigo-500 mr-1"></i>Proveedor: <strong class="text-slate-700" x-text="selectedProduct.provider"></strong></span>
+                                    <span>•</span>
+                                    <span><i class="fa-solid fa-boxes-stacked text-emerald-500 mr-1"></i>Stock verificado: <strong class="text-slate-700" x-text="selectedProduct.stock + ' uds'"></strong></span>
+                                    <span>•</span>
+                                    <span><i class="fa-solid fa-money-bill text-slate-400 mr-1"></i>Costo: <strong class="text-slate-700 font-mono" x-text="'Bs ' + selectedProduct.cost.toFixed(2)"></strong></span>
+                                </div>
+                            </div>
+                            <button type="button" @click="productSearchInput = ''; productDropdownOpen = true"
+                                class="shrink-0 text-[11px] font-semibold text-[#0061f2] hover:underline px-2.5 py-1 bg-white rounded-lg border border-blue-200 shadow-2xs">
+                                Cambiar
+                            </button>
+                        </div>
+                    </template>
+
+                    <!-- Campos Cantidad y Precio de Venta (Con autocompletado y atajos rápidos) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-show="form.product_id">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Cantidad</label>
                             <input type="number" x-model.number="form.quantity" min="1" max="50" @input="calcTotals()"
                                 class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" />
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                Precio de Venta (BOB)
-                                <span class="text-slate-400 font-normal" x-show="selectedProduct.min_price > 0">
-                                    — Mín: <span x-text="selectedProduct.min_price.toFixed(2)"></span>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-700">
+                                    Precio de Venta al Cliente (BOB)
+                                </label>
+                                <span class="text-[11px] text-slate-400" x-show="selectedProduct.min_price > 0">
+                                    Mínimo: <strong class="text-slate-600" x-text="'Bs ' + selectedProduct.min_price.toFixed(2)"></strong>
                                 </span>
-                            </label>
-                            <input type="number" x-model.number="form.selling_price" step="0.50" @input="calcTotals()"
-                                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none" />
-                        </div>
-                    </div>
+                            </div>
 
-                    <!-- Alerta precio mínimo -->
-                    <div x-show="priceError" x-cloak class="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
-                        <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
-                        <span>El precio de venta está por debajo del mínimo permitido por el proveedor.</span>
+                            <!-- Input con datalist nativo de autocompletado -->
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs font-bold text-slate-400">
+                                    Bs
+                                </span>
+                                <input type="number"
+                                    x-model.number="form.selling_price"
+                                    step="0.50"
+                                    list="price-suggestions-list"
+                                    @input="calcTotals()"
+                                    class="w-full pl-9 pr-3 py-2.5 text-sm font-semibold rounded-xl border focus:outline-none focus:ring-2 transition"
+                                    :class="priceError ? 'border-red-300 bg-red-50/40 text-red-900 focus:ring-red-200 focus:border-red-500' : 'border-slate-200 bg-white text-slate-800 focus:ring-blue-500/20 focus:border-[#0061f2]'" />
+                                
+                                <datalist id="price-suggestions-list">
+                                    <option :value="selectedProduct.suggested" label="Precio Sugerido del Proveedor"></option>
+                                    <option :value="selectedProduct.min_price" label="Precio Mínimo Permitido"></option>
+                                    <option :value="+(selectedProduct.suggested * 1.1).toFixed(2)" label="Margen +10%"></option>
+                                    <option :value="+(selectedProduct.suggested * 1.2).toFixed(2)" label="Margen +20%"></option>
+                                </datalist>
+                            </div>
+
+                            <!-- Chips de autocompletado rápido de precio (1 clic) -->
+                            <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                                <span class="text-[10px] text-slate-400 font-medium">Autocompletar precio:</span>
+                                <button type="button" @click="setPrice(selectedProduct.suggested)"
+                                    class="text-[11px] px-2 py-0.5 rounded-md font-medium transition cursor-pointer border"
+                                    :class="form.selling_price === selectedProduct.suggested ? 'bg-blue-600 text-white border-blue-600 shadow-2xs' : 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'">
+                                    <i class="fa-solid fa-bolt text-[9px] mr-1"></i>Sugerido: Bs <span x-text="selectedProduct.suggested.toFixed(0)"></span>
+                                </button>
+                                <button type="button" @click="setPrice(selectedProduct.min_price)"
+                                    class="text-[11px] px-2 py-0.5 rounded-md font-medium transition cursor-pointer border"
+                                    :class="form.selling_price === selectedProduct.min_price ? 'bg-slate-700 text-white border-slate-700 shadow-2xs' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'">
+                                    <i class="fa-solid fa-tag text-[9px] mr-1"></i>Mín: Bs <span x-text="selectedProduct.min_price.toFixed(0)"></span>
+                                </button>
+                                <button type="button" @click="setPrice(+(selectedProduct.suggested * 1.1).toFixed(2))"
+                                    class="text-[11px] px-2 py-0.5 rounded-md font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">
+                                    +10%: Bs <span x-text="(selectedProduct.suggested * 1.1).toFixed(0)"></span>
+                                </button>
+                                <button type="button" @click="setPrice(+(selectedProduct.suggested * 1.2).toFixed(2))"
+                                    class="text-[11px] px-2 py-0.5 rounded-md font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition cursor-pointer">
+                                    +20%: Bs <span x-text="(selectedProduct.suggested * 1.2).toFixed(0)"></span>
+                                </button>
+                            </div>
+
+                            <!-- Estado dinámico de ganancia / error -->
+                            <div class="mt-2 text-xs">
+                                <template x-if="!priceError && form.selling_price > 0">
+                                    <div class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50/80 px-2.5 py-1.5 rounded-lg border border-emerald-200">
+                                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                        <span>Tu ganancia neta estimada: <strong class="font-mono" x-text="'Bs ' + profit.toFixed(2)"></strong> (<span x-text="profitMarginPercent()"></span>% margen)</span>
+                                    </div>
+                                </template>
+                                <template x-if="priceError">
+                                    <div class="flex items-start gap-1.5 text-red-700 bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-200">
+                                        <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
+                                        <span>El precio de venta (Bs <span x-text="form.selling_price"></span>) está por debajo del mínimo de Bs <span x-text="selectedProduct.min_price.toFixed(2)"></span> permitido por el proveedor.</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -531,6 +674,9 @@ function checkoutDemo() {
         result: null,
         errorMsg: null,
         priceError: false,
+        productDropdownOpen: false,
+        productSearchInput: '',
+        catalogProducts: {{ Js::from($productsJson ?? []) }},
         availableWarehouses: [],
         selectedProduct: { name: '', cost: 0, suggested: 0, min_price: 0, provider: '', stock: 0 },
         totalAmount: 0,
@@ -552,10 +698,29 @@ function checkoutDemo() {
             payment_method: 'qr_interoperable',
         },
 
+        get filteredProducts() {
+            if (!this.productSearchInput || this.productSearchInput.trim() === '') {
+                return this.catalogProducts;
+            }
+            const q = this.productSearchInput.toLowerCase().trim();
+            return this.catalogProducts.filter(p => {
+                const nameMatch = (p.name || '').toLowerCase().includes(q);
+                const skuMatch  = (p.sku || '').toLowerCase().includes(q);
+                const provMatch = (p.provider || '').toLowerCase().includes(q);
+                const costMatch = (p.cost || '').toString().includes(q);
+                const suggMatch = (p.suggested || '').toString().includes(q);
+                return nameMatch || skuMatch || provMatch || costMatch || suggMatch;
+            });
+        },
+
         init() {
             this.$nextTick(() => {
-                if (this.form.product_id) {
-                    this.onProductChange();
+                if (this.catalogProducts.length > 0) {
+                    const initialId = this.form.product_id || this.catalogProducts[0].id;
+                    const found = this.catalogProducts.find(p => p.id == initialId) || this.catalogProducts[0];
+                    if (found) {
+                        this.selectProduct(found, false);
+                    }
                 }
                 if (!this.form.customer_name) {
                     this.fillDemoData();
@@ -563,37 +728,51 @@ function checkoutDemo() {
             });
         },
 
-        onProductChange() {
-            const sel = document.querySelector(`select[x-model="form.product_id"] option[value="${this.form.product_id}"]`);
-            if (sel) {
-                let whs = [];
-                try {
-                    whs = JSON.parse(sel.getAttribute('data-warehouses') || '[]');
-                } catch(e) { whs = []; }
-                this.availableWarehouses = whs;
+        selectProduct(p, overwritePrice = true) {
+            if (!p) return;
+            this.form.product_id = p.id;
+            this.productSearchInput = p.name;
+            this.selectedProduct = {
+                name:      p.name,
+                cost:      parseFloat(p.cost) || 0,
+                suggested: parseFloat(p.suggested) || 0,
+                min_price: parseFloat(p.min_price) || 0,
+                provider:  p.provider || '',
+                stock:     parseInt(p.stock) || 0,
+            };
+            this.availableWarehouses = p.warehouses || [];
 
-                this.selectedProduct = {
-                    name:      sel.getAttribute('data-name') || '',
-                    cost:      parseFloat(sel.getAttribute('data-cost')) || 0,
-                    suggested: parseFloat(sel.getAttribute('data-suggested')) || 0,
-                    min_price: parseFloat(sel.getAttribute('data-min')) || 0,
-                    provider:  sel.getAttribute('data-provider') || '',
-                    stock:     parseInt(sel.getAttribute('data-stock')) || 0,
-                };
-                if (!this.form.selling_price || this.form.selling_price === 0) {
-                    this.form.selling_price = this.selectedProduct.suggested;
-                }
-
-                // Autoseleccionar la bodega si hay bodegas disponibles con stock
-                if (whs.length > 0) {
-                    const exists = whs.some(w => w.id === this.form.warehouse_id);
-                    if (!exists) {
-                        this.form.warehouse_id = whs[0].id;
-                    }
-                }
-
-                this.calcTotals();
+            // Autocompletar precio sugerido
+            if (overwritePrice || !this.form.selling_price || this.form.selling_price === 0) {
+                this.form.selling_price = this.selectedProduct.suggested;
             }
+
+            // Autoseleccionar la bodega si hay bodegas disponibles con stock
+            if (this.availableWarehouses.length > 0) {
+                const exists = this.availableWarehouses.some(w => w.id === this.form.warehouse_id);
+                if (!exists) {
+                    this.form.warehouse_id = this.availableWarehouses[0].id;
+                }
+            }
+
+            this.productDropdownOpen = false;
+            this.calcTotals();
+        },
+
+        clearProductSearch() {
+            this.productSearchInput = '';
+            this.productDropdownOpen = true;
+        },
+
+        setPrice(amount) {
+            this.form.selling_price = parseFloat(amount) || 0;
+            this.calcTotals();
+        },
+
+        profitMarginPercent() {
+            const total = (parseFloat(this.form.selling_price) || 0) * (parseInt(this.form.quantity) || 1);
+            if (total <= 0) return '0.0';
+            return ((this.profit / total) * 100).toFixed(1);
         },
 
         calcTotals() {
@@ -621,12 +800,8 @@ function checkoutDemo() {
         },
 
         fillDemoData() {
-            if (!this.form.product_id) {
-                const firstOpt = document.querySelector('select[x-model="form.product_id"] option:nth-child(2)');
-                if (firstOpt) {
-                    this.form.product_id = firstOpt.value;
-                    this.onProductChange();
-                }
+            if (!this.form.product_id && this.catalogProducts.length > 0) {
+                this.selectProduct(this.catalogProducts[0]);
             }
             if (!this.form.warehouse_id) {
                 const firstWh = document.querySelector('select[x-model="form.warehouse_id"] option:nth-child(2)');
