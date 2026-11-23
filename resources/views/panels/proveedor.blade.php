@@ -3229,39 +3229,6 @@
 
 </div>
 
-
-    {{-- =========================================================
-         ACCESO AL CENTRO DE REPORTES DEDICADO (/reportes)
-    ========================================================= --}}
-    <div id="reporte" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-violet-950 rounded-3xl p-6 md:p-8 text-white shadow-xl mt-8 relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
-            <div class="space-y-2 max-w-2xl">
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-violet-500/20 text-violet-300 rounded-full text-xs font-bold border border-violet-400/30">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Centro de Reportes & Métricas</span>
-                </div>
-                <h3 class="text-2xl font-black tracking-tight text-white">
-                    Módulo Avanzado de Analítica & Valorado
-                </h3>
-                <p class="text-slate-300 text-sm leading-relaxed">
-                    Hemos trasladado las métricas completas a la nueva ruta dedicada <span class="font-bold text-violet-400 font-mono">/reportes</span>: filtros por rango de fechas, embudo de pedidos COD, rotación ABC con runway, valorado de inventario por bodega, cobertura geográfica y exportación CSV.
-                </p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0">
-                <a href="{{ url('/reportes') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-black rounded-2xl shadow-lg shadow-violet-900/50 transition">
-                    <i class="fa-solid fa-chart-line text-sm"></i>
-                    <span>Abrir Reportes & Métricas</span>
-                    <i class="fa-solid fa-arrow-right text-xs"></i>
-                </a>
-                <a href="{{ url('/reportes/exportar') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-2xl border border-white/20 backdrop-blur transition">
-                    <i class="fa-solid fa-file-csv text-emerald-400 text-sm"></i>
-                    <span>Exportar CSV</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
 <script>
 function proveedorDashboard() {
     return {
