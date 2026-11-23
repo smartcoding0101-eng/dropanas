@@ -99,6 +99,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/proveedor/exportar', [\App\Http\Controllers\Web\ReportesController::class, 'exportProveedor'])    ->name('proveedor.exportar');
     });
 
+    // =========================================================================
+    // NUEVA RUTA REPORTE COMERCIAL ADAPTATIVO — /reporte
+    // =========================================================================
+    Route::get('/reporte',        [\App\Http\Controllers\Web\CommercialReportController::class, 'index'])   ->name('reporte.index');
+    Route::get('/reporte/data',   [\App\Http\Controllers\Web\CommercialReportController::class, 'dataJson'])->name('reporte.data');
+    Route::get('/reporte/export', [\App\Http\Controllers\Web\CommercialReportController::class, 'exportCsv'])->name('reporte.export');
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::get('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'show'])->name('products.show.web');
