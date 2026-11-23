@@ -66,9 +66,14 @@ class PanelController extends Controller
      */
     public function proveedor(Request $request)
     {
-        $provider = auth()->user() && auth()->user()->role === 'provider' 
-            ? auth()->user() 
-            : User::where('role', 'provider')->first();
+        $authUser = $request->user();
+        if (!$authUser || (!$authUser->isProvider() && !$authUser->isTenantAdmin())) {
+            abort(403, 'Acceso denegado. Exclusivo para proveedores mayoristas o administradores del sistema.');
+        }
+
+        $provider = $authUser->isProvider() 
+            ? $authUser 
+            : ($request->filled('provider_id') ? User::where('role', 'provider')->find($request->provider_id) : User::where('role', 'provider')->first());
 
         $stats = [
             'total_products'   => 0,
@@ -346,12 +351,17 @@ class PanelController extends Controller
      */
     public function exportProviderKardex(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $provider = auth()->user() && auth()->user()->role === 'provider' 
-            ? auth()->user() 
-            : User::where('role', 'provider')->first();
+        $authUser = $request->user();
+        if (!$authUser || (!$authUser->isProvider() && !$authUser->isTenantAdmin())) {
+            abort(403, 'Acceso denegado. Exclusivo para proveedores mayoristas o administradores del sistema.');
+        }
+
+        $provider = $authUser->isProvider() 
+            ? $authUser 
+            : ($request->filled('provider_id') ? User::where('role', 'provider')->find($request->provider_id) : User::where('role', 'provider')->first());
 
         if (!$provider) {
-            abort(403, 'Proveedor no encontrado');
+            abort(404, 'Proveedor no encontrado');
         }
 
         $productIds = Product::where('provider_id', $provider->id)->pluck('id');

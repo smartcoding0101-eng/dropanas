@@ -220,6 +220,27 @@ class SecurityAndAccessControlTest extends TestCase
         $res2->assertStatus(422);
         $this->assertEquals('settled', $order->fresh()->status);
     }
+
+    /**
+     * SEGURIDAD 6: Aislamiento del Panel de Proveedor y Exportación de Kardex (Anti-Fuga de Datos Comerciales)
+     */
+    public function test_dropshipper_cannot_access_provider_panel_or_export_kardex(): void
+    {
+        // 1. Dropshipper no puede entrar al panel del proveedor
+        $response = $this->actingAs($this->dropshipperA)->get('/panel/proveedor');
+        $response->assertStatus(403);
+
+        // 2. Dropshipper no puede exportar el kardex privado del proveedor
+        $exportResponse = $this->actingAs($this->dropshipperA)->get('/panel/proveedor/kardex/export');
+        $exportResponse->assertStatus(403);
+
+        // 3. Proveedor legítimo SÍ puede acceder y exportar
+        $this->actingAs($this->provider)->get('/panel/proveedor')->assertStatus(200);
+        $this->actingAs($this->provider)->get('/panel/proveedor/kardex/export')->assertStatus(200);
+
+        // 4. Admin del tenant SÍ puede acceder al panel del proveedor para soporte
+        $this->actingAs($this->admin)->get('/panel/proveedor')->assertStatus(200);
+    }
 }
 
 

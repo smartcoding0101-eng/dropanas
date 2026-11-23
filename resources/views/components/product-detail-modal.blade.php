@@ -361,6 +361,15 @@
                         class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition cursor-pointer">
                         Cerrar
                     </button>
+                    @if(auth()->check() && (auth()->user()->isProvider() || auth()->user()->isTenantAdmin()))
+                    <template x-if="product?.provider_id === '{{ auth()->id() }}' || {{ auth()->user()->isTenantAdmin() ? 'true' : 'false' }}">
+                        <a :href="'/panel/proveedor?edit=' + (product?.id || '')"
+                           class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>Editar Producto</span>
+                        </a>
+                    </template>
+                    @endif
                     <a :href="checkoutUrl()"
                        class="btn-scarlet px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md w-full sm:w-auto">
                         <i class="fa-solid fa-cart-arrow-down"></i>

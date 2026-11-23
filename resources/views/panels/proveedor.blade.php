@@ -3257,6 +3257,15 @@ function proveedorDashboard() {
             name: '',
             description: ''
         },
+        init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            if (editId) {
+                this.$nextTick(() => {
+                    this.openEditProductModal(editId);
+                });
+            }
+        },
         productModalTab: 'general',
         warehousesList: @json($warehouses),
         form: {

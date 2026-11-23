@@ -48,6 +48,7 @@
             'category_id' => (string) ($p->category_id ?? ''),
             'category_name' => $p->category->name ?? 'Tecnología',
             'category_name_lower' => strtolower($p->category->name ?? 'tecnología'),
+            'provider_id' => (string) ($p->provider_id ?? ''),
             'provider_name' => $p->provider?->company_or_store_name ?? $p->provider?->name ?? 'Megabodega Bolidrop',
             'provider_city' => $p->provider?->city ?? 'Santa Cruz',
             'provider_phone' => $p->provider?->phone ?? '',
