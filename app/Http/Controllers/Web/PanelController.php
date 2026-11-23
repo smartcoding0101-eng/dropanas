@@ -91,6 +91,12 @@ class PanelController extends Controller
         $warehouses = collect();
         $wallet     = null;
         $salesOrders = collect();
+        $salesOrdersJson = [];
+        $orderStatusCounts = [
+            'total' => 0, 'pending' => 0, 'preparing' => 0, 'in_transit' => 0,
+            'delivering' => 0, 'delivered' => 0, 'settled' => 0, 'cancelled' => 0,
+            'returned' => 0, 'novedad' => 0, 'in_process' => 0,
+        ];
         $recentKardex = collect();
         $stockTransfers = collect();
         $inventoryAlerts = collect();
@@ -134,8 +140,22 @@ class PanelController extends Controller
             $salesOrders = Order::with(['items' => fn($q) => $q->where('provider_id', $provider->id)->with('product'), 'carrier', 'warehouse', 'dropshipper'])
                 ->whereIn('id', $providerOrderIds)
                 ->latest()
-                ->limit(20)
                 ->get();
+
+            // Contadores de estado para los KPIs y pills de Dropanas
+            $orderStatusCounts = [
+                'total'      => $salesOrders->count(),
+                'pending'    => $salesOrders->whereIn('status', ['pending_confirmation'])->count(),
+                'preparing'  => $salesOrders->where('status', 'confirmed')->count(),
+                'in_transit' => $salesOrders->where('status', 'in_transit')->count(),
+                'delivering' => $salesOrders->where('status', 'dispatched')->count(),
+                'delivered'  => $salesOrders->where('status', 'delivered')->count(),
+                'settled'    => $salesOrders->where('status', 'settled')->count(),
+                'cancelled'  => $salesOrders->where('status', 'cancelled')->count(),
+                'returned'   => $salesOrders->where('status', 'returned')->count(),
+                'novedad'    => $salesOrders->filter(fn($o) => !empty($o->novedad_reason))->count(),
+                'in_process' => $salesOrders->whereIn('status', ['confirmed', 'in_transit', 'dispatched'])->count(),
+            ];
 
             // Historial de Trazabilidad Kardex de sus productos en bodegas con relaciones completas
             $recentKardex = \App\Models\InventoryKardex::withoutGlobalScopes()
@@ -177,9 +197,47 @@ class PanelController extends Controller
             ->orderBy('name')
             ->get();
 
+        // JSON seguro para Alpine.js (pedidosModule) — preparado en el controlador para evitar
+        // errores de compilación Blade con closures dentro de @json()
+        $salesOrdersJson = $salesOrders->map(function ($order) use ($provider) {
+            $providerSubtotal = $order->items->sum(fn($i) => (float)$i->unit_cost_bob * (int)$i->quantity);
+            // Venta directa del proveedor vs venta por dropshipper
+            $isDropshipperSale = !empty($order->dropshipper_id)
+                && ($order->dropshipper_id !== ($provider->id ?? null));
+            return [
+                'id'                  => (string) $order->id,
+                'order_number'        => $order->order_number,
+                'tracking_number'     => $order->tracking_number,
+                'customer_name'       => $order->customer_name,
+                'shipping_city'       => $order->shipping_city,
+                'shipping_department' => $order->shipping_department,
+                'status'              => $order->status,
+                'has_novedad'         => !empty($order->novedad_reason),
+                'novedad_reason'      => $order->novedad_reason,
+                'total_amount_bob'    => (float) $order->total_amount_bob,
+                'provider_subtotal'   => round($providerSubtotal, 2),
+                'payment_method'      => $order->payment_method,
+                'carrier_name'        => $order->carrier?->name ?? 'DEX Bolivia',
+                'warehouse_name'      => $order->warehouse?->name ?? null,
+                'dropshipper_name'    => $order->dropshipper?->name ?? null,
+                'dropshipper_id'      => $order->dropshipper_id,
+                'is_dropshipper_sale' => $isDropshipperSale,
+                'date_fmt'            => $order->created_at->format('d/m/Y'),
+                'time_fmt'            => $order->created_at->format('H:i') . ' hrs',
+                'created_at_ts'       => $order->created_at->timestamp,
+                'items'               => $order->items->map(fn($i) => [
+                    'id'            => (string) $i->id,
+                    'product_name'  => $i->product?->name ?? 'Producto',
+                    'quantity'      => (int) $i->quantity,
+                    'unit_cost_bob' => (float) $i->unit_cost_bob,
+                ])->values()->all(),
+            ];
+        })->values()->all();
+
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
-            'wallet', 'categories', 'salesOrders', 'recentKardex', 'stockTransfers', 'inventoryAlerts',
+            'wallet', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
+            'recentKardex', 'stockTransfers', 'inventoryAlerts',
             'dropshippers', 'transferProductsList'
         ));
     }

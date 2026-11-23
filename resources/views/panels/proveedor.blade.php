@@ -2035,109 +2035,414 @@
 
         </div>
 
-        <!-- Ventas y Pedidos Relacionados con el Proveedor -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/80">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-cart-shopping text-[#0061f2]"></i>
+        <!-- ===================================================================
+             MÓDULO MIS PEDIDOS — Estilo Dropanas (KPIs, Filtros, Tabla)
+        =================================================================== -->
+        <div id="ventas" x-data="pedidosModule()" class="space-y-4">
+
+            <!-- KPI Cards estilo Dropanas -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-cart-shopping text-[#4F46E5] text-sm"></i>
+                    </div>
                     <div>
-                        <h3 class="font-bold text-slate-900 text-sm font-heading">Ventas y Pedidos COD Despachados</h3>
-                        <p class="text-xs text-slate-500">Pedidos que contienen tus productos publicados, con courier y liquidación</p>
+                        <div class="text-2xl font-extrabold font-mono text-slate-900">{{ $orderStatusCounts['total'] }}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Total Pedidos</div>
                     </div>
                 </div>
-                <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white text-slate-600 border border-slate-200">
-                    {{ $salesOrders->count() }} órdenes
-                </span>
+                <div class="bg-white rounded-2xl border border-amber-200 p-4 flex items-center gap-3 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-clock text-amber-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold font-mono text-amber-600">{{ $orderStatusCounts['pending'] }}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Pendientes</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-sky-200 p-4 flex items-center gap-3 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-truck-fast text-sky-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold font-mono text-sky-600">{{ $orderStatusCounts['in_process'] }}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">En Proceso</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-emerald-200 p-4 flex items-center gap-3 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold font-mono text-emerald-600">{{ $orderStatusCounts['delivered'] }}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Entregados</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-rose-200 p-4 flex items-center gap-3 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-rose-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-extrabold font-mono text-rose-600">{{ $orderStatusCounts['novedad'] }}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Novedades</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-600">
-                    <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
-                        <tr>
-                            <th class="py-3 px-4">Pedido / Fecha</th>
-                            <th class="py-3 px-4">Productos Despachados</th>
-                            <th class="py-3 px-4">Destino / Cliente</th>
-                            <th class="py-3 px-4">Courier COD</th>
-                            <th class="py-3 px-4">Monto Mayorista</th>
-                            <th class="py-3 px-4">Estado Pedido</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse($salesOrders as $order)
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-bold text-slate-900 font-mono">{{ $order->order_number }}</div>
-                                <div class="text-[11px] text-slate-400">{{ $order->created_at->format('d/m/Y H:i') }}</div>
-                                <div class="text-[10px] text-[#0061f2] font-semibold">DS: {{ $order->dropshipper->name ?? 'Dropshipper' }}</div>
-                            </td>
-                            <td class="py-3 px-4">
-                                @foreach($order->items as $item)
-                                <div class="flex items-center justify-between gap-2 py-0.5">
-                                    <span class="font-medium text-slate-800">{{ $item->product->name ?? 'Producto' }}</span>
-                                    <span class="font-mono font-bold text-slate-900 shrink-0">x{{ $item->quantity }}</span>
-                                </div>
-                                @endforeach
-                            </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-semibold text-slate-900">{{ $order->customer_name }}</div>
-                                <div class="text-[11px] text-slate-500 flex items-center gap-1">
-                                    <i class="fa-solid fa-location-dot text-[#0061f2]"></i>
-                                    {{ $order->shipping_city }}, {{ $order->shipping_department }}
-                                </div>
-                            </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-medium text-slate-800">{{ $order->carrier->name ?? 'DEX Bolivia' }}</div>
-                                <div class="text-[11px] text-slate-400 font-mono">{{ $order->tracking_number ?? 'Guía pendiente' }}</div>
-                            </td>
-                            <td class="py-3 px-4 font-mono font-bold whitespace-nowrap text-emerald-700">
-                                @php
-                                    $providerSubtotal = $order->items->sum(fn($i) => (float)$i->unit_cost_bob * (int)$i->quantity);
-                                @endphp
-                                Bs {{ number_format($providerSubtotal, 2) }}
-                            </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                @if($order->status === 'settled')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                        <i class="fa-solid fa-circle-check"></i> Liquidado
-                                    </span>
-                                @elseif($order->status === 'delivered')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
-                                        <i class="fa-solid fa-box-open"></i> Entregado
-                                    </span>
-                                @elseif(in_array($order->status, ['in_transit', 'dispatched']))
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                        <i class="fa-solid fa-truck-fast"></i> En Ruta DEX
-                                    </span>
-                                @elseif($order->status === 'confirmed')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                        <i class="fa-solid fa-check"></i> Confirmado
-                                    </span>
-                                @elseif($order->status === 'pending_confirmation')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                        <i class="fa-solid fa-clock"></i> Pendiente Confirmación
-                                    </span>
-                                @elseif($order->status === 'cancelled')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                        <i class="fa-solid fa-xmark"></i> Cancelado
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                                        {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                                    </span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="py-8 text-center text-slate-400 italic">
-                                No se registran ventas para tus productos aún.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <!-- Panel de Mis Pedidos -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+                <!-- Cabecera -->
+                <div class="p-5 border-b border-slate-200 bg-slate-50/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-[#4F46E5]/10 border border-[#4F46E5]/20 flex items-center justify-center">
+                            <i class="fa-solid fa-cart-shopping text-[#4F46E5] text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm font-heading">Mis Pedidos</h3>
+                            <p class="text-xs text-slate-500">Gestiona y rastrea tus pedidos COD</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Buscador -->
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+                            <input x-model="searchQuery"
+                                type="text" placeholder="Buscar por guía, cliente..."
+                                class="pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 w-52">
+                        </div>
+                        <!-- Exportar -->
+                        <a href="{{ url('/reportes/exportar') }}"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                            <i class="fa-solid fa-file-excel"></i> Exportar Excel
+                        </a>
+                        <!-- Contador total filtrado -->
+                        <span class="text-xs font-mono font-semibold px-2.5 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200"
+                            x-text="filteredOrders.length + ' órdenes'">
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Filtros: Estado pills -->
+                <div class="px-5 pt-4 pb-2 border-b border-slate-100 space-y-3">
+
+                    <!-- Fila 1: Estado -->
+                    <div class="flex items-start gap-3 flex-wrap">
+                        <div class="flex items-center gap-1.5 shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider pt-1">
+                            <i class="fa-solid fa-filter"></i> Estado:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button @click="statusFilter = ''"
+                                :class="statusFilter === '' ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+                                class="px-3 py-1.5 rounded-full text-[11px] font-semibold border transition cursor-pointer flex items-center gap-1.5">
+                                Todos <span x-text="'(' + allOrders.length + ')'" class="opacity-70"></span>
+                            </button>
+                            <template x-for="pill in statusPills" :key="pill.key">
+                                <button @click="statusFilter = pill.key"
+                                    :class="statusFilter === pill.key ? pill.activeClass : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+                                    class="px-3 py-1.5 rounded-full text-[11px] font-semibold border transition cursor-pointer flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full inline-block" :class="pill.dotClass"></span>
+                                    <span x-text="pill.label"></span>
+                                    <span x-text="'(' + pill.count + ')'" class="opacity-70"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Fila 2: Courier/Transportadora -->
+                    <div class="flex items-start gap-3 flex-wrap">
+                        <div class="flex items-center gap-1.5 shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider pt-1">
+                            <i class="fa-solid fa-truck"></i> Envío:
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button @click="carrierFilter = ''"
+                                :class="carrierFilter === '' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+                                class="px-3 py-1 rounded-xl text-[11px] font-semibold border transition cursor-pointer">
+                                Todos
+                            </button>
+                            <template x-for="carrier in uniqueCarriers" :key="carrier">
+                                <button @click="carrierFilter = carrier"
+                                    :class="carrierFilter === carrier ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+                                    class="px-3 py-1 rounded-xl text-[11px] font-semibold border transition cursor-pointer flex items-center gap-1.5">
+                                    <i class="fa-solid fa-truck-fast text-[10px]"></i>
+                                    <span x-text="carrier"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Fecha + Toggle Dropshippers -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 pb-1">
+                        <!-- Date pickers -->
+                        <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0">
+                            <i class="fa-regular fa-calendar"></i> Fecha:
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <input type="date" x-model="dateFrom"
+                                class="text-xs rounded-xl border border-slate-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <span class="text-slate-400 text-xs">—</span>
+                            <input type="date" x-model="dateTo"
+                                class="text-xs rounded-xl border border-slate-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <button @click="dateFrom = ''; dateTo = ''"
+                                x-show="dateFrom || dateTo"
+                                class="text-[11px] px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold flex items-center gap-1 transition cursor-pointer">
+                                <i class="fa-solid fa-xmark"></i> Limpiar fecha
+                            </button>
+                        </div>
+
+                        <!-- Separador -->
+                        <div class="hidden sm:block w-px h-5 bg-slate-200 mx-2"></div>
+
+                        <!-- Toggle Dropshippers -->
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <div class="relative">
+                                <input type="checkbox" x-model="includeDropshippers" class="sr-only">
+                                <div class="w-9 h-5 rounded-full transition-colors duration-200"
+                                    :class="includeDropshippers ? 'bg-[#4F46E5]' : 'bg-slate-300'"></div>
+                                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+                                    :class="includeDropshippers ? 'translate-x-4' : 'translate-x-0'"></div>
+                            </div>
+                            <span class="text-[11px] text-slate-700 font-medium">
+                                <i class="fa-solid fa-people-arrows text-slate-400 mr-0.5"></i>
+                                Incluir pedidos de dropshippers
+                                <span class="text-slate-400 italic">(ventas que terceros hicieron de tus productos desde la Megabodega)</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tabla de pedidos -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-600 min-w-[900px]">
+                        <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4"># Guía</th>
+                                <th class="py-3 px-4">Fecha</th>
+                                <th class="py-3 px-4">Cliente</th>
+                                <th class="py-3 px-4">Estado</th>
+                                <th class="py-3 px-4">Origen</th>
+                                <th class="py-3 px-4">Tipo Venta</th>
+                                <th class="py-3 px-4">Transportadora</th>
+                                <th class="py-3 px-4">Bodega</th>
+                                <th class="py-3 px-4">Recaudo / Costo</th>
+                                <th class="py-3 px-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <template x-if="filteredOrders.length === 0">
+                                <tr>
+                                    <td colspan="10" class="py-10 text-center text-slate-400">
+                                        <i class="fa-solid fa-box-open text-2xl mb-2 block"></i>
+                                        <span class="text-sm">No hay pedidos que coincidan con los filtros aplicados.</span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-for="order in filteredOrders" :key="order.id">
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <!-- # Guía -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="font-bold text-[#4F46E5] font-mono text-xs" x-text="order.order_number"></div>
+                                        <div class="text-[10px] text-slate-400 font-mono" x-text="order.tracking_number || 'Sin guía'"></div>
+                                    </td>
+                                    <!-- Fecha -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="font-medium text-slate-800" x-text="order.date_fmt"></div>
+                                        <div class="text-[10px] text-slate-400" x-text="order.time_fmt"></div>
+                                    </td>
+                                    <!-- Cliente + Ciudad -->
+                                    <td class="py-3 px-4">
+                                        <div class="font-semibold text-slate-900" x-text="order.customer_name"></div>
+                                        <div class="text-[11px] text-slate-400 flex items-center gap-1">
+                                            <i class="fa-solid fa-location-dot text-[#4F46E5] text-[10px]"></i>
+                                            <span x-text="order.shipping_city + ', ' + order.shipping_department"></span>
+                                        </div>
+                                    </td>
+                                    <!-- Estado -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border"
+                                            :class="statusBadgeClass(order.status, order.has_novedad)">
+                                            <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass(order.status, order.has_novedad)"></span>
+                                            <span x-text="statusLabel(order.status, order.has_novedad)"></span>
+                                        </span>
+                                    </td>
+                                    <!-- Origen -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-medium text-slate-700">
+                                            <i class="fa-solid fa-bolt text-[#4F46E5] text-[10px]"></i> App Bolidrop
+                                        </span>
+                                    </td>
+                                    <!-- Tipo Venta -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <template x-if="order.is_dropshipper_sale">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-violet-50 border border-violet-200 text-violet-700">
+                                                <i class="fa-solid fa-people-arrows text-[10px]"></i> Dropshipping
+                                            </span>
+                                        </template>
+                                        <template x-if="!order.is_dropshipper_sale">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 border border-indigo-200 text-[#4F46E5]">
+                                                <i class="fa-solid fa-store text-[10px]"></i> Venta Proveedor
+                                            </span>
+                                        </template>
+                                    </td>
+                                    <!-- Transportadora -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="font-medium text-slate-800 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-truck-fast text-[#4F46E5] text-[10px]"></i>
+                                            <span x-text="order.carrier_name || 'DEX Bolivia'"></span>
+                                        </div>
+                                    </td>
+                                    <!-- Bodega -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="text-[11px] text-slate-700 font-medium" x-text="order.warehouse_name || '—'"></div>
+                                    </td>
+                                    <!-- Recaudo / Costo -->
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="font-mono font-bold text-emerald-700 text-xs" x-text="'Bs ' + parseFloat(order.total_amount_bob || 0).toFixed(2)"></div>
+                                        <div class="font-mono text-[10px] text-slate-400" x-text="'Costo: Bs ' + parseFloat(order.provider_subtotal || 0).toFixed(2)"></div>
+                                    </td>
+                                    <!-- Acciones -->
+                                    <td class="py-3 px-4 whitespace-nowrap text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <!-- Tracking -->
+                                            <a :href="'/tracking/' + order.tracking_number" x-show="order.tracking_number" target="_blank"
+                                                class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 text-[10px] font-bold transition" title="Ver tracking">
+                                                <i class="fa-solid fa-route"></i>
+                                            </a>
+                                            <!-- Novedad -->
+                                            <a :href="'/returns'" x-show="order.has_novedad"
+                                                class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[10px] font-bold transition" title="Ver novedad">
+                                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                            </a>
+                                            <!-- Detalle -->
+                                            <button @click="openOrderDetail(order)"
+                                                class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold transition cursor-pointer" title="Ver detalle">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer paginación simple -->
+                <div x-show="filteredOrders.length > 0" class="px-5 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/60">
+                    <span class="text-[11px] text-slate-400">
+                        Mostrando <span class="font-bold text-slate-600" x-text="filteredOrders.length"></span> de
+                        <span class="font-bold text-slate-600" x-text="allOrders.length"></span> pedidos
+                    </span>
+                    <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-shield-check text-emerald-500"></i>
+                        Bolidrop COD Bolivia · Pagos seguros en BOB
+                    </span>
+                </div>
             </div>
+
+            <!-- Modal Detalle de Pedido -->
+            <div x-show="detailModalOpen" x-cloak
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                @click.self="detailModalOpen = false">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg" @click.stop>
+                    <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm" x-text="'Pedido ' + (selectedOrder?.order_number || '')"></h3>
+                            <p class="text-xs text-slate-500 mt-0.5" x-text="selectedOrder?.date_fmt + ' ' + selectedOrder?.time_fmt"></p>
+                        </div>
+                        <button @click="detailModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="p-5 space-y-4" x-show="selectedOrder">
+                        <!-- Estado + Tipo -->
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border"
+                                :class="statusBadgeClass(selectedOrder?.status, selectedOrder?.has_novedad)">
+                                <span x-text="statusLabel(selectedOrder?.status, selectedOrder?.has_novedad)"></span>
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border"
+                                :class="selectedOrder?.is_dropshipper_sale ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-indigo-50 text-[#4F46E5] border-indigo-200'"
+                                x-text="selectedOrder?.is_dropshipper_sale ? 'Dropshipping' : 'Venta Proveedor'">
+                            </span>
+                        </div>
+                        <!-- Cliente -->
+                        <div class="rounded-xl border border-slate-200 overflow-hidden">
+                            <div class="bg-slate-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                <i class="fa-solid fa-user mr-1 text-[#4F46E5]"></i> Destinatario
+                            </div>
+                            <div class="p-4 space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Nombre:</span>
+                                    <span class="font-semibold text-slate-900" x-text="selectedOrder?.customer_name"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Ciudad / Depto:</span>
+                                    <span class="font-semibold text-slate-900" x-text="(selectedOrder?.shipping_city || '') + ', ' + (selectedOrder?.shipping_department || '')"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Logística -->
+                        <div class="rounded-xl border border-slate-200 overflow-hidden">
+                            <div class="bg-slate-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                <i class="fa-solid fa-truck-fast mr-1 text-[#4F46E5]"></i> Logística
+                            </div>
+                            <div class="p-4 space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">N° Guía:</span>
+                                    <span class="font-mono font-bold text-[#4F46E5]" x-text="selectedOrder?.tracking_number || 'Pendiente'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Courier:</span>
+                                    <span class="font-semibold text-slate-900" x-text="selectedOrder?.carrier_name || 'DEX Bolivia'"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Bodega:</span>
+                                    <span class="font-semibold text-slate-900" x-text="selectedOrder?.warehouse_name || '—'"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Productos -->
+                        <div class="rounded-xl border border-slate-200 overflow-hidden">
+                            <div class="bg-slate-50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                <i class="fa-solid fa-box mr-1 text-[#4F46E5]"></i> Productos
+                            </div>
+                            <div class="divide-y divide-slate-100">
+                                <template x-for="item in (selectedOrder?.items || [])" :key="item.id">
+                                    <div class="px-4 py-2.5 flex items-center justify-between gap-2 text-xs">
+                                        <span class="font-medium text-slate-800" x-text="item.product_name"></span>
+                                        <div class="flex items-center gap-3 shrink-0">
+                                            <span class="text-slate-500" x-text="'x' + item.quantity"></span>
+                                            <span class="font-mono font-bold text-emerald-700" x-text="'Bs ' + parseFloat(item.unit_cost_bob * item.quantity).toFixed(2)"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <!-- Totales -->
+                        <div class="rounded-xl bg-indigo-50 border border-indigo-200 p-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-700">Total recaudo / costo mayorista:</span>
+                            <div class="text-right">
+                                <div class="font-mono font-extrabold text-sm text-emerald-700" x-text="'Bs ' + parseFloat(selectedOrder?.total_amount_bob || 0).toFixed(2)"></div>
+                                <div class="font-mono text-[11px] text-slate-500" x-text="'Costo: Bs ' + parseFloat(selectedOrder?.provider_subtotal || 0).toFixed(2)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
+                        <a :href="selectedOrder?.tracking_number ? '/tracking/' + selectedOrder.tracking_number : '#'" target="_blank"
+                            x-show="selectedOrder?.tracking_number"
+                            class="px-4 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold hover:bg-sky-100 transition">
+                            <i class="fa-solid fa-route mr-1"></i> Ver Tracking
+                        </a>
+                        <button @click="detailModalOpen = false"
+                            class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition cursor-pointer">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
+        <!-- FIN MÓDULO MIS PEDIDOS -->
     </div>
 
     <!-- Productos del Proveedor (#FFFFFF) -->
@@ -3946,6 +4251,142 @@ function proveedorDashboard() {
             }
         }
     }
+}
+
+// =============================================================================
+// MÓDULO ALPINE.JS — MIS PEDIDOS (Estilo Dropanas)
+// =============================================================================
+function pedidosModule() {
+    // Datos preparados en PHP y emitidos de forma segura via Js::from()
+    const rawOrders = {{ Js::from($salesOrdersJson ?? []) }};
+
+    return {
+        // Datos
+        allOrders: rawOrders,
+        // Filtros reactivos
+        statusFilter: '',
+        carrierFilter: '',
+        dateFrom: '',
+        dateTo: '',
+        includeDropshippers: true,
+        searchQuery: '',
+        // Modal
+        detailModalOpen: false,
+        selectedOrder: null,
+
+        // Pills de estado con sus clases
+        get statusPills() {
+            const defs = [
+                { key: 'pending_confirmation', label: 'Pendiente',      dotClass: 'bg-amber-400',   activeClass: 'bg-amber-50 text-amber-700 border-amber-300' },
+                { key: 'confirmed',            label: 'En preparación', dotClass: 'bg-indigo-500',  activeClass: 'bg-indigo-50 text-indigo-700 border-indigo-300' },
+                { key: 'in_transit',           label: 'En tránsito',    dotClass: 'bg-sky-500',     activeClass: 'bg-sky-50 text-sky-700 border-sky-300' },
+                { key: 'dispatched',           label: 'En reparto',     dotClass: 'bg-blue-500',    activeClass: 'bg-blue-50 text-blue-700 border-blue-300' },
+                { key: 'delivered',            label: 'Entregado',      dotClass: 'bg-emerald-500', activeClass: 'bg-emerald-50 text-emerald-700 border-emerald-300' },
+                { key: 'settled',              label: 'Pagado',         dotClass: 'bg-teal-500',    activeClass: 'bg-teal-50 text-teal-700 border-teal-300' },
+                { key: 'novedad',              label: 'Novedad',        dotClass: 'bg-rose-500',    activeClass: 'bg-rose-50 text-rose-700 border-rose-300' },
+                { key: 'returned',             label: 'Devolución',     dotClass: 'bg-orange-500',  activeClass: 'bg-orange-50 text-orange-700 border-orange-300' },
+                { key: 'cancelled',            label: 'Cancelado',      dotClass: 'bg-slate-400',   activeClass: 'bg-slate-100 text-slate-600 border-slate-300' },
+            ];
+            return defs.map(d => ({
+                ...d,
+                count: d.key === 'novedad'
+                    ? this.allOrders.filter(o => o.has_novedad).length
+                    : this.allOrders.filter(o => o.status === d.key).length,
+            }));
+        },
+
+        // Couriers únicos
+        get uniqueCarriers() {
+            return [...new Set(this.allOrders.map(o => o.carrier_name).filter(Boolean))];
+        },
+
+        // Filtros combinados
+        get filteredOrders() {
+            return this.allOrders.filter(order => {
+                // Toggle dropshippers
+                if (!this.includeDropshippers && order.is_dropshipper_sale) return false;
+                // Filtro estado
+                if (this.statusFilter) {
+                    if (this.statusFilter === 'novedad') {
+                        if (!order.has_novedad) return false;
+                    } else {
+                        if (order.status !== this.statusFilter) return false;
+                    }
+                }
+                // Filtro courier
+                if (this.carrierFilter && order.carrier_name !== this.carrierFilter) return false;
+                // Filtro fechas
+                if (this.dateFrom) {
+                    const from = new Date(this.dateFrom + 'T00:00:00');
+                    if (new Date(order.created_at_ts * 1000) < from) return false;
+                }
+                if (this.dateTo) {
+                    const to = new Date(this.dateTo + 'T23:59:59');
+                    if (new Date(order.created_at_ts * 1000) > to) return false;
+                }
+                // Búsqueda libre
+                if (this.searchQuery) {
+                    const q = this.searchQuery.toLowerCase();
+                    if (
+                        !order.order_number?.toLowerCase().includes(q) &&
+                        !order.tracking_number?.toLowerCase().includes(q) &&
+                        !order.customer_name?.toLowerCase().includes(q)
+                    ) return false;
+                }
+                return true;
+            });
+        },
+
+        // Helpers de badges de estado
+        statusLabel(status, hasNovedad) {
+            if (hasNovedad) return 'En novedad';
+            const map = {
+                pending_confirmation: 'Pendiente',
+                confirmed:            'En preparación',
+                in_transit:           'En tránsito',
+                dispatched:           'En reparto',
+                delivered:            'Entregado',
+                settled:              'Pagado',
+                returned:             'Devolución',
+                cancelled:            'Cancelado',
+            };
+            return map[status] || status;
+        },
+        statusBadgeClass(status, hasNovedad) {
+            if (hasNovedad) return 'bg-rose-50 text-rose-700 border-rose-200';
+            const map = {
+                pending_confirmation: 'bg-amber-50 text-amber-700 border-amber-200',
+                confirmed:            'bg-indigo-50 text-indigo-700 border-indigo-200',
+                in_transit:           'bg-sky-50 text-sky-700 border-sky-200',
+                dispatched:           'bg-blue-50 text-blue-700 border-blue-200',
+                delivered:            'bg-emerald-50 text-emerald-700 border-emerald-200',
+                settled:              'bg-teal-50 text-teal-700 border-teal-200',
+                returned:             'bg-orange-50 text-orange-700 border-orange-200',
+                cancelled:            'bg-slate-100 text-slate-600 border-slate-200',
+            };
+            return map[status] || 'bg-slate-100 text-slate-600 border-slate-200';
+        },
+        statusDotClass(status, hasNovedad) {
+            if (hasNovedad) return 'bg-rose-500';
+            const map = {
+                pending_confirmation: 'bg-amber-400',
+                confirmed:            'bg-indigo-500',
+                in_transit:           'bg-sky-500',
+                dispatched:           'bg-blue-500',
+                delivered:            'bg-emerald-500',
+                settled:              'bg-teal-500',
+                returned:             'bg-orange-500',
+                cancelled:            'bg-slate-400',
+            };
+            return map[status] || 'bg-slate-400';
+        },
+
+        // Modal
+        openOrderDetail(order) {
+            this.selectedOrder = order;
+            this.detailModalOpen = true;
+        },
+    };
 }
 
 // =============================================================================
