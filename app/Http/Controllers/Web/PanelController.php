@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Warehouse;
+use App\Services\Analytics\ProviderMetricsService;
 use Illuminate\Http\Request;
 
 class PanelController extends Controller
@@ -463,6 +464,76 @@ class PanelController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    // =========================================================
+    // REPORTE GLOBAL DE MÉTRICAS DEL PROVEEDOR
+    // =========================================================
+
+    /**
+     * API JSON: métricas completas filtradas por rango de fechas.
+     */
+    public function providerMetricsJson(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $authUser = $request->user();
+        if (! $authUser || (! $authUser->isProvider() && ! $authUser->isTenantAdmin())) {
+            return response()->json(['status' => 'error', 'message' => 'Sin permisos.'], 403);
+        }
+
+        $provider = $authUser->isProvider()
+            ? $authUser
+            : (
+                $request->filled('provider_id')
+                    ? User::where('role', 'provider')->find($request->input('provider_id'))
+                    : User::where('role', 'provider')->first()
+            );
+
+        if (! $provider) {
+            return response()->json(['status' => 'error', 'message' => 'Proveedor no encontrado.'], 404);
+        }
+
+        $service = app(ProviderMetricsService::class);
+        $data    = $service->getMetrics(
+            $provider->id,
+            $request->input('date_from'),
+            $request->input('date_to')
+        );
+
+        return response()->json(['status' => 'success', 'data' => $data]);
+    }
+
+    /**
+     * Exportar CSV completo de métricas del proveedor.
+     */
+    public function exportProviderMetrics(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $authUser = $request->user();
+        if (! $authUser || (! $authUser->isProvider() && ! $authUser->isTenantAdmin())) {
+            abort(403);
+        }
+
+        $provider = $authUser->isProvider()
+            ? $authUser
+            : (
+                $request->filled('provider_id')
+                    ? User::where('role', 'provider')->find($request->input('provider_id'))
+                    : User::where('role', 'provider')->first()
+            );
+
+        if (! $provider) {
+            abort(404);
+        }
+
+        $service  = app(ProviderMetricsService::class);
+        $filename = 'reporte_proveedor_' . now()->format('Ymd_His') . '.csv';
+
+        return response()->streamDownload(function () use ($service, $provider, $request) {
+            echo $service->generateMetricsCsv(
+                $provider->id,
+                $request->input('date_from'),
+                $request->input('date_to')
+            );
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 }
 

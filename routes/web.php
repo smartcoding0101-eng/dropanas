@@ -83,6 +83,10 @@ Route::middleware(['auth'])->group(function () {
     // Exportación de Kardex del Proveedor (CSV con UTF-8 BOM para Excel)
     Route::get('/panel/proveedor/kardex/export', [\App\Http\Controllers\Web\PanelController::class, 'exportProviderKardex'])->name('provider.kardex.export');
 
+    // Reportes de Métricas, Flujo de Ventas, Valorado y Rotación del Proveedor
+    Route::get('/panel/proveedor/reports/metrics', [\App\Http\Controllers\Web\PanelController::class, 'providerMetricsJson'])->name('provider.reports.metrics');
+    Route::get('/panel/proveedor/reports/export', [\App\Http\Controllers\Web\PanelController::class, 'exportProviderMetrics'])->name('provider.reports.export');
+
     // CRUD Web de Categorías y Creación de Productos (Sesión Web directa para Panel Proveedor / Admin)
     Route::post('/products/bulk-upload', [\App\Http\Controllers\Api\ProductController::class, 'bulkUpload'])->name('products.bulk.upload');
     Route::get('/products/{id}', [\App\Http\Controllers\Api\ProductController::class, 'show'])->name('products.show.web');

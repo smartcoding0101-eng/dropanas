@@ -111,6 +111,9 @@
         <a href="#ventas" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">
             <i class="fa-solid fa-chart-line text-slate-400"></i> Ventas
         </a>
+        <a href="#reporte" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-chart-pie text-violet-500"></i> Reportes &amp; Métricas
+        </a>
     </nav>
 
     <!-- =========================================================
@@ -3226,6 +3229,396 @@
 
 </div>
 
+
+    {{-- =========================================================
+         SECCIÓN REPORTE GLOBAL DE MÉTRICAS
+    ========================================================= --}}
+    <div id="reporte" class="space-y-6 mt-8" x-data="reporteModule()" x-init="init()">
+
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-violet-600"></i> Reporte Global de Métricas
+                </h2>
+                <p class="text-slate-500 text-sm mt-0.5">Ventas, rotación, inventario valorado y flujo COD filtrado por período.</p>
+            </div>
+            <a :href="getExportUrl()" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow transition">
+                <i class="fa-solid fa-file-csv"></i> Exportar CSV
+            </a>
+        </div>
+
+        {{-- FILTROS --}}
+        <div class="bg-white border border-violet-100 rounded-2xl shadow-sm p-4 flex flex-wrap items-end gap-3">
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Desde</label>
+                <input type="date" x-model="dateFrom" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-violet-400 outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Hasta</label>
+                <input type="date" x-model="dateTo" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-violet-400 outline-none">
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+                <button @click="setPreset(1)"  class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">Hoy</button>
+                <button @click="setPreset(7)"  class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">7 días</button>
+                <button @click="setPreset(30)" class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">30 días</button>
+                <button @click="setPreset(90)" class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">90 días</button>
+                <button @click="setPresetMonth()" class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">Este mes</button>
+                <button @click="setPresetYear()" class="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-violet-100 text-slate-600 hover:text-violet-700 rounded-lg transition">Este año</button>
+            </div>
+            <button @click="loadReportData()" :disabled="loading"
+                class="ml-auto px-5 py-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white text-sm font-bold rounded-xl shadow transition flex items-center gap-2">
+                <i class="fa-solid fa-rotate" :class="{'animate-spin': loading}"></i>
+                <span x-text="loading ? 'Cargando...' : 'Aplicar Filtro'"></span>
+            </button>
+        </div>
+
+        {{-- SPINNER --}}
+        <div x-show="loading" class="flex justify-center py-16">
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
+                <p class="text-sm text-slate-500">Calculando métricas...</p>
+            </div>
+        </div>
+
+        {{-- CONTENIDO --}}
+        <div x-show="!loading && report" class="space-y-6">
+
+            {{-- KPI CARDS --}}
+            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Uds Vendidas</span>
+                    <span class="text-2xl font-black text-indigo-700" x-text="report?.summary_kpis?.total_units_sold ?? '—'"></span>
+                    <span class="text-xs text-slate-400">unidades en el período</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Ingresos Mayoristas</span>
+                    <span class="text-2xl font-black text-emerald-700" x-text="'Bs ' + (report?.funnel?.total_provider_cost_bob ?? '0')"></span>
+                    <span class="text-xs text-slate-400">costo acreditado</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tasa Entrega</span>
+                    <span class="text-2xl font-black text-teal-700" x-text="(report?.funnel?.delivery_rate_percent ?? '0') + '%'"></span>
+                    <span class="text-xs text-slate-400">pedidos entregados</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Valorado Inventario</span>
+                    <span class="text-2xl font-black text-violet-700" x-text="'Bs ' + (report?.valuation?.total_valuation_cost_bob ?? '0')"></span>
+                    <span class="text-xs text-slate-400">costo total en stock</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Saldo Billetera</span>
+                    <span class="text-2xl font-black text-amber-700" x-text="'Bs ' + (report?.wallet?.available_bob ?? '0')"></span>
+                    <span class="text-xs text-slate-400">disponible ahora</span>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Producto Estrella</span>
+                    <span class="text-sm font-black text-slate-800 leading-tight" x-text="report?.summary_kpis?.top_mover_product?.name ?? '—'"></span>
+                    <span class="text-xs text-indigo-600 font-semibold" x-text="(report?.summary_kpis?.top_mover_product?.sold ?? 0) + ' uds vendidas'"></span>
+                </div>
+            </div>
+
+            {{-- EMBUDO DE VENTAS --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-violet-500"></i> Embudo del Flujo COD
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <template x-for="(phase, key) in {
+                        phase_1_prep: {label: 'Confirmación & Bodega', icon: 'fa-box', color: 'indigo'},
+                        phase_2_transit: {label: 'En Ruta DEX', icon: 'fa-truck', color: 'amber'},
+                        phase_3_delivered: {label: 'Entregados & Recaudados', icon: 'fa-circle-check', color: 'emerald'},
+                        phase_4_novedades: {label: 'Devoluciones / Novedades', icon: 'fa-triangle-exclamation', color: 'red'}
+                    }">
+                        <div class="border border-slate-100 rounded-xl p-4 flex flex-col gap-1 bg-slate-50 hover:bg-white transition">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i :class="'fa-solid ' + phase.icon + ' text-' + phase.color + '-500 text-sm'"></i>
+                                <span class="text-xs font-semibold text-slate-500" x-text="phase.label"></span>
+                            </div>
+                            <span class="text-2xl font-black text-slate-800" x-text="report?.funnel?.[key]?.count ?? 0"></span>
+                            <span class="text-xs text-slate-400">pedidos</span>
+                            <span class="text-sm font-bold text-slate-600 mt-1" x-text="'Bs ' + (report?.funnel?.[key]?.total_bob ?? '0')"></span>
+                        </div>
+                    </template>
+                </div>
+                <div class="mt-4 grid grid-cols-3 gap-4 border-t border-slate-100 pt-4 text-sm">
+                    <div class="text-center">
+                        <div class="font-black text-slate-800 text-lg" x-text="report?.funnel?.total_orders ?? 0"></div>
+                        <div class="text-xs text-slate-400">Total Pedidos</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-black text-emerald-700 text-lg" x-text="(report?.funnel?.delivery_rate_percent ?? 0) + '%'"></div>
+                        <div class="text-xs text-slate-400">Tasa de Entrega</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-black text-violet-700 text-lg" x-text="'Bs ' + (report?.funnel?.total_provider_cost_bob ?? 0)"></div>
+                        <div class="text-xs text-slate-400">Total Acreditado</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ROTACIÓN DE PRODUCTOS --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-rotate text-indigo-500"></i> Rotación de Productos (Clasificación ABC)
+                    </h3>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-bold">A = Estrella</span>
+                        <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-bold">B = Normal</span>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-bold">C = Lento</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider">
+                                <th class="px-3 py-2 text-left rounded-tl-lg">Producto</th>
+                                <th class="px-3 py-2 text-left">SKU</th>
+                                <th class="px-3 py-2 text-center cursor-pointer hover:text-indigo-600" @click="toggleSort('stock_available')">Stock ▲▼</th>
+                                <th class="px-3 py-2 text-center cursor-pointer hover:text-indigo-600" @click="toggleSort('units_sold')">Uds Vendidas ▲▼</th>
+                                <th class="px-3 py-2 text-center cursor-pointer hover:text-indigo-600" @click="toggleSort('velocity_per_day')">Vel/Día ▲▼</th>
+                                <th class="px-3 py-2 text-center cursor-pointer hover:text-indigo-600" @click="toggleSort('runway_days')">Runway (días) ▲▼</th>
+                                <th class="px-3 py-2 text-center">Tasa Rot.</th>
+                                <th class="px-3 py-2 text-center rounded-tr-lg">ABC / Recomendación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-if="!report?.rotation?.items?.length">
+                                <tr><td colspan="8" class="text-center text-slate-400 py-6 italic">Sin datos de rotación en este período.</td></tr>
+                            </template>
+                            <template x-for="item in sortedRotation()" :key="item.product_id">
+                                <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-3 py-2 font-semibold text-slate-700 max-w-[180px] truncate" x-text="item.product_name"></td>
+                                    <td class="px-3 py-2 text-slate-400 font-mono" x-text="item.sku ?? '—'"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-slate-700" x-text="item.stock_available"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-indigo-700" x-text="item.units_sold"></td>
+                                    <td class="px-3 py-2 text-center text-slate-600" x-text="item.velocity_per_day"></td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span :class="{
+                                            'text-emerald-700 font-bold': item.runway_days > 60,
+                                            'text-amber-700 font-bold': item.runway_days > 15 && item.runway_days <= 60,
+                                            'text-red-700 font-bold': item.runway_days <= 15
+                                        }" x-text="item.runway_days === 9999 ? '∞' : item.runway_days"></span>
+                                    </td>
+                                    <td class="px-3 py-2 text-center text-slate-600" x-text="item.rotation_rate + '%'"></td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span :class="{
+                                            'bg-emerald-100 text-emerald-700': item.abc_class === 'A',
+                                            'bg-indigo-100 text-indigo-700': item.abc_class === 'B',
+                                            'bg-amber-100 text-amber-700': item.abc_class === 'C'
+                                        }" class="px-2 py-0.5 rounded-full font-black text-xs mr-1" x-text="item.abc_class"></span>
+                                        <span class="text-slate-400 text-xs" x-text="item.recommendation"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- VALORADO DE INVENTARIO POR BODEGA --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-warehouse text-violet-500"></i> Valorado de Inventario por Bodega
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider">
+                                <th class="px-3 py-2 text-left rounded-tl-lg">Bodega</th>
+                                <th class="px-3 py-2 text-left">Depto.</th>
+                                <th class="px-3 py-2 text-center">Stock Disp.</th>
+                                <th class="px-3 py-2 text-center">Stock Físico</th>
+                                <th class="px-3 py-2 text-right">Val. Costo BOB</th>
+                                <th class="px-3 py-2 text-right">Val. Sugerido BOB</th>
+                                <th class="px-3 py-2 text-center rounded-tr-lg">Particip. %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-if="!report?.valuation?.warehouses?.length">
+                                <tr><td colspan="7" class="text-center text-slate-400 py-6 italic">Sin bodegas con inventario.</td></tr>
+                            </template>
+                            <template x-for="wh in report?.valuation?.warehouses ?? []" :key="wh.warehouse_id">
+                                <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-3 py-2 font-semibold text-slate-700" x-text="wh.warehouse_name"></td>
+                                    <td class="px-3 py-2 text-slate-500" x-text="wh.department"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-indigo-700" x-text="wh.stock_available"></td>
+                                    <td class="px-3 py-2 text-center text-slate-600" x-text="wh.stock_physical"></td>
+                                    <td class="px-3 py-2 text-right font-bold text-slate-800" x-text="'Bs ' + wh.valuation_cost_bob"></td>
+                                    <td class="px-3 py-2 text-right font-bold text-emerald-700" x-text="'Bs ' + wh.valuation_suggested_bob"></td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span class="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full font-bold" x-text="wh.participation_pct + '%'"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <tr x-show="report?.valuation?.warehouses?.length" class="border-t-2 border-slate-300 bg-slate-50 font-black text-xs">
+                                <td class="px-3 py-2 text-slate-700" colspan="4">TOTAL INVENTARIO</td>
+                                <td class="px-3 py-2 text-right text-violet-700" x-text="'Bs ' + (report?.valuation?.total_valuation_cost_bob ?? 0)"></td>
+                                <td class="px-3 py-2 text-right text-emerald-700" x-text="'Bs ' + (report?.valuation?.total_valuation_suggested_bob ?? 0)"></td>
+                                <td class="px-3 py-2 text-center text-slate-400">100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- DISTRIBUCIÓN GEOGRÁFICA --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-teal-500"></i> Distribución Geográfica (Bolivia)
+                </h3>
+                <template x-if="!report?.geo?.length">
+                    <p class="text-slate-400 italic text-sm text-center py-4">Sin datos geográficos en este período.</p>
+                </template>
+                <div class="space-y-2">
+                    <template x-for="dept in report?.geo ?? []" :key="dept.department">
+                        <div class="flex items-center gap-3">
+                            <span class="w-24 text-xs font-semibold text-slate-600 truncate" x-text="dept.department"></span>
+                            <div class="flex-1 bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="h-3 bg-teal-500 rounded-full transition-all duration-500"
+                                     :style="'width:' + dept.participation_pct + '%'"></div>
+                            </div>
+                            <span class="w-12 text-xs text-right font-bold text-teal-700" x-text="dept.participation_pct + '%'"></span>
+                            <span class="w-16 text-xs text-right text-slate-500" x-text="dept.orders + ' ped.'"></span>
+                            <span class="w-24 text-xs text-right font-semibold text-slate-700" x-text="'Bs ' + dept.total_cost_bob"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            {{-- TOP VENDEDORES --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <h3 class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-500"></i> Top 10 Vendedores / Dropshippers
+                </h3>
+                <template x-if="!report?.top_sellers?.length">
+                    <p class="text-slate-400 italic text-sm text-center py-4">Sin vendedores activos en este período.</p>
+                </template>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider">
+                                <th class="px-3 py-2 text-center w-8">#</th>
+                                <th class="px-3 py-2 text-left">Vendedor</th>
+                                <th class="px-3 py-2 text-left">Tienda</th>
+                                <th class="px-3 py-2 text-left">Ciudad</th>
+                                <th class="px-3 py-2 text-center">Pedidos</th>
+                                <th class="px-3 py-2 text-center">Uds</th>
+                                <th class="px-3 py-2 text-right">Volumen BOB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(seller, idx) in report?.top_sellers ?? []" :key="seller.seller_id">
+                                <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-3 py-2 text-center">
+                                        <span :class="{
+                                            'text-amber-500 font-black': idx === 0,
+                                            'text-slate-500 font-black': idx === 1,
+                                            'text-orange-400 font-black': idx === 2,
+                                            'text-slate-400': idx > 2
+                                        }" x-text="idx + 1"></span>
+                                    </td>
+                                    <td class="px-3 py-2 font-semibold text-slate-700" x-text="seller.seller_name"></td>
+                                    <td class="px-3 py-2 text-slate-500" x-text="seller.store_name ?? '—'"></td>
+                                    <td class="px-3 py-2 text-slate-500" x-text="seller.city ?? '—'"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-indigo-700" x-text="seller.orders"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-slate-700" x-text="seller.units"></td>
+                                    <td class="px-3 py-2 text-right font-black text-emerald-700" x-text="'Bs ' + seller.total_cost_bob"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- MOVIMIENTOS DETALLADOS --}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
+                <div class="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+                    <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-500"></i> Movimientos Detallados de Ventas
+                    </h3>
+                    <div class="flex flex-wrap gap-2 md:ml-auto">
+                        <input type="text" x-model="movementSearch" placeholder="Buscar producto, pedido, cliente..."
+                               class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-300 outline-none w-56">
+                        <select x-model="movementStatusFilter" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-indigo-300 outline-none">
+                            <option value="all">Todos los estados</option>
+                            <option value="pending">Pendiente</option>
+                            <option value="confirmed">Confirmado</option>
+                            <option value="dispatched">Despachado</option>
+                            <option value="delivered">Entregado</option>
+                            <option value="settled">Liquidado</option>
+                            <option value="cancelled">Cancelado</option>
+                            <option value="returned">Devuelto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-xs text-slate-400 mb-2">
+                    Mostrando <span class="font-bold text-slate-600" x-text="filteredMovements().length"></span> de
+                    <span x-text="report?.movements?.length ?? 0"></span> movimientos
+                </div>
+                <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                    <table class="w-full text-xs">
+                        <thead class="sticky top-0 bg-white z-10">
+                            <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider">
+                                <th class="px-3 py-2 text-left">Fecha</th>
+                                <th class="px-3 py-2 text-left">Pedido</th>
+                                <th class="px-3 py-2 text-left">Guía</th>
+                                <th class="px-3 py-2 text-left">Producto</th>
+                                <th class="px-3 py-2 text-center">Cant.</th>
+                                <th class="px-3 py-2 text-right">Costo Unit.</th>
+                                <th class="px-3 py-2 text-right">Subtotal</th>
+                                <th class="px-3 py-2 text-left">Cliente</th>
+                                <th class="px-3 py-2 text-left">Ciudad</th>
+                                <th class="px-3 py-2 text-center">Estado</th>
+                                <th class="px-3 py-2 text-center">Liquid.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-if="!filteredMovements().length">
+                                <tr><td colspan="11" class="text-center text-slate-400 py-6 italic">Sin movimientos que coincidan con los filtros.</td></tr>
+                            </template>
+                            <template x-for="mv in filteredMovements()" :key="mv.order_item_id">
+                                <tr class="border-t border-slate-100 hover:bg-slate-50 transition">
+                                    <td class="px-3 py-2 text-slate-500 whitespace-nowrap" x-text="mv.created_at"></td>
+                                    <td class="px-3 py-2 font-mono text-indigo-600 font-bold" x-text="mv.order_number"></td>
+                                    <td class="px-3 py-2 font-mono text-slate-500" x-text="mv.tracking_guide ?? '—'"></td>
+                                    <td class="px-3 py-2 max-w-[160px] truncate font-semibold text-slate-700" :title="mv.product_name" x-text="mv.product_name"></td>
+                                    <td class="px-3 py-2 text-center font-bold text-slate-700" x-text="mv.quantity"></td>
+                                    <td class="px-3 py-2 text-right text-slate-600" x-text="'Bs ' + mv.unit_cost_bob"></td>
+                                    <td class="px-3 py-2 text-right font-bold text-emerald-700" x-text="'Bs ' + mv.subtotal_cost_bob"></td>
+                                    <td class="px-3 py-2 text-slate-500 max-w-[120px] truncate" :title="mv.customer_name" x-text="mv.customer_name"></td>
+                                    <td class="px-3 py-2 text-slate-400" x-text="mv.customer_city ?? '—'"></td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span :class="{
+                                            'bg-emerald-100 text-emerald-700': mv.order_status === 'delivered' || mv.order_status === 'settled',
+                                            'bg-amber-100 text-amber-700': mv.order_status === 'dispatched',
+                                            'bg-indigo-100 text-indigo-700': mv.order_status === 'confirmed',
+                                            'bg-slate-100 text-slate-500': mv.order_status === 'pending',
+                                            'bg-red-100 text-red-700': mv.order_status === 'cancelled' || mv.order_status === 'returned'
+                                        }" class="px-2 py-0.5 rounded-full font-semibold text-xs" x-text="mv.order_status_label ?? mv.order_status"></span>
+                                    </td>
+                                    <td class="px-3 py-2 text-center">
+                                        <span :class="'px-2 py-0.5 rounded-full font-semibold text-xs ' + (mv.settlement_badge ?? 'bg-slate-100 text-slate-400')"
+                                              x-text="mv.settlement_status_label ?? '—'"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>{{-- /contenido --}}
+
+        {{-- VACÍO --}}
+        <div x-show="!loading && !report" class="text-center py-16">
+            <i class="fa-solid fa-chart-pie text-5xl text-violet-200 mb-4"></i>
+            <p class="text-slate-500">Selecciona un período y presiona <strong>Aplicar Filtro</strong> para generar el reporte.</p>
+        </div>
+
+    </div>{{-- /reporte --}}
+
 <script>
 function proveedorDashboard() {
     return {
@@ -4624,6 +5017,123 @@ function networkModule() {
                 }
             } catch {
                 this.showNetToast('Error al procesar la liberación.', 'error');
+            }
+        }
+    };
+}
+
+// =========================================================
+// REPORTE GLOBAL DE MÉTRICAS — Alpine.js Module
+// =========================================================
+function reporteModule() {
+    return {
+        loading: false,
+        report: null,
+        dateFrom: '',
+        dateTo: '',
+        movementSearch: '',
+        movementStatusFilter: 'all',
+        sortField: 'units_sold',
+        sortDir: 'desc',
+
+        getExportUrl() {
+            const params = new URLSearchParams();
+            if (this.dateFrom) params.set('date_from', this.dateFrom);
+            if (this.dateTo)   params.set('date_to',   this.dateTo);
+            return '/panel/proveedor/reports/export?' + params.toString();
+        },
+
+        async init() {
+            const to   = new Date();
+            const from = new Date();
+            from.setDate(from.getDate() - 29);
+            this.dateTo   = to.toISOString().split('T')[0];
+            this.dateFrom = from.toISOString().split('T')[0];
+            await this.loadReportData();
+        },
+
+        setPreset(days) {
+            const to   = new Date();
+            const from = new Date();
+            from.setDate(from.getDate() - (days - 1));
+            this.dateTo   = to.toISOString().split('T')[0];
+            this.dateFrom = from.toISOString().split('T')[0];
+            this.loadReportData();
+        },
+
+        setPresetMonth() {
+            const now  = new Date();
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            this.dateTo   = now.toISOString().split('T')[0];
+            this.dateFrom = from.toISOString().split('T')[0];
+            this.loadReportData();
+        },
+
+        setPresetYear() {
+            const now  = new Date();
+            const from = new Date(now.getFullYear(), 0, 1);
+            this.dateTo   = now.toISOString().split('T')[0];
+            this.dateFrom = from.toISOString().split('T')[0];
+            this.loadReportData();
+        },
+
+        async loadReportData() {
+            this.loading = true;
+            try {
+                const params = new URLSearchParams();
+                if (this.dateFrom) params.set('date_from', this.dateFrom);
+                if (this.dateTo)   params.set('date_to',   this.dateTo);
+                const res  = await fetch('/panel/proveedor/reports/metrics?' + params, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    this.report = data.data;
+                } else {
+                    console.warn('Reporte error:', data.message);
+                    this.report = null;
+                }
+            } catch (e) {
+                console.error('Error loading report:', e);
+                this.report = null;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        filteredMovements() {
+            if (!this.report?.movements) return [];
+            return this.report.movements.filter(m => {
+                const matchStatus = this.movementStatusFilter === 'all'
+                    || m.order_status === this.movementStatusFilter;
+                const q = this.movementSearch.toLowerCase().trim();
+                const matchSearch = !q
+                    || (m.product_name  ?? '').toLowerCase().includes(q)
+                    || (m.order_number  ?? '').toLowerCase().includes(q)
+                    || (m.customer_name ?? '').toLowerCase().includes(q)
+                    || (m.product_sku   ?? '').toLowerCase().includes(q)
+                    || (m.tracking_guide ?? '').toLowerCase().includes(q);
+                return matchStatus && matchSearch;
+            });
+        },
+
+        sortedRotation() {
+            if (!this.report?.rotation?.items) return [];
+            const items = [...this.report.rotation.items];
+            const dir   = this.sortDir === 'asc' ? 1 : -1;
+            return items.sort((a, b) => {
+                const av = a[this.sortField] ?? 0;
+                const bv = b[this.sortField] ?? 0;
+                return dir * (av > bv ? 1 : av < bv ? -1 : 0);
+            });
+        },
+
+        toggleSort(field) {
+            if (this.sortField === field) {
+                this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortField = field;
+                this.sortDir   = 'desc';
             }
         }
     };
