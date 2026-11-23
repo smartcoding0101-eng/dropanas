@@ -3,6 +3,16 @@
 @section('title', 'Checkout COD + QR Bolivia | Bolidrop')
 
 @section('content')
+@php
+    $currentApiToken = null;
+    if (Auth::check()) {
+        try {
+            $currentApiToken = Auth::user()->createToken('checkout_web_session')->plainTextToken;
+        } catch (\Throwable $e) {
+            $currentApiToken = null;
+        }
+    }
+@endphp
 <div class="space-y-8" x-data="checkoutDemo()">
 
     <x-page-header
@@ -676,6 +686,7 @@ function checkoutDemo() {
         priceError: false,
         productDropdownOpen: false,
         productSearchInput: '',
+        apiToken: '{{ $currentApiToken ?? "" }}',
         catalogProducts: {{ Js::from($productsJson ?? []) }},
         availableWarehouses: [],
         selectedProduct: { name: '', cost: 0, suggested: 0, min_price: 0, provider: '', stock: 0 },
@@ -845,18 +856,22 @@ function checkoutDemo() {
             this.errorMsg = null;
 
             try {
-                // 1. Obtener autenticación demo Dropshipper
-                const loginRes = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' }),
-                });
-                const loginData = await loginRes.json();
-                
-                if (!loginData.data?.token) {
-                    throw new Error(loginData.message || 'Error de autenticación demo en el servidor.');
+                // 1. Obtener autenticación (usar token del usuario activo o autenticar demo)
+                let token = this.apiToken;
+                if (!token) {
+                    const loginRes = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' }),
+                    });
+                    const loginData = await loginRes.json();
+                    
+                    if (!loginData.data?.token) {
+                        throw new Error(loginData.message || 'Error de autenticación demo en el servidor.');
+                    }
+                    token = loginData.data.token;
+                    this.apiToken = token;
                 }
-                const token = loginData.data.token;
 
                 // 2. Despachar orden COD
                 const payload = {
