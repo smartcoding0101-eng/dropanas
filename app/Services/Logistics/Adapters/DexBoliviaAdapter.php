@@ -16,9 +16,13 @@ class DexBoliviaAdapter implements CarrierAdapterInterface
 
     public function generateWaybill(Order $order): array
     {
+        $waybillNumber = str_starts_with($order->order_number, 'DEX-')
+            ? $order->order_number
+            : (str_starts_with($order->order_number, 'BO-') ? 'DEX-' . $order->order_number : 'DEX-BO-' . $order->order_number);
+
         return [
             'carrier' => 'DEX Bolivia Express',
-            'waybill_number' => 'DEX-BO-' . $order->order_number,
+            'waybill_number' => $waybillNumber,
             'service_type' => 'COD_STANDARD',
             'origin' => $order->warehouse->city ?? 'Santa Cruz',
             'destination_department' => $order->shipping_department,

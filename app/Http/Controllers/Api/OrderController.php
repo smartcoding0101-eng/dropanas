@@ -186,6 +186,8 @@ class OrderController extends Controller
 
             // Generar Guía Logística
             $waybill = $dexAdapter->generateWaybill($order);
+            $order->tracking_number = $waybill['waybill_number'];
+            $order->save();
 
             // Generar Carga Útil de Pago si no es estrictamente efectivo puro
             $paymentPayload = null;

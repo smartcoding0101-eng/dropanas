@@ -39,10 +39,20 @@ Route::prefix('v1')->group(function () {
 
     // Tracking Público en Tiempo Real por Número de Guía o Pedido
     Route::get('/tracking/{guide}', function (string $guide) {
+        $guide = trim($guide);
+        
+        // Normalización de variantes: maneja prefijos como DEX-BO-BO-... o búsqueda por orden directa
+        $normalizedBo  = preg_replace('/^DEX-(BO-)+/', 'BO-', $guide);
+        $normalizedDex = 'DEX-' . ltrim($normalizedBo, 'DEX-');
+        $rawSuffix     = preg_replace('/^(DEX-)?(BO-)+/', '', $guide);
+
         $order = \App\Models\Order::withoutGlobalScopes()
-            ->where(function ($q) use ($guide) {
+            ->where(function ($q) use ($guide, $normalizedBo, $normalizedDex, $rawSuffix) {
                 $q->where('tracking_number', $guide)
-                  ->orWhere('order_number', $guide);
+                  ->orWhere('order_number', $guide)
+                  ->orWhere('tracking_number', $normalizedDex)
+                  ->orWhere('order_number', $normalizedBo)
+                  ->orWhere('order_number', 'LIKE', '%' . $rawSuffix);
             })
             ->with(['items.product', 'carrier', 'warehouse'])
             ->first();
