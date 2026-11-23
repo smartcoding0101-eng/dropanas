@@ -215,39 +215,13 @@
                             <div class="text-xs text-slate-500">Banco Unión, BCP, Bisa, Ganadero...</div>
                         </div>
                     </label>
-
-                    <!-- Binance Pay -->
-                    <label :class="form.payment_method === 'binance_pay' ? 'ring-2 ring-amber-400 border-amber-300 bg-amber-50' : 'border-slate-200 bg-white'"
-                        class="flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
-                        <input type="radio" x-model="form.payment_method" value="binance_pay" class="text-amber-500 w-4 h-4" />
-                        <div>
-                            <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                                <i class="fa-brands fa-bitcoin text-amber-500"></i> Binance Pay (USDT)
-                            </div>
-                            <div class="text-xs text-slate-500">Criptomonedas estables — Sin fronteras</div>
-                        </div>
-                    </label>
-
-                    <!-- Takenos -->
-                    <label :class="form.payment_method === 'takenos' ? 'ring-2 ring-purple-500 border-purple-300 bg-purple-50' : 'border-slate-200 bg-white'"
-                        class="flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
-                        <input type="radio" x-model="form.payment_method" value="takenos" class="text-purple-600 w-4 h-4" />
-                        <div>
-                            <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                                <i class="fa-solid fa-wallet text-purple-500"></i> Takenos / USD Digital
-                            </div>
-                            <div class="text-xs text-slate-500">Dólares digitales — Remesas</div>
-                        </div>
-                    </label>
                 </div>
 
                 <!-- Panel Dinámico de Acción Inmediata según Moneda / Método Seleccionado -->
                 <div class="mx-5 mb-5 p-4 rounded-xl border transition-all duration-200"
                      :class="{
                          'bg-emerald-50 border-emerald-200 text-emerald-900': form.payment_method === 'cash_on_delivery_bob',
-                         'bg-sky-50 border-sky-200 text-sky-900': form.payment_method === 'qr_interoperable',
-                         'bg-amber-50 border-amber-300 text-amber-950': form.payment_method === 'binance_pay',
-                         'bg-purple-50 border-purple-200 text-purple-950': form.payment_method === 'takenos'
+                         'bg-sky-50 border-sky-200 text-sky-900': form.payment_method === 'qr_interoperable'
                      }">
                     
                     <!-- 1. DETALLE EFECTIVO -->
@@ -280,52 +254,6 @@
                             </div>
                             <p class="text-xs text-sky-700 leading-relaxed">
                                 Se emitirá un código QR interoperable compatible con <strong>Banco Unión, BCP, BNB, Banco Bisa, Ganadero, Mercantil Santa Cruz y Tigo Money</strong>.
-                            </p>
-                        </div>
-                    </template>
-
-                    <!-- 3. DETALLE BINANCE PAY (CRIPTO) -->
-                    <template x-if="form.payment_method === 'binance_pay'">
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 font-bold text-sm text-amber-900">
-                                    <i class="fa-brands fa-bitcoin text-amber-600 text-base"></i>
-                                    <span>Pasarela Cripto Activa: Binance Pay (USDT)</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-sm bg-amber-200 text-amber-950 font-black px-3 py-1 rounded-full font-mono"
-                                          x-text="((totalAmount || 0) / 12.06).toFixed(2) + ' USDT'"></span>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs bg-white/80 p-3 rounded-lg border border-amber-200/60">
-                                <div>
-                                    <span class="text-slate-500">Monto Base en Bolivianos:</span>
-                                    <strong class="block text-slate-800 font-mono" x-text="(totalAmount || 0).toFixed(2) + ' BOB'"></strong>
-                                </div>
-                                <div>
-                                    <span class="text-slate-500">Tasa Oficial BCB Aplicada:</span>
-                                    <strong class="block text-amber-800 font-mono">12.06 BOB / USD</strong>
-                                </div>
-                            </div>
-                            <p class="text-xs text-amber-800 leading-relaxed">
-                                Sin comisiones de red Blockchain. Al presionar confirmar se generará el <strong>código QR de Binance Pay</strong> y el enlace directo para pagar desde la App de Binance.
-                            </p>
-                        </div>
-                    </template>
-
-                    <!-- 4. DETALLE TAKENOS -->
-                    <template x-if="form.payment_method === 'takenos'">
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 font-bold text-sm text-purple-800">
-                                    <i class="fa-solid fa-wallet text-purple-600"></i>
-                                    <span>Dólares Digitales: Takenos</span>
-                                </div>
-                                <span class="text-xs bg-purple-100 text-purple-800 font-bold px-2.5 py-1 rounded-full font-mono"
-                                      x-text="((totalAmount || 0) / 12.06).toFixed(2) + ' USD'"></span>
-                            </div>
-                            <p class="text-xs text-purple-700 leading-relaxed">
-                                Liquidación con saldo Takenos o TakeCard internacional al tipo de cambio oficial de 12.06 BOB.
                             </p>
                         </div>
                     </template>
@@ -439,10 +367,8 @@
                 <!-- Método seleccionado -->
                 <div x-show="form.payment_method" class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs text-sky-800">
                     <i class="fa-solid fa-info-circle mr-1"></i>
-                    <span x-show="form.payment_method === 'cash_on_delivery_bob'">Cobro en efectivo al momento de la entrega.</span>
-                    <span x-show="form.payment_method === 'qr_interoperable'">Se generará un QR bancario interoperable para que el cliente escanee.</span>
-                    <span x-show="form.payment_method === 'binance_pay'">Se generará un código de pago Binance Pay en USDT.</span>
-                    <span x-show="form.payment_method === 'takenos'">Se generará un link de pago Takenos en USD digital.</span>
+                    <span x-show="form.payment_method === 'cash_on_delivery_bob'">Cobro en efectivo al momento de la entrega (COD).</span>
+                    <span x-show="form.payment_method === 'qr_interoperable'">Se generará un QR bancario interoperable (Simple) para que el cliente escanee al recibir.</span>
                 </div>
             </div>
 
