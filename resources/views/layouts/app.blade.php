@@ -158,6 +158,37 @@
             transform: scale(1.12);
         }
 
+        /* Modo Colapsado / Mini Sidebar (Ocultar textos y mostrar solo iconos) */
+        .sidebar-mini a span,
+        .sidebar-mini .sidebar-heading,
+        .sidebar-mini nav > div.sidebar-heading,
+        .sidebar-mini .sidebar-hide-mini {
+            display: none !important;
+        }
+        .sidebar-mini a {
+            justify-content: center !important;
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+            margin-left: 0.4rem !important;
+            margin-right: 0.4rem !important;
+            border-radius: 0.75rem !important;
+        }
+        .sidebar-mini a i {
+            margin: 0 !important;
+            width: auto !important;
+            font-size: 1.15rem !important;
+        }
+        .sidebar-mini .sidebar-footer-text {
+            display: none !important;
+        }
+        .sidebar-mini .sidebar-footer-wrapper {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            padding-top: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+            justify-content: center !important;
+        }
+
         /* Stripe & Linear Executive Card Shadow Elevation */
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
@@ -536,7 +567,20 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
-      x-data="{ sidenavOpen: true, mobileMenuOpen: false, logoutModalOpen: false, cmdPaletteOpen: false, cmdQuery: '' }"
+      x-data="{ 
+          sidenavOpen: true, 
+          sidebarCollapsed: localStorage.getItem('dropana_sidebar_collapsed') === 'true', 
+          mobileMenuOpen: false, 
+          logoutModalOpen: false, 
+          cmdPaletteOpen: false, 
+          cmdQuery: '',
+          toggleSidebar() {
+              this.sidebarCollapsed = !this.sidebarCollapsed;
+              try {
+                  localStorage.setItem('dropana_sidebar_collapsed', this.sidebarCollapsed);
+              } catch (e) {}
+          }
+      }"
       @keydown.escape.window="logoutModalOpen = false; cmdPaletteOpen = false"
       @keydown.ctrl.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())"
       @keydown.meta.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())">
@@ -808,13 +852,31 @@
         <!-- SIDENAV (Fixed Left Sidebar locked to viewport on Mobile, Tablet, Desktop & 4K TV) -->
         <aside :class="[
                 mobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full hidden md:translate-x-0',
-                sidenavOpen ? 'md:flex' : 'md:hidden'
+                sidenavOpen ? 'md:flex' : 'md:hidden',
+                sidebarCollapsed ? 'md:w-20 sidebar-mini' : 'md:w-64'
             ]"
-            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] hidden md:flex flex-col justify-between shrink-0 z-40 overflow-y-auto transition-transform duration-200 ease-out">
+            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] h-[calc(100vh-4rem)] hidden md:flex flex-col justify-between shrink-0 z-40 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out group/sidebar">
             
-            <div class="py-2">
+            <div class="py-1">
+                <!-- Sidenav Header Bar: Título & Botón Colapsar/Expandir en la parte superior derecha -->
+                <div class="px-3 pt-3 pb-2.5 mb-1 border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
+                    <div x-show="!sidebarCollapsed" x-transition.opacity.duration.200ms class="flex items-center gap-2 overflow-hidden pl-1">
+                        <span class="w-1.5 h-4 bg-[#38BDF8] rounded-full"></span>
+                        <span class="text-[11px] font-black uppercase tracking-wider text-slate-300">Menú</span>
+                    </div>
+                    <button @click="toggleSidebar()"
+                            type="button"
+                            class="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#4F46E5] text-slate-300 hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs group/btn shrink-0"
+                            :class="sidebarCollapsed ? 'mx-auto' : 'ml-auto'"
+                            :title="sidebarCollapsed ? 'Mostrar menú completo' : 'Ocultar textos y mostrar solo iconos'"
+                            aria-label="Alternar ancho del menú">
+                        <i class="fa-solid text-xs transition-transform duration-300"
+                           :class="sidebarCollapsed ? 'fa-angles-right text-[#38BDF8] group-hover/btn:scale-125' : 'fa-angles-left group-hover/btn:-translate-x-0.5'"></i>
+                    </button>
+                </div>
+
                 <!-- Buscador Rápido Visible en Móvil y Tablet (< 1024px) -->
-                <div class="px-4 pt-2 pb-3 lg:hidden">
+                <div class="sidebar-hide-mini px-4 pt-2 pb-3 lg:hidden">
                     <form action="{{ url('/tracking') }}" method="GET" class="relative">
                         <input type="text" name="guide" placeholder="Buscar guía o pedido..."
                             class="w-full bg-white/10 border border-white/15 text-white placeholder-slate-400 rounded-lg pl-3 pr-8 py-2 text-xs focus:outline-none focus:border-[#38BDF8]">
@@ -831,62 +893,62 @@
                     {{-- ADMINISTRADOR (tenant_admin)                     --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'tenant_admin')
-                        <div class="px-6 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-6 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Core / Dashboards
                         </div>
-                        <a href="{{ url('/panel/admin') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/admin') }}" title="Dashboard Central" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/admin') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Dashboard Central</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Megabodega Nacional" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Megabodega Nacional</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/checkout-demo') }}" title="Crear Pedido COD" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-cart-shopping w-4 text-center {{ request()->is('checkout-demo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Crear Pedido COD</span>
                         </a>
 
-                        <div class="px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Finanzas & Conciliación
                         </div>
-                        <a href="{{ url('/reporte') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reporte Comercial</span>
                         </a>
-                        <a href="{{ url('/settlements') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('settlements*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/settlements') }}" title="Liquidaciones Bancarias" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('settlements*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-building-columns w-4 text-center {{ request()->is('settlements*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Liquidaciones Bancarias</span>
                         </a>
-                        <a href="{{ url('/reports') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reports*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reports') }}" title="Reportes & Analytics" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reports*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-line w-4 text-center {{ request()->is('reports*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportes & Analytics</span>
                         </a>
-                        <a href="{{ url('/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reportes') }}" title="Métricas Proveedor & Valorado" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Métricas Proveedor & Valorado</span>
                         </a>
 
-                        <div class="px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Logística & Operaciones
                         </div>
-                        <a href="{{ route('admin.kardex.index') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ route('admin.kardex.index') }}" title="Kardex Global & Stock" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-clipboard-list w-4 text-center {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Kardex Global & Stock</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Devoluciones & Log. Inv." class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Devoluciones & Log. Inv.</span>
                         </a>
-                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/carrier/cobro') }}" title="Cobro QR Repartidor" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-qrcode w-4 text-center {{ request()->is('carrier/cobro*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Cobro QR Repartidor</span>
                         </a>
-                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/fulfillment') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/fulfillment') }}" title="Fulfillment & Tiendas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/fulfillment') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-packing w-4 text-center {{ request()->is('panel/fulfillment') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Fulfillment & Tiendas</span>
                         </a>
-                        <a href="{{ url('/notifications/whatsapp') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('notifications/whatsapp*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/notifications/whatsapp') }}" title="WhatsApp Bot (+591)" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('notifications/whatsapp*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-brands fa-whatsapp w-4 text-center {{ request()->is('notifications/whatsapp*') ? 'text-[#0061f2]' : 'text-[#00ac69]' }}"></i>
                             <span>WhatsApp Bot (+591)</span>
                         </a>
@@ -896,30 +958,30 @@
                     {{-- DROPSHIPPER                                      --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'dropshipper')
-                        <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Mi Negocio Dropshipping
                         </div>
-                        <a href="{{ url('/panel/dropshipper') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/dropshipper') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/dropshipper') }}" title="Mi Dashboard" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/dropshipper') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/dropshipper') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mi Dashboard</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Megabodega" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Megabodega</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/checkout-demo') }}" title="Crear Pedido COD" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-cart-shopping w-4 text-center {{ request()->is('checkout-demo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Crear Pedido COD</span>
                         </a>
-                        <a href="{{ url('/panel/dropshipper') }}#billetera" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
+                        <a href="{{ url('/panel/dropshipper') }}#billetera" title="Mi Billetera & Ganancias" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
                             <i class="fa-solid fa-wallet w-4 text-center text-[#a7aeb8]"></i>
                             <span>Mi Billetera & Ganancias</span>
                         </a>
-                        <a href="{{ url('/reporte') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reporte Comercial</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Mis Devoluciones" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mis Devoluciones</span>
                         </a>
@@ -929,30 +991,30 @@
                     {{-- PROVEEDOR                                        --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'provider')
-                        <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Panel de Proveedor
                         </div>
-                        <a href="{{ url('/panel/proveedor') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/proveedor') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/proveedor') }}" title="Mi Dashboard" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/proveedor') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/proveedor') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mi Dashboard</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Catálogo Publicado" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Catálogo Publicado</span>
                         </a>
-                        <a href="{{ url('/reporte') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reporte Comercial</span>
                         </a>
-                        <a href="{{ url('/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reportes') }}" title="Reportes & Métricas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportes & Métricas</span>
                         </a>
-                        <a href="{{ url('/panel/proveedor') }}#inventario" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
+                        <a href="{{ url('/panel/proveedor') }}#inventario" title="Mi Inventario Físico" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
                             <i class="fa-solid fa-warehouse w-4 text-center text-[#a7aeb8]"></i>
                             <span>Mi Inventario Físico</span>
                         </a>
-                        <a href="{{ url('/panel/proveedor') }}#alertas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
+                        <a href="{{ url('/panel/proveedor') }}#alertas" title="Alertas de Stock" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
                             <i class="fa-solid fa-triangle-exclamation w-4 text-center text-[#a7aeb8]"></i>
                             <span>Alertas de Stock</span>
                         </a>
@@ -962,22 +1024,22 @@
                     {{-- CARRIER                                          --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'carrier')
-                        <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Repartidor / Courier
                         </div>
-                        <a href="{{ url('/panel/carrier') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier') && !request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/carrier') }}" title="Mi Hoja de Ruta" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier') && !request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-truck-fast w-4 text-center {{ request()->is('panel/carrier') && !request()->is('panel/carrier/reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mi Hoja de Ruta</span>
                         </a>
-                        <a href="{{ url('/panel/carrier/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/carrier/reportes') }}" title="Reportes & Métricas COD" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('panel/carrier/reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportes &amp; Métricas COD</span>
                         </a>
-                        <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/carrier/cobro') }}" title="Cobro QR / Efectivo" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-qrcode w-4 text-center {{ request()->is('carrier/cobro*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Cobro QR / Efectivo</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Reportar Novedad" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportar Novedad</span>
                         </a>
@@ -987,18 +1049,18 @@
                     {{-- FULFILLMENT CLIENT                               --}}
                     {{-- ================================================ --}}
                     @if(Auth::user()->role === 'fulfillment_client')
-                        <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Fulfillment e-Commerce
                         </div>
-                        <a href="{{ url('/panel/fulfillment') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/fulfillment') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/fulfillment') }}" title="Mi Tienda Online" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/fulfillment') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-store w-4 text-center {{ request()->is('panel/fulfillment') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mi Tienda Online</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/checkout-demo') }}" title="Enviar Pedidos" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-cart-shopping w-4 text-center {{ request()->is('checkout-demo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Enviar Pedidos</span>
                         </a>
-                        <a href="{{ url('/returns') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Devoluciones" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Devoluciones</span>
                         </a>
@@ -1008,18 +1070,18 @@
                     {{-- ADDONS / HERRAMIENTAS GLOBALES                           --}}
                     {{-- ======================================================== --}}
                     <div class="pt-3 mt-3 border-t border-white/10">
-                        <div class="px-6 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
+                        <div class="sidebar-heading px-6 pt-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Addons & Soporte
                         </div>
-                        <a href="{{ url('/tracking') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('tracking*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/tracking') }}" title="Rastrear Guía" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('tracking*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-magnifying-glass-location w-4 text-center {{ request()->is('tracking*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Rastrear Guía</span>
                         </a>
-                        <a href="{{ url('/contactenos') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/contactenos') }}" title="Sedes & Almacenes" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-map-location-dot w-4 text-center {{ request()->is('contactenos*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Sedes & Almacenes</span>
                         </a>
-                        <a href="{{ url('/soporte') }}" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('soporte*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/soporte') }}" title="Centro de Soporte" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('soporte*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-headset w-4 text-center {{ request()->is('soporte*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Centro de Soporte</span>
                         </a>
@@ -1028,20 +1090,20 @@
             </div>
 
             <!-- Stripe & Linear Executive Sidenav Footer (#0F172A Midnight Slate Glass) -->
-            <div class="bg-[#090D16]/75 border-t border-white/10 px-6 py-4 backdrop-blur-sm">
+            <div class="sidebar-footer-wrapper bg-[#090D16]/75 border-t border-white/10 px-6 py-4 backdrop-blur-sm transition-all duration-200">
                 <div class="flex items-center justify-between gap-2 mb-1.5">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
-                        <span class="text-[10px] font-extrabold text-[#38BDF8] uppercase tracking-wider">Nano Banana Sync</span>
+                        <span class="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse shrink-0"></span>
+                        <span class="sidebar-footer-text text-[10px] font-extrabold text-[#38BDF8] uppercase tracking-wider truncate">Nano Banana Sync</span>
                     </div>
                     <button type="button" @click="logoutModalOpen = true" title="Salir del Sistema"
-                        class="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 transition cursor-pointer">
+                        class="text-[11px] font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1 transition cursor-pointer shrink-0">
                         <i class="fa-solid fa-power-off text-[10px]"></i>
-                        <span>Salir</span>
+                        <span class="sidebar-footer-text">Salir</span>
                     </button>
                 </div>
-                <div class="text-[11px] text-slate-400 font-medium">Conectado como:</div>
-                <div class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
+                <div class="sidebar-footer-text text-[11px] text-slate-400 font-medium">Conectado como:</div>
+                <div class="sidebar-footer-text text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
             </div>
 
         </aside>
@@ -1052,8 +1114,8 @@
         <!-- ===================================================================== -->
         <div id="layoutSidenav_content"
              @if(Auth::check() && !request()->is('/'))
-             :class="sidenavOpen ? 'md:ml-64' : 'md:ml-0'"
-             class="md:ml-64 flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-200 ease-out"
+             :class="sidenavOpen ? (sidebarCollapsed ? 'md:ml-20' : 'md:ml-64') : 'md:ml-0'"
+             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-all duration-300 ease-in-out"
              @else
              class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]"
              @endif>
