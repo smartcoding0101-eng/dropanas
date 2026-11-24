@@ -190,7 +190,18 @@
         }
 
         /* Prevenir salto o desplazamiento visual del Hero y Sidebar al refrescar la página */
+        body.preload-transitions,
+        body.preload-transitions *,
+        body.preload-transitions *::before,
+        body.preload-transitions *::after {
+            transition: none !important;
+            animation-duration: 0s !important;
+        }
+
         @media (min-width: 768px) {
+            aside.sidenav-light {
+                width: 16rem; /* 256px / md:w-64 */
+            }
             html.sidebar-is-collapsed #layoutSidenav_content {
                 margin-left: 5rem !important; /* 80px / md:ml-20 */
             }
@@ -592,7 +603,7 @@
         })();
     </script>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
+<body class="preload-transitions min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
       x-data="{ 
           sidenavOpen: true, 
           sidebarCollapsed: localStorage.getItem('dropana_sidebar_collapsed') === 'true', 
@@ -615,6 +626,14 @@
       @keydown.escape.window="logoutModalOpen = false; cmdPaletteOpen = false"
       @keydown.ctrl.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())"
       @keydown.meta.k.window.prevent="cmdPaletteOpen = !cmdPaletteOpen; if(cmdPaletteOpen) $nextTick(() => $refs.cmdInput?.focus())">
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            requestAnimationFrame(function() {
+                document.body.classList.remove('preload-transitions');
+            });
+        });
+    </script>
 
     <!-- WCAG 2.2 AA Skip Navigation Link -->
     <a href="#main-content" class="skip-to-main">Saltar al contenido principal</a>
@@ -886,7 +905,7 @@
                 sidenavOpen ? 'md:flex' : 'md:hidden',
                 sidebarCollapsed ? 'md:w-20 sidebar-mini' : 'md:w-64'
             ]"
-            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] h-[calc(100vh-4rem)] hidden md:flex flex-col justify-between shrink-0 z-40 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out group/sidebar">
+            class="sidenav-light fixed top-16 left-0 bottom-0 w-72 max-w-[82vw] md:w-64 h-[calc(100vh-4rem)] hidden md:flex flex-col justify-between shrink-0 z-40 overflow-y-auto overflow-x-hidden transition-[width,transform] duration-300 ease-in-out group/sidebar">
             
             <div class="py-1">
                 <!-- Sidenav Header Bar: Título & Botón Colapsar/Expandir en la parte superior derecha -->
