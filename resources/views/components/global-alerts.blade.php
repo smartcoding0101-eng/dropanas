@@ -5,6 +5,14 @@
 {{-- ================================================================== --}}
 <div x-data="{
     toasts: [],
+    alertModal: {
+        open: false,
+        title: 'Advertencia del Sistema',
+        message: '',
+        type: 'warning', // warning, danger, primary, success, info
+        buttonText: 'Entendido',
+        resolve: null
+    },
     confirmModal: {
         open: false,
         title: '¿Confirmar Acción?',
@@ -30,6 +38,34 @@
         };
 
         window.$notify = window.$toast;
+
+        window.$alert = (message, options = {}) => {
+            return new Promise((resolve) => {
+                const str = String(message || '');
+                let defaultType = options.type || 'warning';
+                let defaultTitle = options.title || 'Advertencia del Sistema';
+                if (!options.type) {
+                    if (str.includes('✅') || str.toLowerCase().includes('éxito') || str.toLowerCase().includes('confirmad') || str.toLowerCase().includes('exitosamente')) {
+                        defaultType = 'success';
+                        defaultTitle = options.title || 'Operación Exitosa';
+                    } else if (str.includes('❌') || str.toLowerCase().includes('error') || str.toLowerCase().includes('fall') || str.toLowerCase().includes('denegad')) {
+                        defaultType = 'danger';
+                        defaultTitle = options.title || 'Error en la Operación';
+                    } else if (str.includes('⚠️') || str.toLowerCase().includes('advertencia') || str.toLowerCase().includes('cuidado') || str.toLowerCase().includes('atención')) {
+                        defaultType = 'warning';
+                        defaultTitle = options.title || 'Advertencia';
+                    }
+                }
+                this.alertModal = {
+                    open: true,
+                    title: defaultTitle,
+                    message: str.replace(/^[✅⚠️❌]\s*/, ''),
+                    type: defaultType,
+                    buttonText: options.buttonText || 'Entendido',
+                    resolve: resolve
+                };
+            });
+        };
 
         window.$confirm = (message, options = {}) => {
             return new Promise((resolve) => {
@@ -59,17 +95,9 @@
         };
 
         // Interceptar window.alert nativo para que NUNCA aparezca 'localhost dice:'
+        // Renderiza el moderno modal emergente Tailwind centrado
         window.alert = (message) => {
-            const str = String(message || '');
-            let type = 'info';
-            if (str.includes('✅') || str.toLowerCase().includes('éxito') || str.toLowerCase().includes('confirmad')) {
-                type = 'success';
-            } else if (str.includes('⚠️') || str.toLowerCase().includes('advertencia') || str.toLowerCase().includes('cuidado')) {
-                type = 'warning';
-            } else if (str.includes('❌') || str.toLowerCase().includes('error') || str.toLowerCase().includes('fall')) {
-                type = 'error';
-            }
-            this.addToast(str.replace(/^[✅⚠️❌]\s*/, ''), type);
+            return window.$alert(message);
         };
 
         // Interceptar formularios con atributo data-confirm
@@ -112,6 +140,13 @@
 
     removeToast(id) {
         this.toasts = this.toasts.filter(t => t.id !== id);
+    },
+
+    handleAlert() {
+        if (this.alertModal.resolve) {
+            this.alertModal.resolve(true);
+        }
+        this.alertModal.open = false;
     },
 
     handleConfirm(result) {
@@ -197,6 +232,86 @@ x-cloak>
                 </button>
             </div>
         </template>
+    </div>
+
+    {{-- ================================================================== --}}
+    {{-- 1.5. MODAL DE ADVERTENCIA / ALERTA TAILWIND (REEMPLAZA alert())     --}}
+    {{-- ================================================================== --}}
+    <div x-show="alertModal.open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[10002] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+         @keydown.escape.window="if(alertModal.open) handleAlert()"
+         x-cloak>
+
+        <div @click.stop
+             x-show="alertModal.open"
+             x-transition:enter="transition ease-out duration-250"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+             class="relative w-full max-w-md bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden">
+
+            {{-- Haz decorativo superior animado según tipo --}}
+            <div class="h-1.5 w-full"
+                 :class="{
+                     'bg-gradient-to-r from-rose-500 via-red-500 to-rose-600': alertModal.type === 'danger',
+                     'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600': alertModal.type === 'warning',
+                     'bg-gradient-to-r from-[#4F46E5] to-[#10B981]': alertModal.type === 'primary' || alertModal.type === 'info',
+                     'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500': alertModal.type === 'success'
+                 }"></div>
+
+            <div class="p-6 text-center space-y-4">
+                {{-- Insignia e Ícono de Advertencia --}}
+                <div class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner"
+                     :class="{
+                         'bg-rose-50 text-rose-600 border border-rose-200 ring-4 ring-rose-500/10': alertModal.type === 'danger',
+                         'bg-amber-50 text-amber-600 border border-amber-200 ring-4 ring-amber-500/10': alertModal.type === 'warning',
+                         'bg-indigo-50 text-[#4F46E5] border border-indigo-200 ring-4 ring-indigo-500/10': alertModal.type === 'primary' || alertModal.type === 'info',
+                         'bg-emerald-50 text-emerald-600 border border-emerald-200 ring-4 ring-emerald-500/10': alertModal.type === 'success'
+                     }">
+                    <template x-if="alertModal.type === 'danger'">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </template>
+                    <template x-if="alertModal.type === 'warning'">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </template>
+                    <template x-if="alertModal.type === 'primary' || alertModal.type === 'info'">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </template>
+                    <template x-if="alertModal.type === 'success'">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </template>
+                </div>
+
+                {{-- Título y Mensaje --}}
+                <div class="space-y-1.5">
+                    <h3 class="text-base sm:text-lg font-bold font-heading text-slate-900" x-text="alertModal.title"></h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm mx-auto whitespace-pre-line" x-text="alertModal.message"></p>
+                </div>
+
+                {{-- Botón de Acción Principal --}}
+                <div class="pt-2">
+                    <button type="button"
+                            @click="handleAlert()"
+                            class="w-full px-5 py-2.5 rounded-xl text-white text-xs font-bold transition shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                            :class="{
+                                'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20': alertModal.type === 'danger',
+                                'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20': alertModal.type === 'warning',
+                                'bg-[#4F46E5] hover:bg-[#312E81] shadow-indigo-600/20': alertModal.type === 'primary' || alertModal.type === 'info',
+                                'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20': alertModal.type === 'success'
+                            }">
+                        <span x-text="alertModal.buttonText"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- ================================================================== --}}

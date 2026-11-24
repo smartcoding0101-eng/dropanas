@@ -986,7 +986,7 @@
                                     @endif
 
                                     @if($u->id !== $admin->id)
-                                        <button @click="toggleUserStatus('{{ $u->id }}')"
+                                        <button @click="toggleUserStatus('{{ $u->id }}', '{{ addslashes($u->name) }}', {{ $u->is_active ? 'true' : 'false' }})"
                                             class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition
                                             {{ $u->is_active ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50' }}">
                                             {{ $u->is_active ? 'Suspender' : 'Reactivar' }}
@@ -1178,7 +1178,20 @@ function adminDashboard() {
             }
         },
 
-        async toggleUserStatus(userId) {
+        async toggleUserStatus(userId, userName = 'este usuario', isActive = true) {
+            const action = isActive ? 'suspender' : 'reactivar';
+            const actionTitle = isActive ? 'Suspender Cuenta de Usuario' : 'Reactivar Cuenta de Usuario';
+            const actionType = isActive ? 'danger' : 'success';
+            const actionBtn = isActive ? 'Sí, suspender acceso' : 'Sí, reactivar cuenta';
+
+            const ok = await window.$confirm(`¿Estás seguro de que deseas ${action} la cuenta de "${userName}"? ${isActive ? 'El usuario perderá acceso inmediato a la plataforma.' : 'El usuario podrá volver a operar normalmente.'}`, {
+                title: actionTitle,
+                type: actionType,
+                confirmText: actionBtn,
+                cancelText: 'Cancelar'
+            });
+            if (!ok) return;
+
             try {
                 const token = await this.getAdminToken();
                 const res = await fetch(`/api/v1/admin/users/${userId}/toggle-status`, {
@@ -1191,13 +1204,21 @@ function adminDashboard() {
 
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
-                    this.showToast(data.message, 'success');
-                    setTimeout(() => { window.location.reload(); }, 1000);
+                    window.$toast(data.message, 'success', 'Usuario Actualizado');
+                    setTimeout(() => { window.location.reload(); }, 900);
                 } else {
-                    this.showToast(data.message || 'Error al actualizar usuario.', 'error');
+                    await window.$alert(data.message || 'Error al actualizar usuario.', {
+                        title: 'Error de Gestión',
+                        type: 'danger',
+                        buttonText: 'Entendido'
+                    });
                 }
             } catch (e) {
-                this.showToast('Error de red al actualizar estado del usuario.', 'error');
+                await window.$alert('Error de red al actualizar estado del usuario: ' + (e.message || e), {
+                    title: 'Error de Conexión',
+                    type: 'danger',
+                    buttonText: 'Entendido'
+                });
             }
         },
 

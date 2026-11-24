@@ -4472,7 +4472,13 @@ function pedidosModule() {
                 dispatched: 'despachado',
             };
             const label = statusLabels[newStatus] || newStatus;
-            if (!confirm(`¿Confirmas cambiar el pedido ${order.order_number} a estado "${label}"?`)) return;
+            const ok = await window.$confirm(`¿Confirmas cambiar el pedido #${order.order_number} a estado "${label.toUpperCase()}"?`, {
+                title: 'Actualizar Estado de Orden COD',
+                type: newStatus === 'confirmed' ? 'primary' : 'warning',
+                confirmText: `Sí, marcar como ${label}`,
+                cancelText: 'Cancelar'
+            });
+            if (!ok) return;
 
             this.orderActionLoading = order.id;
             const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -4499,24 +4505,24 @@ function pedidosModule() {
                         this.selectedOrder = { ...this.selectedOrder, status: newStatus };
                     }
                     // Emitir evento toast global
-                    window.dispatchEvent(new CustomEvent('show-toast', {
-                        detail: { type: 'success', message: `¡Pedido ${order.order_number} marcado como ${label} exitosamente!` }
-                    }));
+                    window.$toast(`¡Pedido #${order.order_number} marcado como ${label} exitosamente!`, 'success', 'Estado Actualizado');
                     // Recargar suavemente tras 1.2s para actualizar contadores KPI de servidor
                     setTimeout(() => window.location.reload(), 1200);
                 } else {
                     const msg = data.message || 'Error al actualizar el estado del pedido.';
-                    alert(msg);
-                    window.dispatchEvent(new CustomEvent('show-toast', {
-                        detail: { type: 'error', message: msg }
-                    }));
+                    await window.$alert(msg, {
+                        title: 'Error al Actualizar Pedido',
+                        type: 'danger',
+                        buttonText: 'Entendido'
+                    });
                 }
             } catch (e) {
                 const errText = 'Error de conexión al actualizar el pedido: ' + (e.message || e);
-                alert(errText);
-                window.dispatchEvent(new CustomEvent('show-toast', {
-                    detail: { type: 'error', message: errText }
-                }));
+                await window.$alert(errText, {
+                    title: 'Error de Red / Servidor',
+                    type: 'danger',
+                    buttonText: 'Entendido'
+                });
             } finally {
                 this.orderActionLoading = null;
             }
