@@ -189,6 +189,21 @@
             justify-content: center !important;
         }
 
+        /* Prevenir salto o desplazamiento visual del Hero y Sidebar al refrescar la página */
+        @media (min-width: 768px) {
+            html.sidebar-is-collapsed #layoutSidenav_content {
+                margin-left: 5rem !important; /* 80px / md:ml-20 */
+            }
+            html.sidebar-is-collapsed aside.sidenav-light {
+                width: 5rem !important; /* 80px / md:w-20 */
+            }
+            html.sidebar-is-collapsed .sidebar-mini a span,
+            html.sidebar-is-collapsed .sidebar-heading,
+            html.sidebar-is-collapsed .sidebar-hide-mini {
+                display: none !important;
+            }
+        }
+
         /* Stripe & Linear Executive Card Shadow Elevation */
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
@@ -565,6 +580,17 @@
             top: 0.75rem;
         }
     </style>
+
+    <!-- Anti-flicker script: Determina estado de sidebar colapsado antes del primer renderizado visual -->
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem('dropana_sidebar_collapsed') === 'true') {
+                    document.documentElement.classList.add('sidebar-is-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
       x-data="{ 
@@ -578,6 +604,11 @@
               this.sidebarCollapsed = !this.sidebarCollapsed;
               try {
                   localStorage.setItem('dropana_sidebar_collapsed', this.sidebarCollapsed);
+                  if (this.sidebarCollapsed) {
+                      document.documentElement.classList.add('sidebar-is-collapsed');
+                  } else {
+                      document.documentElement.classList.remove('sidebar-is-collapsed');
+                  }
               } catch (e) {}
           }
       }"
@@ -1114,8 +1145,12 @@
         <!-- ===================================================================== -->
         <div id="layoutSidenav_content"
              @if(Auth::check() && !request()->is('/'))
-             :class="sidenavOpen ? (sidebarCollapsed ? 'md:ml-20' : 'md:ml-64') : 'md:ml-0'"
-             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-all duration-300 ease-in-out"
+             :class="{
+                 'md:ml-64': sidenavOpen && !sidebarCollapsed,
+                 'md:ml-20': sidenavOpen && sidebarCollapsed,
+                 'md:!ml-0': !sidenavOpen
+             }"
+             class="md:ml-64 flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-300 ease-in-out"
              @else
              class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]"
              @endif>
