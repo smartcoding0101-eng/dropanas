@@ -79,6 +79,46 @@ class WebPagesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Panel de Control de la Plataforma');
         $response->assertSee('Tenant Admin');
+        $response->assertSee('Control Global de Actores del Ecosistema');
+    }
+
+    public function test_admin_has_oversight_and_control_over_all_roles(): void
+    {
+        $admin = \App\Models\User::where('role', 'tenant_admin')->first();
+        $provider = \App\Models\User::where('role', 'provider')->first();
+        $dropshipper = \App\Models\User::where('role', 'dropshipper')->first();
+
+        // 1. Admin supervisando proveedor (general y específico por provider_id)
+        $respProv = $this->actingAs($admin)->get('/panel/proveedor');
+        $respProv->assertStatus(200)->assertSee('Modo Supervisión y Control Administrativo');
+
+        if ($provider) {
+            $respProvId = $this->actingAs($admin)->get('/panel/proveedor?provider_id=' . $provider->id);
+            $respProvId->assertStatus(200)->assertSee($provider->name);
+        }
+
+        // 2. Admin supervisando dropshipper (general y específico por dropshipper_id)
+        $respDrop = $this->actingAs($admin)->get('/panel/dropshipper');
+        $respDrop->assertStatus(200)->assertSee('Modo Supervisión y Control Administrativo');
+
+        if ($dropshipper) {
+            $respDropId = $this->actingAs($admin)->get('/panel/dropshipper?dropshipper_id=' . $dropshipper->id);
+            $respDropId->assertStatus(200)->assertSee($dropshipper->name);
+        }
+
+        // 3. Admin supervisando Courier DEX y sus Reportes
+        $respCarrier = $this->actingAs($admin)->get('/panel/carrier');
+        $respCarrier->assertStatus(200)->assertSee('Modo Supervisión y Control Administrativo');
+
+        $respCarrierRep = $this->actingAs($admin)->get('/panel/carrier/reportes');
+        $respCarrierRep->assertStatus(200);
+
+        // 4. Admin accediendo a Kardex e Informes
+        $respKardex = $this->actingAs($admin)->get('/panel/admin/kardex');
+        $respKardex->assertStatus(200);
+
+        $respSettlements = $this->actingAs($admin)->get('/settlements');
+        $respSettlements->assertStatus(200);
     }
 }
 

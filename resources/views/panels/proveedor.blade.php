@@ -5,6 +5,46 @@
 @section('content')
 <div class="space-y-8" x-data="proveedorDashboard()" @warehouses-updated.window="handleWarehousesUpdated($event.detail.warehouses)">
 
+    @if($isAdmin ?? false)
+    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL -->
+    <div class="bg-gradient-to-r from-amber-900 via-slate-900 to-amber-950 border border-amber-500/40 rounded-2xl p-4 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                    <span>Modo Supervisión y Control Administrativo</span>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] bg-amber-400 text-slate-950 font-extrabold">SUPER ADMIN</span>
+                </div>
+                <div class="text-xs text-slate-200">
+                    Inspeccionando megabodega de: <strong class="text-white">{{ $provider?->name }}</strong> ({{ $provider?->email }})
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap">
+            @if(isset($allProviders) && $allProviders->count() > 1)
+            <div class="flex items-center gap-2">
+                <label class="text-[11px] text-slate-300 font-semibold">Cambiar Proveedor:</label>
+                <select onchange="window.location.href='{{ url('/panel/proveedor') }}?provider_id=' + this.value"
+                    class="bg-slate-800 border border-amber-500/40 text-amber-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none">
+                    @foreach($allProviders as $ap)
+                        <option value="{{ $ap->id }}" {{ ($provider && $provider->id === $ap->id) ? 'selected' : '' }}>
+                            {{ $ap->name }} ({{ $ap->city ?? 'Bolivia' }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+
+            <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
+            </a>
+        </div>
+    </div>
+    @endif
+
     <x-page-header
         :title="$provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega'"
         :subtitle="($provider?->city ?? 'Santa Cruz de la Sierra') . ', ' . ($provider?->department ?? 'Santa Cruz') . ' • NIT: ' . ($provider?->document_id ?? '1029384019')"
@@ -2303,6 +2343,20 @@
                                     <!-- Acciones -->
                                     <td class="py-3 px-4 whitespace-nowrap text-right">
                                         <div class="flex items-center justify-end gap-1">
+                                            <!-- Confirmar (solo si está en pending_confirmation) -->
+                                            <button x-show="order.status === 'pending_confirmation'"
+                                                @click="changeOrderStatus(order, 'confirmed')"
+                                                :disabled="orderActionLoading === order.id"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold transition cursor-pointer disabled:opacity-50" title="Confirmar Pedido">
+                                                <i class="fa-solid fa-circle-check"></i> Confirmar
+                                            </button>
+                                            <!-- Despachar (solo si está en confirmed) -->
+                                            <button x-show="order.status === 'confirmed'"
+                                                @click="changeOrderStatus(order, 'dispatched')"
+                                                :disabled="orderActionLoading === order.id"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white text-[10px] font-bold transition cursor-pointer disabled:opacity-50" title="Despachar al Courier">
+                                                <i class="fa-solid fa-truck-fast"></i> Despachar
+                                            </button>
                                             <!-- Tracking -->
                                             <a :href="'/tracking/' + order.tracking_number" x-show="order.tracking_number" target="_blank"
                                                 class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 text-[10px] font-bold transition" title="Ver tracking">
@@ -2427,7 +2481,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 border-t border-slate-200 flex justify-end gap-2">
+                    <div class="p-4 border-t border-slate-200 flex flex-wrap justify-end gap-2">
+                        <!-- Acción: Confirmar (si está en pending_confirmation) -->
+                        <button x-show="selectedOrder?.status === 'pending_confirmation'"
+                            @click="changeOrderStatus(selectedOrder, 'confirmed'); detailModalOpen = false"
+                            :disabled="orderActionLoading === selectedOrder?.id"
+                            class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition cursor-pointer disabled:opacity-50">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Confirmar Pedido
+                        </button>
+                        <!-- Acción: Despachar (si está en confirmed) -->
+                        <button x-show="selectedOrder?.status === 'confirmed'"
+                            @click="changeOrderStatus(selectedOrder, 'dispatched'); detailModalOpen = false"
+                            :disabled="orderActionLoading === selectedOrder?.id"
+                            class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold transition cursor-pointer disabled:opacity-50">
+                            <i class="fa-solid fa-truck-fast mr-1"></i> Despachar al Courier
+                        </button>
                         <a :href="selectedOrder?.tracking_number ? '/tracking/' + selectedOrder.tracking_number : '#'" target="_blank"
                             x-show="selectedOrder?.tracking_number"
                             class="px-4 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold hover:bg-sky-100 transition">
@@ -3573,6 +3641,13 @@ function proveedorDashboard() {
                     this.openEditProductModal(editId);
                 });
             }
+            // Escuchar eventos de toast desde otros módulos Alpine (pedidosModule)
+            window.addEventListener('show-toast', (e) => {
+                this.toast.type    = e.detail.type    || 'success';
+                this.toast.message = e.detail.message || '';
+                this.toast.show    = true;
+                setTimeout(() => { this.toast.show = false; }, 4000);
+            });
         },
         productModalTab: 'general',
         warehousesList: @json($warehouses),
@@ -4273,6 +4348,8 @@ function pedidosModule() {
         // Modal
         detailModalOpen: false,
         selectedOrder: null,
+        // Acción de cambio de estado
+        orderActionLoading: null,
 
         // Pills de estado con sus clases
         get statusPills() {
@@ -4385,6 +4462,64 @@ function pedidosModule() {
         openOrderDetail(order) {
             this.selectedOrder = order;
             this.detailModalOpen = true;
+        },
+
+        // Cambiar estado del pedido (confirmed / dispatched)
+        async changeOrderStatus(order, newStatus) {
+            if (!order || this.orderActionLoading) return;
+            const statusLabels = {
+                confirmed:  'confirmado',
+                dispatched: 'despachado',
+            };
+            const label = statusLabels[newStatus] || newStatus;
+            if (!confirm(`¿Confirmas cambiar el pedido ${order.order_number} a estado "${label}"?`)) return;
+
+            this.orderActionLoading = order.id;
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+            try {
+                const resp = await fetch(`/orders/${order.id}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                    },
+                    body: JSON.stringify({ status: newStatus }),
+                });
+                const data = await resp.json();
+                if (resp.ok && (data.status === 'success' || data.message?.toLowerCase().includes('actualiz'))) {
+                    // Actualizar el estado localmente de forma reactiva
+                    const idx = this.allOrders.findIndex(o => o.id === order.id);
+                    if (idx !== -1) {
+                        this.allOrders[idx] = { ...this.allOrders[idx], status: newStatus };
+                        this.allOrders = [...this.allOrders];
+                    }
+                    if (this.selectedOrder?.id === order.id) {
+                        this.selectedOrder = { ...this.selectedOrder, status: newStatus };
+                    }
+                    // Emitir evento toast global
+                    window.dispatchEvent(new CustomEvent('show-toast', {
+                        detail: { type: 'success', message: `¡Pedido ${order.order_number} marcado como ${label} exitosamente!` }
+                    }));
+                    // Recargar suavemente tras 1.2s para actualizar contadores KPI de servidor
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    const msg = data.message || 'Error al actualizar el estado del pedido.';
+                    alert(msg);
+                    window.dispatchEvent(new CustomEvent('show-toast', {
+                        detail: { type: 'error', message: msg }
+                    }));
+                }
+            } catch (e) {
+                const errText = 'Error de conexión al actualizar el pedido: ' + (e.message || e);
+                alert(errText);
+                window.dispatchEvent(new CustomEvent('show-toast', {
+                    detail: { type: 'error', message: errText }
+                }));
+            } finally {
+                this.orderActionLoading = null;
+            }
         },
     };
 }

@@ -74,27 +74,34 @@ class AuditReconcileLedgersCommand extends Command
                     }
 
                     if ($diffWithdrawn > 0.00) {
-                        // Crear histórico de retiros para justificar balance_withdrawn
-                        WalletTransaction::create([
-                            'tenant_id'        => $wallet->tenant_id,
-                            'wallet_id'        => $wallet->id,
-                            'transaction_type' => 'withdrawal',
-                            'amount'           => -$diffWithdrawn,
-                            'balance_after'    => $wallet->balance_available,
-                            'description'      => 'Importación de retiro histórico justificado por auditoría QA',
-                        ]);
+                        if ($balanceWithdrawn < $sumWithdrawals) {
+                            $wallet->balance_withdrawn = $sumWithdrawals;
+                            $wallet->save();
+                            $this->warn("🔧 Billetera {$wallet->id}: Sincronizado balance_withdrawn con el ledger (Bs {$sumWithdrawals})");
+                        } else {
+                            // Crear histórico de retiros para justificar balance_withdrawn
+                            $missingWithdrawal = $balanceWithdrawn - $sumWithdrawals;
+                            WalletTransaction::create([
+                                'tenant_id'        => $wallet->tenant_id,
+                                'wallet_id'        => $wallet->id,
+                                'transaction_type' => 'withdrawal',
+                                'amount'           => -$missingWithdrawal,
+                                'balance_after'    => $wallet->balance_available,
+                                'description'      => 'Importación de retiro histórico justificado por auditoría QA',
+                            ]);
 
-                        // Contrapartida de ingreso previo que justificó ese retiro
-                        WalletTransaction::create([
-                            'tenant_id'        => $wallet->tenant_id,
-                            'wallet_id'        => $wallet->id,
-                            'transaction_type' => 'manual_adjustment',
-                            'amount'           => $diffWithdrawn,
-                            'balance_after'    => $wallet->balance_available,
-                            'description'      => 'Contrapartida de ingreso histórico para retiro previo auditado',
-                        ]);
+                            // Contrapartida de ingreso previo que justificó ese retiro
+                            WalletTransaction::create([
+                                'tenant_id'        => $wallet->tenant_id,
+                                'wallet_id'        => $wallet->id,
+                                'transaction_type' => 'manual_adjustment',
+                                'amount'           => $missingWithdrawal,
+                                'balance_after'    => $wallet->balance_available,
+                                'description'      => 'Contrapartida de ingreso histórico para retiro previo auditado',
+                            ]);
 
-                        $this->warn("🔧 Billetera {$wallet->id}: Creado registro de retiro histórico de Bs {$diffWithdrawn}");
+                            $this->warn("🔧 Billetera {$wallet->id}: Creado registro de retiro histórico de Bs {$missingWithdrawal}");
+                        }
                     }
                     continue;
                 }

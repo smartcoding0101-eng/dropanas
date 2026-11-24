@@ -5,6 +5,35 @@
 @section('content')
 <div class="space-y-6" x-data="carrierPanelApp()">
 
+    @if($isAdmin ?? false)
+    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL -->
+    <div class="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-950 border border-sky-500/40 rounded-2xl p-4 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-sky-300 uppercase tracking-wider flex items-center gap-2">
+                    <span>Modo Supervisión y Control Administrativo</span>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] bg-sky-400 text-slate-950 font-extrabold">SUPER ADMIN</span>
+                </div>
+                <div class="text-xs text-slate-200">
+                    Supervisando logística, ruta de reparto y recaudo COD de: <strong class="text-white">{{ $carrierUser?->name ?? 'DEX Express' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap">
+            <a href="{{ route('carrier.reportes') }}" class="px-3.5 py-1.5 rounded-xl bg-sky-600/50 hover:bg-sky-500/50 border border-sky-400/40 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-chart-line text-amber-200"></i> Reportes DEX
+            </a>
+            <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
+            </a>
+        </div>
+    </div>
+    @endif
+
     <!-- Toast Notification -->
     <div x-show="toast.show" x-cloak
         class="fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold flex items-center gap-3 transition"
@@ -19,6 +48,11 @@
         icon="fa-solid fa-truck-fast"
         badge="Módulo de Última Milla & Call Center">
         <x-slot:actions>
+            <a href="{{ route('carrier.reportes') }}"
+                class="px-4 py-2 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/30 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition">
+                <i class="fa-solid fa-chart-pie text-amber-200"></i>
+                <span>Reportes &amp; Métricas</span>
+            </a>
             <span class="px-3.5 py-2 rounded-xl bg-white/15 border border-white/25 text-white text-xs font-bold flex items-center gap-2">
                 <i class="fa-solid fa-motorcycle text-emerald-300"></i>
                 <span>Agente: {{ $carrierUser->name ?? 'Repartidor Central' }}</span>
@@ -28,36 +62,56 @@
 
     <!-- 4 Métricas de Despacho (Stripe & Linear Executive Overlap) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
-        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#0F172A]">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</div>
-            <div class="text-2xl font-black text-[#0F172A] mt-1" data-countup>{{ $stats['in_route'] }}</div>
-            <div class="text-[11px] text-slate-400 mt-1">Paquetes para entregar</div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-[#0F172A] space-y-2 interactive-card">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">En Ruta Hoy</span>
+                <div class="w-9 h-9 rounded-xl bg-slate-100 text-[#0F172A] border border-slate-200/80 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#0F172A] font-heading" data-countup>{{ $stats['in_route'] }}</div>
+            <div class="text-[11px] text-slate-400 font-medium">Paquetes para entregar</div>
         </div>
 
-        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#10B981]">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entregados</div>
-            <div class="text-2xl font-black text-[#10B981] mt-1" data-countup>{{ $stats['delivered_today'] }}</div>
-            <div class="text-[11px] text-slate-400 mt-1">Con recaudación efectiva</div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-[#10B981] space-y-2 interactive-card">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entregados</span>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#10B981] border border-emerald-200/80 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#10B981] font-heading" data-countup>{{ $stats['delivered_today'] }}</div>
+            <div class="text-[11px] text-slate-400 font-medium">Con recaudación efectiva</div>
         </div>
 
-        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-amber-500">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Novedades Activas</div>
-            <div class="text-2xl font-black text-[#4F46E5] mt-1" data-countup>{{ $stats['novedades_active'] }}</div>
-            <div class="text-[11px] text-amber-700 font-semibold mt-1">Requieren gestión WhatsApp</div>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-amber-500 space-y-2 interactive-card">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Novedades Activas</span>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/80 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-amber-600 font-heading" data-countup>{{ $stats['novedades_active'] }}</div>
+            <div class="text-[11px] text-amber-700 font-semibold">Requieren gestión WhatsApp</div>
         </div>
 
-        <div class="white-card interactive-card p-5 rounded-2xl border-l-4 border-[#4F46E5]">
-            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Por Recaudar COD</div>
-            <div class="text-2xl font-black text-[#4F46E5] mt-1 font-mono" data-countup>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-[#4F46E5] space-y-2 interactive-card">
+            <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Por Recaudar COD</span>
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-200/80 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#4F46E5] font-heading font-mono" data-countup>
                 Bs. {{ number_format($stats['cod_to_collect_bob'], 2) }}
             </div>
-            <div class="text-[11px] text-slate-400 mt-1 font-mono">Total asignado en calle</div>
+            <div class="text-[11px] text-slate-400 font-mono">Total asignado en calle</div>
         </div>
     </div>
 
     <!-- Tabla de Envíos en Ruta / Novedades -->
-    <div class="white-card rounded-2xl overflow-hidden shadow-sm">
-        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/80">
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
             <div>
                 <h2 class="text-lg font-bold text-[#212832]">Hoja de Ruta y Gestión de Entregas</h2>
                 <p class="text-xs text-slate-500">Haz clic en "Entregado" para recaudar o en "Reportar Novedad" si el cliente no responde.</p>
@@ -80,7 +134,7 @@
                         <th class="py-3 px-4 text-center">Acciones en Campo</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white">
                     @forelse($ordersInRoute as $order)
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="py-3.5 px-4">
@@ -163,7 +217,7 @@
 
     <!-- Modal de Registro de Novedades (DEX Call Center) -->
     <div x-show="modalNovedad.show" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="white-card w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-200" @click.away="modalNovedad.show = false">
+        <div class="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-200" @click.away="modalNovedad.show = false">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-2">
                     <span class="w-8 h-8 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
@@ -270,7 +324,7 @@ function carrierPanelApp() {
             if (!ok) return;
 
             try {
-                const response = await fetch(`/api/v1/orders/${orderId}/status`, {
+                const response = await fetch(`/orders/${orderId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -295,7 +349,7 @@ function carrierPanelApp() {
         async submitNovedad() {
             this.modalNovedad.submitting = true;
             try {
-                const response = await fetch(`/api/v1/orders/${this.modalNovedad.orderId}/status`, {
+                const response = await fetch(`/orders/${this.modalNovedad.orderId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

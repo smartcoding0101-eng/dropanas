@@ -163,6 +163,122 @@
     </div>
 
     <!-- ===================================================================== -->
+    <!-- CENTRO DE CONTROL & GOBERNANZA OPERATIVA (PROVEEDORES, VENDEDORES, COURIER) -->
+    <!-- ===================================================================== -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 border border-indigo-900/40 shadow-xl text-white">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center text-white shadow-md text-base">
+                    <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base font-heading text-white flex items-center gap-2">
+                        <span>Control Global de Actores del Ecosistema</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Supervisión Activa</span>
+                    </h3>
+                    <p class="text-xs text-slate-300">Auditoría en tiempo real, supervisión de megabodegas, tiendas dropshipper y rutas DEX Bolivia</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ url('/panel/admin/kardex') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-boxes-stacked text-amber-300"></i> Kardex Global
+                </a>
+                <a href="{{ url('/settlements') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-money-check-dollar text-emerald-300"></i> Liquidaciones
+                </a>
+                <a href="{{ url('/reporte') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-column text-indigo-300"></i> Reporte Comercial
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+            <!-- 1. Control Proveedores Mayoristas -->
+            <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition space-y-3 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-warehouse"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Megabodegas Proveedores</div>
+                            <div class="text-[10px] text-slate-400">{{ $stats['total_providers'] ?? 0 }} proveedores registrados</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-bold text-amber-300">{{ $stats['total_products'] ?? 0 }} SKUs</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-snug">
+                    Supervisa catálogos de fábrica, stock en almacenes y liquidaciones de costo mayorista.
+                </p>
+                <div class="pt-1">
+                    <a href="{{ url('/panel/proveedor') }}"
+                        class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <span>Gestionar Proveedores</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Control Vendedores Dropshippers -->
+            <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition space-y-3 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Vendedores Dropshippers</div>
+                            <div class="text-[10px] text-slate-400">{{ $stats['total_dropshippers'] ?? 0 }} tiendas activas</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-bold text-emerald-300">{{ $stats['total_orders'] ?? 0 }} pedidos</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-snug">
+                    Controla carteras, billeteras de comisiones, integraciones de tienda Shopify y retiros bancarios.
+                </p>
+                <div class="pt-1">
+                    <a href="{{ url('/panel/dropshipper') }}"
+                        class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <span>Gestionar Dropshippers</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Control Courier Logístico DEX Bolivia -->
+            <div class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition space-y-3 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Logística DEX Bolivia</div>
+                            <div class="text-[10px] text-slate-400">{{ $stats['active_dispatches'] ?? 0 }} paquetes en ruta</div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-mono font-bold text-sky-300">Bs {{ number_format($stats['pending_cod_bob'] ?? 0, 0) }}</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-snug">
+                    Hoja de ruta diaria, recaudo COD contra entrega, resolución de novedades y liquidaciones.
+                </p>
+                <div class="pt-1 flex items-center gap-2">
+                    <a href="{{ url('/panel/carrier') }}"
+                        class="flex-1 py-2 px-2.5 rounded-lg text-xs font-bold bg-sky-500 hover:bg-sky-400 text-slate-950 transition flex items-center justify-center gap-1 shadow-sm">
+                        <span>Hoja de Ruta</span>
+                        <i class="fa-solid fa-route text-[10px]"></i>
+                    </a>
+                    <a href="{{ url('/panel/carrier/reportes') }}"
+                        class="flex-1 py-2 px-2.5 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1">
+                        <span>Reportes DEX</span>
+                        <i class="fa-solid fa-chart-pie text-[10px] text-purple-300"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
     <!-- NUEVO MONITOR INTERACTIVO DE FLUJO COD & RADAR LOGÍSTICO EN TIEMPO REAL -->
     <!-- ===================================================================== -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6"
@@ -843,15 +959,42 @@
                                 @endif
                             </td>
                             <td class="p-3 text-right">
-                                @if($u->id !== $admin->id)
-                                    <button @click="toggleUserStatus('{{ $u->id }}')"
-                                        class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition
-                                        {{ $u->is_active ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50' }}">
-                                        {{ $u->is_active ? 'Suspender' : 'Reactivar' }}
-                                    </button>
-                                @else
-                                    <span class="text-[11px] text-slate-400 italic">Tu cuenta</span>
-                                @endif
+                                <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    @if($u->role === 'provider')
+                                        <a href="{{ url('/panel/proveedor?provider_id=' . $u->id) }}" target="_blank"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-[#0061f2] border border-amber-200 transition inline-flex items-center gap-1 shadow-2xs"
+                                            title="Inspeccionar Megabodega de este Proveedor">
+                                            <i class="fa-solid fa-warehouse"></i> Panel
+                                        </a>
+                                    @elseif($u->role === 'dropshipper')
+                                        <a href="{{ url('/panel/dropshipper?dropshipper_id=' . $u->id) }}" target="_blank"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition inline-flex items-center gap-1 shadow-2xs"
+                                            title="Inspeccionar Tienda, Pedidos y Billetera de este Dropshipper">
+                                            <i class="fa-solid fa-store"></i> Panel
+                                        </a>
+                                    @elseif($u->role === 'carrier_agent' || $u->role === 'carrier')
+                                        <a href="{{ url('/panel/carrier') }}" target="_blank"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 transition inline-flex items-center gap-1 shadow-2xs"
+                                            title="Ver Hoja de Ruta DEX">
+                                            <i class="fa-solid fa-truck-fast"></i> Ruta
+                                        </a>
+                                        <a href="{{ url('/panel/carrier/reportes') }}" target="_blank"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 transition inline-flex items-center gap-1 shadow-2xs"
+                                            title="Ver Reportes DEX">
+                                            <i class="fa-solid fa-chart-pie"></i> Reportes
+                                        </a>
+                                    @endif
+
+                                    @if($u->id !== $admin->id)
+                                        <button @click="toggleUserStatus('{{ $u->id }}')"
+                                            class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition
+                                            {{ $u->is_active ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50' }}">
+                                            {{ $u->is_active ? 'Suspender' : 'Reactivar' }}
+                                        </button>
+                                    @else
+                                        <span class="text-[11px] text-slate-400 italic">Tu cuenta</span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -1128,13 +1271,7 @@ function adminDashboard() {
         },
 
         async getAdminToken() {
-            const authRes = await fetch('/api/v1/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ email: 'admin@bolidrop.bo', password: 'password123' })
-            });
-            const authData = await authRes.json();
-            return authData.data?.token;
+            return '{{ $apiToken ?? "" }}';
         },
 
         async submitStatusUpdate() {

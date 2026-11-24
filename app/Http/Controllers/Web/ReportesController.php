@@ -18,6 +18,11 @@ class ReportesController extends Controller
      */
     public function index(Request $request)
     {
+        $authUser = $request->user();
+        if ($authUser && $authUser->isCarrier()) {
+            return redirect()->route('carrier.reportes');
+        }
+
         return $this->proveedor($request);
     }
 

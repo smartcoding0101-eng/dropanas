@@ -164,6 +164,7 @@
         .bg-white.rounded-xl,
         .white-card,
         .sb-card {
+            background-color: #ffffff;
             box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
             border-color: #E2E8F0;
         }
@@ -964,9 +965,13 @@
                         <div class="px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Repartidor / Courier
                         </div>
-                        <a href="{{ url('/panel/carrier') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
-                            <i class="fa-solid fa-truck-fast w-4 text-center {{ request()->is('panel/carrier') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                        <a href="{{ url('/panel/carrier') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier') && !request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-truck-fast w-4 text-center {{ request()->is('panel/carrier') && !request()->is('panel/carrier/reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Mi Hoja de Ruta</span>
+                        </a>
+                        <a href="{{ url('/panel/carrier/reportes') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/carrier/reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('panel/carrier/reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                            <span>Reportes &amp; Métricas COD</span>
                         </a>
                         <a href="{{ url('/carrier/cobro') }}" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-qrcode w-4 text-center {{ request()->is('carrier/cobro*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>

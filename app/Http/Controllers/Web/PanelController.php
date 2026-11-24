@@ -22,9 +22,17 @@ class PanelController extends Controller
     public function dropshipper(Request $request)
     {
         $authUser = $request->user();
-        $dropshipper = ($authUser && $authUser->role === 'dropshipper')
+        $isAdmin = $authUser && ($authUser->isTenantAdmin() || $authUser->isSuperAdmin() || in_array($authUser->role, ['tenant_admin', 'admin']));
+
+        $dropshipper = ($authUser && $authUser->role === 'dropshipper' && !$request->filled('dropshipper_id'))
             ? $authUser
-            : User::where('role', 'dropshipper')->first();
+            : ($request->filled('dropshipper_id') && ($isAdmin || !$authUser)
+                ? User::where('role', 'dropshipper')->find($request->dropshipper_id)
+                : User::where('role', 'dropshipper')->first());
+
+        $allDropshippers = $isAdmin
+            ? User::where('role', 'dropshipper')->orderBy('name')->get()
+            : collect();
 
         $stats = [
             'total_orders'    => 0,
@@ -58,7 +66,9 @@ class PanelController extends Controller
             ? \App\Models\StoreIntegration::where('dropshipper_id', $dropshipper->id)->latest()->get()
             : collect();
 
-        return view('panels.dropshipper', compact('dropshipper', 'stats', 'recentOrders', 'wallet', 'storeIntegrations'));
+        $apiToken = $dropshipper ? $dropshipper->createToken('dropshipper-web-session')->plainTextToken : '';
+
+        return view('panels.dropshipper', compact('dropshipper', 'stats', 'recentOrders', 'wallet', 'storeIntegrations', 'apiToken', 'allDropshippers', 'isAdmin'));
     }
 
     /**
@@ -68,13 +78,18 @@ class PanelController extends Controller
     public function proveedor(Request $request)
     {
         $authUser = $request->user();
-        if (!$authUser || (!$authUser->isProvider() && !$authUser->isTenantAdmin())) {
+        $isAdmin = $authUser && ($authUser->isTenantAdmin() || $authUser->isSuperAdmin() || in_array($authUser->role, ['tenant_admin', 'admin']));
+        if (!$authUser || (!$authUser->isProvider() && !$isAdmin)) {
             abort(403, 'Acceso denegado. Exclusivo para proveedores mayoristas o administradores del sistema.');
         }
 
-        $provider = $authUser->isProvider() 
+        $provider = ($authUser->isProvider() && !$request->filled('provider_id'))
             ? $authUser 
             : ($request->filled('provider_id') ? User::where('role', 'provider')->find($request->provider_id) : User::where('role', 'provider')->first());
+
+        $allProviders = $isAdmin
+            ? User::where('role', 'provider')->orderBy('name')->get()
+            : collect();
 
         $stats = [
             'total_products'   => 0,
@@ -238,7 +253,7 @@ class PanelController extends Controller
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
             'wallet', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
             'recentKardex', 'stockTransfers', 'inventoryAlerts',
-            'dropshippers', 'transferProductsList'
+            'dropshippers', 'transferProductsList', 'allProviders', 'isAdmin'
         ));
     }
 
@@ -297,9 +312,11 @@ class PanelController extends Controller
 
         $users = User::latest()->get();
 
+        $apiToken = $admin ? $admin->createToken('admin-web-session')->plainTextToken : '';
+
         return view('panels.admin', compact(
             'admin', 'stats', 'recentOrders', 'carriers', 'manifests',
-            'stockTransfers', 'notifications', 'customers', 'warehouses', 'products', 'users'
+            'stockTransfers', 'notifications', 'customers', 'warehouses', 'products', 'users', 'apiToken'
         ));
     }
 
@@ -310,10 +327,12 @@ class PanelController extends Controller
     public function carrier(Request $request)
     {
         $authUser = $request->user();
+        $isAdmin = $authUser && ($authUser->isTenantAdmin() || $authUser->isSuperAdmin() || in_array($authUser->role, ['tenant_admin', 'admin']));
         $carrierUser = ($authUser && in_array($authUser->role, ['carrier', 'carrier_agent']))
             ? $authUser
             : (User::where('role', 'carrier')->first() ?? $authUser ?? User::where('role', 'tenant_admin')->first());
         $carrier = Carrier::first();
+        $allCarriers = Carrier::all();
 
         $stats = [
             'total_assigned'    => Order::whereIn('status', ['dispatched', 'delivered', 'failed_delivery'])->count(),
@@ -335,7 +354,7 @@ class PanelController extends Controller
             ->limit(5)
             ->get();
 
-        return view('panels.carrier', compact('carrierUser', 'carrier', 'stats', 'ordersInRoute', 'recentDelivered'));
+        return view('panels.carrier', compact('carrierUser', 'carrier', 'stats', 'ordersInRoute', 'recentDelivered', 'allCarriers', 'isAdmin'));
     }
 
     /**

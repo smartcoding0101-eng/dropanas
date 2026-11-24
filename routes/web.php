@@ -128,7 +128,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/panel/proveedor', [PanelController::class, 'proveedor'])->name('panel.proveedor');
     Route::get('/panel/admin', [PanelController::class, 'admin'])->name('panel.admin');
     Route::get('/panel/carrier', [PanelController::class, 'carrier'])->name('panel.carrier');
+    Route::get('/panel/carrier/reportes', [\App\Http\Controllers\Web\CarrierReportController::class, 'index'])->name('carrier.reportes');
+    Route::get('/panel/carrier/reportes/data', [\App\Http\Controllers\Web\CarrierReportController::class, 'dataJson'])->name('carrier.reportes.data');
+    Route::get('/panel/carrier/reportes/export', [\App\Http\Controllers\Web\CarrierReportController::class, 'exportCsv'])->name('carrier.reportes.export');
     Route::get('/panel/fulfillment', [PanelController::class, 'fulfillment'])->name('panel.fulfillment');
+
+    // Actualización de estado de pedidos vía sesión Web (Panel Proveedor / Admin / Carrier)
+    Route::match(['put', 'patch', 'post'], '/orders/{id}/status', [\App\Http\Controllers\Api\OrderStatusController::class, 'update'])->name('orders.status.web');
 
     // Impresión de Rótulos, Etiquetas Térmicas (Zebra 4x6 / A6) y Notas de Entrega
     Route::get('/orders/{id}/label', [\App\Http\Controllers\Web\ShippingLabelController::class, 'show'])->name('orders.label');

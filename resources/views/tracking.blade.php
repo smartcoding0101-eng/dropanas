@@ -186,10 +186,15 @@ function trackingPanel() {
 
         statusLabel(status) {
             const labels = {
+                'pending_confirmation': '⏳ Pendiente de Confirmación',
+                'confirmed':  '📦 Confirmado – En Preparación',
                 'processing': '📦 En Preparación',
+                'dispatched': '🚚 Despachado – En Reparto',
                 'in_transit': '🚚 En Camino',
-                'delivered': '✅ Entregado',
-                'returned': '↩️ Devuelto',
+                'delivered':  '✅ Entregado',
+                'returned':   '↩️ Devuelto',
+                'cancelled':  '❌ Cancelado',
+                'settled':    '💰 Pagado / Liquidado',
             };
             return labels[status] || status;
         }

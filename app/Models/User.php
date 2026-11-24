@@ -64,6 +64,11 @@ class User extends Authenticatable
         return $this->role === 'carrier_agent';
     }
 
+    public function isCarrier(): bool
+    {
+        return in_array($this->role, ['carrier', 'carrier_agent'], true);
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class, 'dropshipper_id');

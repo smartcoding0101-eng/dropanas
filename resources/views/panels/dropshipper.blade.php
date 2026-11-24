@@ -5,6 +5,46 @@
 @section('content')
 <div class="space-y-8" x-data="dropshipperDashboard()">
 
+    @if($isAdmin ?? false)
+    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL -->
+    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-500/40 rounded-2xl p-4 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div>
+                <div class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+                    <span>Modo Supervisión y Control Administrativo</span>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] bg-emerald-400 text-slate-950 font-extrabold">SUPER ADMIN</span>
+                </div>
+                <div class="text-xs text-slate-200">
+                    Inspeccionando tienda y billetera de: <strong class="text-white">{{ $dropshipper?->name }}</strong> ({{ $dropshipper?->email }})
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap">
+            @if(isset($allDropshippers) && $allDropshippers->count() > 1)
+            <div class="flex items-center gap-2">
+                <label class="text-[11px] text-slate-300 font-semibold">Cambiar Vendedor:</label>
+                <select onchange="window.location.href='{{ url('/panel/dropshipper') }}?dropshipper_id=' + this.value"
+                    class="bg-slate-800 border border-emerald-500/40 text-emerald-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none">
+                    @foreach($allDropshippers as $ad)
+                        <option value="{{ $ad->id }}" {{ ($dropshipper && $dropshipper->id === $ad->id) ? 'selected' : '' }}>
+                            {{ $ad->name }} ({{ $ad->company_or_store_name ?? 'Tienda' }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+
+            <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
+            </a>
+        </div>
+    </div>
+    @endif
+
     <x-page-header
         title="Panel del Dropshipper"
         subtitle="Monitorea tus pedidos contra entrega en Bolivia, ganancias líquidas y estado de recaudación de DEX."
@@ -534,13 +574,7 @@ function dropshipperDashboard() {
         async submitIntegration() {
             this.integrationSubmitting = true;
             try {
-                const authRes = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' })
-                });
-                const authData = await authRes.json();
-                const token = authData.data?.token;
+                const token = '{{ $apiToken ?? "" }}';
 
                 const response = await fetch('/api/v1/store-integrations', {
                     method: 'POST',
@@ -572,14 +606,7 @@ function dropshipperDashboard() {
             this.submitting = true;
 
             try {
-                // Obtener token demo del dropshipper
-                const authRes = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ email: 'dropshipper@bolidrop.bo', password: 'password123' })
-                });
-                const authData = await authRes.json();
-                const token = authData.data?.token;
+                const token = '{{ $apiToken ?? "" }}';
 
                 const response = await fetch('/api/v1/wallet/withdraw', {
                     method: 'POST',
