@@ -134,6 +134,10 @@ class StressTestSimulationCommand extends Command
         $orderBatchStartTime = microtime(true);
         $createdOrders = [];
 
+        $existingOrderOffset = (int) Order::where('tenant_id', $tenant->id)
+            ->where('order_number', 'LIKE', 'STRESS-' . date('ymd') . '-%')
+            ->count();
+
         for ($i = 1; $i <= $targetOrders; $i++) {
             $loc = $boliviaLocations[array_rand($boliviaLocations)];
             $customerName = $bolivianNames[array_rand($bolivianNames)] . " ($i)";
@@ -188,7 +192,8 @@ class StressTestSimulationCommand extends Command
                 $status = (rand(0, 1) === 1) ? 'failed_delivery' : 'returned';
             }
 
-            $orderNumber = 'STRESS-' . date('ymd') . '-' . str_pad((string) $i, 5, '0', STR_PAD_LEFT);
+            $orderIndex = $existingOrderOffset + $i;
+            $orderNumber = 'STRESS-' . date('ymd') . '-' . str_pad((string) $orderIndex, 5, '0', STR_PAD_LEFT);
             $trackingNumber = 'DEX-BO-' . date('Ymd') . '-' . strtoupper(Str::random(6));
 
             $order = Order::create([
