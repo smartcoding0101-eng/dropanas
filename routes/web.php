@@ -166,7 +166,8 @@ Route::middleware(['auth'])->group(function () {
     // =========================================================================
     // Operaciones de Usuario (Vendedor / Proveedor / Courier)
     Route::post('/wallet/topups',              [\App\Http\Controllers\Web\FintechWalletController::class, 'submitTopup'])              ->name('wallet.topup.store');
-    Route::post('/wallet/withdraw',            [\App\Http\Controllers\Web\FintechWalletController::class, 'submitWithdrawal'])         ->name('wallet.withdraw.store');
+    Route::post('/wallet/withdraw',            [\App\Http\Controllers\Web\FintechWalletController::class, 'submitWithdrawal'])         ->name('wallet.withdraw');
+    Route::post('/wallet/withdrawals',         [\App\Http\Controllers\Web\FintechWalletController::class, 'submitWithdrawal'])         ->name('wallet.withdraw.store');
     Route::post('/carrier/settlements',        [\App\Http\Controllers\Web\FintechWalletController::class, 'submitCarrierSettlement']) ->name('carrier.settlements.store');
 
     // Operaciones de Administración Central (Aprobaciones & Comisiones Dropana 5 Bs)
