@@ -69,6 +69,11 @@ class InventoryKardex extends Model
         return $this->belongsTo(Order::class, 'reference_id');
     }
 
+    public function stockTransfer(): BelongsTo
+    {
+        return $this->belongsTo(StockTransfer::class, 'reference_id');
+    }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

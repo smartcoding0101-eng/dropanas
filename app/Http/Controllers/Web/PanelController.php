@@ -209,7 +209,10 @@ class PanelController extends Controller
             // Historial de Trazabilidad Kardex de sus productos en bodegas con relaciones completas
             $recentKardex = \App\Models\InventoryKardex::withoutGlobalScopes()
                 ->whereIn('product_id', $products->pluck('id'))
-                ->with(['warehouse', 'product.provider', 'user', 'order.dropshipper', 'order.carrier'])
+                ->with([
+                    'warehouse', 'product.provider', 'user', 'order.dropshipper', 'order.carrier',
+                    'stockTransfer.fromWarehouse', 'stockTransfer.toWarehouse', 'stockTransfer.requester'
+                ])
                 ->latest('created_at')
                 ->limit(100)
                 ->get();

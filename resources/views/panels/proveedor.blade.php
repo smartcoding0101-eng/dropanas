@@ -1756,6 +1756,42 @@
         @php
             $providerKardexJson = $recentKardex->map(function($k) {
                 $order = $k->order;
+                $isTransfer = in_array($k->movement_type, ['transfer_out', 'transfer_in']) || $k->reference_type === 'stock_transfer';
+                $transfer = $isTransfer ? $k->stockTransfer : null;
+
+                if ($isTransfer) {
+                    $fromName = $transfer?->fromWarehouse?->name ?? 'Bodega Origen';
+                    $fromCity = $transfer?->fromWarehouse?->city ?? '';
+                    $toName = $transfer?->toWarehouse?->name ?? 'Bodega Destino';
+                    $toCity = $transfer?->toWarehouse?->city ?? '';
+                    $actorName = $transfer?->requester?->name ?? $k->user?->name ?? 'Administración / Bodeguero';
+
+                    if ($k->movement_type === 'transfer_out') {
+                        $badgeLabel = 'Traspaso (Salida)';
+                        $sellerName = 'Traspaso Interdepartamental';
+                        $buyerName = "Hacia: {$toName}";
+                        $buyerCity = $toCity ?: ($k->warehouse?->city ?? 'N/A');
+                    } else {
+                        $badgeLabel = 'Traspaso (Entrada)';
+                        $sellerName = 'Traspaso Interdepartamental';
+                        $buyerName = "Desde: {$fromName}";
+                        $buyerCity = $fromCity ?: ($k->warehouse?->city ?? 'N/A');
+                    }
+                    $transferFlow = "{$fromName} ➔ {$toName}";
+                } else {
+                    $badgeLabel = match($k->movement_category) {
+                        'inbound'  => 'Entrada',
+                        'outbound' => 'Salida COD',
+                        'hold'     => 'Reserva',
+                        default    => 'Ajuste',
+                    };
+                    $sellerName = $order?->dropshipper?->company_or_store_name ?? $order?->dropshipper?->name ?? 'Operación Directa / Almacén';
+                    $buyerName = $order?->customer_name ?? 'Almacén Central / Stock';
+                    $buyerCity = $order ? ($order->shipping_city . ' (' . $order->shipping_department . ')') : ($k->warehouse?->city ?? 'N/A');
+                    $transferFlow = null;
+                    $actorName = $k->user?->name ?? 'Sistema';
+                }
+
                 return [
                     'id' => (string) $k->id,
                     'created_at' => $k->created_at->format('d/m/Y H:i'),
@@ -1768,6 +1804,10 @@
                     'warehouse_city' => $k->warehouse?->city ?? 'Santa Cruz',
                     'movement_category' => $k->movement_category,
                     'movement_type' => $k->movement_type,
+                    'is_transfer' => $isTransfer,
+                    'badge_label' => $badgeLabel,
+                    'transfer_flow' => $transferFlow,
+                    'responsible_user' => $actorName,
                     'quantity' => (int) $k->quantity,
                     'unit_cost_bob' => (float) $k->unit_cost_bob,
                     'total_cost_bob' => (float) $k->total_cost_bob,
@@ -1781,11 +1821,11 @@
                     'notes' => $k->notes ?? '',
                     'document_number' => $k->document_number ?? ($order?->order_number ?? 'S/N'),
                     'provider_name' => $k->product?->provider?->company_or_store_name ?? $k->product?->provider?->name ?? 'Megabodega Bolivia S.A.',
-                    'seller_name' => $order?->dropshipper?->company_or_store_name ?? $order?->dropshipper?->name ?? 'Operación Directa / Almacén',
+                    'seller_name' => $sellerName,
                     'seller_email' => $order?->dropshipper?->email ?? '',
-                    'buyer_name' => $order?->customer_name ?? 'Almacén Central / Stock',
+                    'buyer_name' => $buyerName,
                     'buyer_phone' => $order?->customer_phone ?? '',
-                    'buyer_city' => $order ? ($order->shipping_city . ' (' . $order->shipping_department . ')') : ($k->warehouse?->city ?? 'N/A'),
+                    'buyer_city' => $buyerCity,
                     'buyer_address' => $order?->shipping_address ?? '',
                     'courier_name' => $order?->carrier?->name ?? 'DEX Express Bolivia',
                     'order_status' => $order?->status ?? '',
@@ -1814,13 +1854,16 @@
                     return this.records.filter(r => {
                         const matchProd = this.filterProduct === 'all' || r.product_id === this.filterProduct;
                         const matchWh   = this.filterWarehouse === 'all' || r.warehouse_id === this.filterWarehouse;
-                        const matchCat  = this.filterCategory === 'all' || r.movement_category === this.filterCategory;
+                        const matchCat  = this.filterCategory === 'all' ||
+                            (this.filterCategory === 'transfers' ? r.is_transfer : r.movement_category === this.filterCategory);
                         const q = this.searchDoc.toLowerCase().trim();
                         const matchText = !q || r.document_number.toLowerCase().includes(q) ||
                                           r.product_name.toLowerCase().includes(q) ||
                                           r.sku.toLowerCase().includes(q) ||
                                           r.buyer_name.toLowerCase().includes(q) ||
-                                          r.seller_name.toLowerCase().includes(q);
+                                          r.seller_name.toLowerCase().includes(q) ||
+                                          (r.transfer_flow && r.transfer_flow.toLowerCase().includes(q)) ||
+                                          (r.responsible_user && r.responsible_user.toLowerCase().includes(q));
                         return matchProd && matchWh && matchCat && matchText;
                     });
                 },
@@ -1998,7 +2041,8 @@
                         <select x-model="filterCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
                             <option value="all">Todos los Movimientos</option>
                             <option value="inbound">Entradas (+ Inbound)</option>
-                            <option value="outbound">Salidas (- Outbound)</option>
+                            <option value="outbound">Salidas COD (- Outbound)</option>
+                            <option value="transfers">Traspasos entre Bodegas (⇄ Transferencias)</option>
                             <option value="hold">Reservas de Venta (Hold)</option>
                             <option value="release">Liberaciones de Stock</option>
                         </select>
@@ -2043,22 +2087,29 @@
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <div class="font-bold text-slate-900" x-text="item.created_at"></div>
                                     <div class="mt-0.5">
-                                        <template x-if="item.movement_category === 'inbound'">
+                                        <template x-if="item.is_transfer">
+                                            <span class="inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.5 rounded-full border uppercase"
+                                                  :class="item.movement_type === 'transfer_out' ? 'text-amber-800 bg-amber-50 border-amber-300' : 'text-sky-800 bg-sky-50 border-sky-300'">
+                                                <i class="fa-solid" :class="item.movement_type === 'transfer_out' ? 'fa-arrow-right-from-bracket' : 'fa-arrow-right-to-bracket'"></i>
+                                                <span x-text="item.badge_label"></span>
+                                            </span>
+                                        </template>
+                                        <template x-if="!item.is_transfer && item.movement_category === 'inbound'">
                                             <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase">
                                                 <i class="fa-solid fa-arrow-down"></i> Entrada
                                             </span>
                                         </template>
-                                        <template x-if="item.movement_category === 'outbound'">
+                                        <template x-if="!item.is_transfer && item.movement_category === 'outbound'">
                                             <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 uppercase">
                                                 <i class="fa-solid fa-arrow-up"></i> Salida COD
                                             </span>
                                         </template>
-                                        <template x-if="item.movement_category === 'hold'">
+                                        <template x-if="!item.is_transfer && item.movement_category === 'hold'">
                                             <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-[#4F46E5] bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 uppercase">
                                                 <i class="fa-solid fa-bookmark"></i> Reserva
                                             </span>
                                         </template>
-                                        <template x-if="item.movement_category !== 'inbound' && item.movement_category !== 'outbound' && item.movement_category !== 'hold'">
+                                        <template x-if="!item.is_transfer && item.movement_category !== 'inbound' && item.movement_category !== 'outbound' && item.movement_category !== 'hold'">
                                             <span class="inline-flex items-center gap-1 text-[9px] font-extrabold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 uppercase">
                                                 <i class="fa-solid fa-rotate"></i> Ajuste
                                             </span>
@@ -2107,21 +2158,32 @@
                                     </div>
                                 </td>
 
-                                <!-- Rol 2: Vendedor (Dropshipper) -->
+                                <!-- Rol 2: Vendedor o Flujo de Traspaso -->
                                 <td class="py-3 px-4">
-                                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50/70 text-[#4F46E5] border border-indigo-200/80 text-[10px] font-bold">
-                                        <i class="fa-solid fa-store text-indigo-400 text-[9px]"></i>
-                                        <span class="truncate max-w-[130px]" x-text="item.seller_name"></span>
-                                    </div>
+                                    <template x-if="item.is_transfer">
+                                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 text-[10px] font-bold" :title="item.transfer_flow">
+                                            <i class="fa-solid fa-right-left text-sky-500 text-[9px]"></i>
+                                            <span class="truncate max-w-[130px]" x-text="item.transfer_flow"></span>
+                                        </div>
+                                    </template>
+                                    <template x-if="!item.is_transfer">
+                                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50/70 text-[#4F46E5] border border-indigo-200/80 text-[10px] font-bold">
+                                            <i class="fa-solid fa-store text-indigo-400 text-[9px]"></i>
+                                            <span class="truncate max-w-[130px]" x-text="item.seller_name"></span>
+                                        </div>
+                                    </template>
                                 </td>
 
-                                <!-- Rol 3: Comprador Final COD -->
+                                <!-- Rol 3: Comprador Final COD o Bodega Destino/Origen -->
                                 <td class="py-3 px-4">
                                     <div class="font-bold text-slate-900 truncate max-w-[140px]" x-text="item.buyer_name"></div>
                                     <div class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                                        <i class="fa-solid fa-location-dot text-[9px]"></i>
+                                        <i class="fa-solid" :class="item.is_transfer ? 'fa-warehouse text-sky-500' : 'fa-location-dot text-slate-400'" class="text-[9px]"></i>
                                         <span class="truncate max-w-[120px]" x-text="item.buyer_city"></span>
                                     </div>
+                                    <template x-if="item.is_transfer && item.responsible_user">
+                                        <div class="text-[9px] text-slate-400 font-mono mt-0.5" x-text="'Resp: ' + item.responsible_user"></div>
+                                    </template>
                                 </td>
 
                                 <!-- Acción de Inspección -->
@@ -2219,7 +2281,7 @@
                                                : selectedItem && selectedItem.movement_category === 'hold'
                                                  ? 'text-indigo-700'
                                                  : 'text-rose-700'"
-                                     x-text="selectedItem ? (selectedItem.movement_category === 'inbound' ? 'Entrada de Stock' : selectedItem.movement_category === 'outbound' ? 'Salida / Despacho COD' : selectedItem.movement_category === 'hold' ? 'Reserva de Venta (Hold)' : 'Ajuste de Inventario') : ''"></div>
+                                     x-text="selectedItem ? (selectedItem.is_transfer ? (selectedItem.movement_type === 'transfer_out' ? 'Traspaso de Inventario (Salida de Bodega)' : 'Traspaso de Inventario (Recepción en Bodega)') : (selectedItem.movement_category === 'inbound' ? 'Entrada de Stock' : selectedItem.movement_category === 'outbound' ? 'Salida / Despacho COD' : selectedItem.movement_category === 'hold' ? 'Reserva de Venta (Hold)' : 'Ajuste de Inventario')) : ''"></div>
                                 <!-- Cantidad en unidades —PRINCIPAL— -->
                                 <div class="text-3xl font-black font-mono leading-none"
                                      :class="selectedItem && selectedItem.quantity > 0 ? 'text-emerald-800' : selectedItem && selectedItem.movement_category === 'hold' ? 'text-indigo-800' : 'text-rose-800'"
@@ -2247,26 +2309,28 @@
                                 <div class="text-[10px] text-slate-500" x-text="selectedItem ? selectedItem.warehouse_name + ' — ' + selectedItem.warehouse_city : ''"></div>
                             </div>
 
-                            <!-- 2. Vendedor / Dropshipper -->
+                            <!-- 2. Vendedor o Flujo de Traspaso -->
                             <div class="p-3.5 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-1">
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-indigo-800 flex items-center gap-1">
-                                    <i class="fa-solid fa-store text-indigo-600"></i> 2. Vendedor
+                                    <i class="fa-solid" :class="selectedItem && selectedItem.is_transfer ? 'fa-right-left text-sky-600' : 'fa-store text-indigo-600'"></i>
+                                    <span x-text="selectedItem && selectedItem.is_transfer ? '2. Flujo de Traspaso' : '2. Vendedor'"></span>
                                 </span>
-                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? selectedItem.seller_name : '—'"></div>
-                                <div class="text-[10px] text-indigo-600 truncate" x-text="selectedItem ? (selectedItem.seller_email || 'Tienda Conectada') : ''"></div>
+                                <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? (selectedItem.is_transfer ? selectedItem.transfer_flow : selectedItem.seller_name) : '—'"></div>
+                                <div class="text-[10px] text-indigo-600 truncate" x-text="selectedItem ? (selectedItem.is_transfer ? ('Guía: ' + selectedItem.document_number) : (selectedItem.seller_email || 'Tienda Conectada')) : ''"></div>
                             </div>
 
-                            <!-- 3. Comprador Final COD -->
+                            <!-- 3. Comprador Final COD o Bodega Operativa -->
                             <div class="p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1">
-                                    <i class="fa-solid fa-user-check text-emerald-600"></i> 3. Comprador
+                                    <i class="fa-solid" :class="selectedItem && selectedItem.is_transfer ? 'fa-warehouse text-emerald-600' : 'fa-user-check text-emerald-600'"></i>
+                                    <span x-text="selectedItem && selectedItem.is_transfer ? '3. Bodega Operativa' : '3. Comprador'"></span>
                                 </span>
                                 <div class="font-bold text-xs text-[#0F172A]" x-text="selectedItem ? selectedItem.buyer_name : '—'"></div>
                                 <div class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
                                     <i class="fa-solid fa-location-dot text-[9px]"></i>
                                     <span class="truncate" x-text="selectedItem ? selectedItem.buyer_city : ''"></span>
                                 </div>
-                                <div class="text-[10px] text-slate-500" x-text="selectedItem && selectedItem.buyer_phone ? '📞 ' + selectedItem.buyer_phone : ''"></div>
+                                <div class="text-[10px] text-slate-500 font-mono" x-text="selectedItem && selectedItem.is_transfer && selectedItem.responsible_user ? 'Autorizado: ' + selectedItem.responsible_user : (selectedItem && selectedItem.buyer_phone ? '📞 ' + selectedItem.buyer_phone : '')"></div>
                             </div>
 
                         </div>
@@ -4064,7 +4128,10 @@ function proveedorDashboard() {
                     this.showToast(result.message || 'Transferencia realizada con éxito.', 'success');
                     this.transferModalOpen = false;
                     this.transferModalItems = [];
-                    setTimeout(() => { window.location.reload(); }, 1000);
+                    setTimeout(() => {
+                        window.location.hash = '#kardex';
+                        window.location.reload();
+                    }, 500);
                 } else {
                     const errMsg = result.errors ? Object.values(result.errors).flat().join(' ') : (result.message || 'Error al realizar la transferencia.');
                     this.showToast(errMsg, 'error');
@@ -4954,6 +5021,10 @@ function almacenModule() {
                     this.showAlmToast(data.message, 'success');
                     this.warehouseModalOpen = false;
                     await this.loadWarehouses();
+                    setTimeout(() => {
+                        window.location.hash = '#almacenes';
+                        window.location.reload();
+                    }, 500);
                 } else {
                     const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error al guardar.');
                     this.showAlmToast(msg, 'error');
@@ -4978,6 +5049,10 @@ function almacenModule() {
                 if (res.ok && data.status === 'success') {
                     this.showAlmToast(data.message, 'success');
                     await this.loadWarehouses();
+                    setTimeout(() => {
+                        window.location.hash = '#almacenes';
+                        window.location.reload();
+                    }, 500);
                 } else {
                     this.showAlmToast(data.message || 'No se pudo eliminar.', 'error');
                 }
@@ -5193,6 +5268,10 @@ function almacenModule() {
                     this.transferItems = [];
                     this.productSearchInput = '';
                     await this.loadWarehouses();
+                    setTimeout(() => {
+                        window.location.hash = '#kardex';
+                        window.location.reload();
+                    }, 500);
                 } else {
                     const msg = data.errors ? Object.values(data.errors).flat().join(' ') : (data.message || 'Error en el traspaso.');
                     this.showAlmToast(msg, 'error');
