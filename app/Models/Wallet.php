@@ -28,6 +28,16 @@ class Wallet extends Model
         'balance_withdrawn' => 'decimal:2',
     ];
 
+    public function getBalanceBobAttribute(): float
+    {
+        return (float) ($this->attributes['balance_available'] ?? 0.0);
+    }
+
+    public function setBalanceBobAttribute($value): void
+    {
+        $this->attributes['balance_available'] = $value;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

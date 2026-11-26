@@ -161,6 +161,23 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}/reject',  [\App\Http\Controllers\Web\BankSettlementController::class, 'reject'])   ->name('reject');
     });
 
+    // =========================================================================
+    // MÓDULO FINTECH DROPANA: BILLETERAS, RECARGAS QR, RENDICIONES Y RETIROS
+    // =========================================================================
+    // Operaciones de Usuario (Vendedor / Proveedor / Courier)
+    Route::post('/wallet/topups',              [\App\Http\Controllers\Web\FintechWalletController::class, 'submitTopup'])              ->name('wallet.topup.store');
+    Route::post('/wallet/withdraw',            [\App\Http\Controllers\Web\FintechWalletController::class, 'submitWithdrawal'])         ->name('wallet.withdraw.store');
+    Route::post('/carrier/settlements',        [\App\Http\Controllers\Web\FintechWalletController::class, 'submitCarrierSettlement']) ->name('carrier.settlements.store');
+
+    // Operaciones de Administración Central (Aprobaciones & Comisiones Dropana 5 Bs)
+    Route::prefix('admin/fintech')->name('admin.fintech.')->group(function () {
+        Route::post('/topups/{id}/approve',              [\App\Http\Controllers\Web\FintechWalletController::class, 'approveTopup'])             ->name('topups.approve');
+        Route::post('/topups/{id}/reject',               [\App\Http\Controllers\Web\FintechWalletController::class, 'rejectTopup'])              ->name('topups.reject');
+        Route::post('/carrier-settlements/{id}/approve', [\App\Http\Controllers\Web\FintechWalletController::class, 'approveCarrierSettlement']) ->name('carrier_settlements.approve');
+        Route::post('/carrier-settlements/{id}/reject',  [\App\Http\Controllers\Web\FintechWalletController::class, 'rejectCarrierSettlement'])  ->name('carrier_settlements.reject');
+        Route::post('/settings',                         [\App\Http\Controllers\Web\FintechWalletController::class, 'updateFinancialSettings'])  ->name('settings.update');
+    });
+
     // Reportes & Analytics Dashboard (Admin)
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/',                      [\App\Http\Controllers\Web\ReportController::class, 'index'])          ->name('index');

@@ -34,6 +34,8 @@ class Order extends Model
         'cost_amount_bob',
         'shipping_fee_bob',
         'platform_fee_bob',
+        'platform_fee_seller_bob',
+        'platform_fee_provider_bob',
         'dropshipper_profit_bob',
         'status',
         'delivery_attempts',
@@ -43,7 +45,10 @@ class Order extends Model
         'payment_method',
         'dispatched_at',
         'delivered_at',
+        'prepaid_at',
         'settled_at',
+        'cod_reimbursed_at',
+        'carrier_cash_settlement_id',
     ];
 
     protected $casts = [
@@ -51,12 +56,16 @@ class Order extends Model
         'cost_amount_bob' => 'decimal:2',
         'shipping_fee_bob' => 'decimal:2',
         'platform_fee_bob' => 'decimal:2',
+        'platform_fee_seller_bob' => 'decimal:2',
+        'platform_fee_provider_bob' => 'decimal:2',
         'dropshipper_profit_bob' => 'decimal:2',
         'delivery_attempts' => 'integer',
         'rescheduled_delivery_at' => 'datetime',
         'dispatched_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'prepaid_at' => 'datetime',
         'settled_at' => 'datetime',
+        'cod_reimbursed_at' => 'datetime',
     ];
 
     public function items(): HasMany
@@ -77,6 +86,11 @@ class Order extends Model
     public function carrier(): BelongsTo
     {
         return $this->belongsTo(Carrier::class);
+    }
+
+    public function carrierCashSettlement(): BelongsTo
+    {
+        return $this->belongsTo(CarrierCashSettlement::class, 'carrier_cash_settlement_id');
     }
 }
 

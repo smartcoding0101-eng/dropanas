@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Carrier;
+use App\Models\CarrierCashSettlement;
+use App\Models\FinancialSetting;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Models\WalletTopup;
 use App\Models\Warehouse;
 use App\Services\Analytics\ProviderMetricsService;
 use Illuminate\Http\Request;
@@ -66,9 +69,18 @@ class PanelController extends Controller
             ? \App\Models\StoreIntegration::where('dropshipper_id', $dropshipper->id)->latest()->get()
             : collect();
 
+        $walletTopups = $dropshipper
+            ? WalletTopup::where('user_id', $dropshipper->id)->latest()->limit(10)->get()
+            : collect();
+
+        $financialSettings = FinancialSetting::forTenant($dropshipper->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb');
+
         $apiToken = $dropshipper ? $dropshipper->createToken('dropshipper-web-session')->plainTextToken : '';
 
-        return view('panels.dropshipper', compact('dropshipper', 'stats', 'recentOrders', 'wallet', 'storeIntegrations', 'apiToken', 'allDropshippers', 'isAdmin'));
+        return view('panels.dropshipper', compact(
+            'dropshipper', 'stats', 'recentOrders', 'wallet', 'storeIntegrations',
+            'walletTopups', 'financialSettings', 'apiToken', 'allDropshippers', 'isAdmin'
+        ));
     }
 
     /**
@@ -249,10 +261,16 @@ class PanelController extends Controller
             ];
         })->values()->all();
 
+        $financialSettings = FinancialSetting::forTenant($provider->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb');
+        $providerTopups = $provider
+            ? WalletTopup::where('user_id', $provider->id)->latest()->limit(10)->get()
+            : collect();
+
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
             'wallet', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
             'recentKardex', 'stockTransfers', 'inventoryAlerts',
+            'financialSettings', 'providerTopups',
             'dropshippers', 'transferProductsList', 'allProviders', 'isAdmin'
         ));
     }
@@ -312,11 +330,16 @@ class PanelController extends Controller
 
         $users = User::latest()->get();
 
+        $pendingTopups = WalletTopup::where('status', 'pending')->with('user')->latest()->get();
+        $pendingCarrierSettlements = CarrierCashSettlement::where('status', 'pending')->with(['carrier', 'orders'])->latest()->get();
+        $financialSettings = FinancialSetting::forTenant($admin->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb');
+
         $apiToken = $admin ? $admin->createToken('admin-web-session')->plainTextToken : '';
 
         return view('panels.admin', compact(
             'admin', 'stats', 'recentOrders', 'carriers', 'manifests',
-            'stockTransfers', 'notifications', 'customers', 'warehouses', 'products', 'users', 'apiToken'
+            'stockTransfers', 'notifications', 'customers', 'warehouses', 'products', 'users',
+            'pendingTopups', 'pendingCarrierSettlements', 'financialSettings', 'apiToken'
         ));
     }
 
@@ -354,7 +377,24 @@ class PanelController extends Controller
             ->limit(5)
             ->get();
 
-        return view('panels.carrier', compact('carrierUser', 'carrier', 'stats', 'ordersInRoute', 'recentDelivered', 'allCarriers', 'isAdmin'));
+        $deliveredOrdersToSettle = Order::where('status', 'delivered')
+            ->whereNull('carrier_cash_settlement_id')
+            ->when($carrier, fn($q) => $q->where('carrier_id', $carrier->id))
+            ->latest()
+            ->get();
+
+        $carrierSettlements = CarrierCashSettlement::when($carrier, fn($q) => $q->where('carrier_id', $carrier->id))
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        $financialSettings = FinancialSetting::forTenant($carrierUser->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb');
+
+        return view('panels.carrier', compact(
+            'carrierUser', 'carrier', 'stats', 'ordersInRoute', 'recentDelivered',
+            'deliveredOrdersToSettle', 'carrierSettlements', 'financialSettings',
+            'allCarriers', 'isAdmin'
+        ));
     }
 
     /**

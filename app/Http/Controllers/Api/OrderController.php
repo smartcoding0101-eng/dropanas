@@ -85,7 +85,8 @@ class OrderController extends Controller
 
         $shippingFee = $coverage ? (float) $coverage->base_shipping_bob : 25.00; // Tarifa base por defecto
 
-        return DB::transaction(function () use ($validated, $user, $carrier, $shippingFee, $commissionEngine, $paymentManager, $dexAdapter) {
+        try {
+            return DB::transaction(function () use ($validated, $user, $carrier, $shippingFee, $commissionEngine, $paymentManager, $dexAdapter) {
             $totalAmount = 0.0;
             $costAmount = 0.0;
             $itemsData = [];
@@ -189,6 +190,11 @@ class OrderController extends Controller
             $order->tracking_number = $waybill['waybill_number'];
             $order->save();
 
+            // Ejecutar prepago obligatorio y debitar saldo de la billetera del Vendedor (Opción A FinTech)
+            if ($user->role === 'dropshipper') {
+                app(\App\Services\Finance\OrderPrepaymentService::class)->processPrepayment($order);
+            }
+
             // Generar Carga Útil de Pago si no es estrictamente efectivo puro
             $paymentPayload = null;
             if (in_array($validated['payment_method'], ['qr_interoperable', 'binance_pay', 'takenos'])) {
@@ -205,6 +211,13 @@ class OrderController extends Controller
                 ],
             ], 201);
         });
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'requires_topup' => true,
+            ], 422);
+        }
     }
 
     /**

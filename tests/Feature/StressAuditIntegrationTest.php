@@ -127,16 +127,24 @@ class StressAuditIntegrationTest extends TestCase
         // 2. Admin
         $this->admin = $this->createUser('tenant_admin', 'stress.admin@bolidrop.bo', 'Admin Stress');
 
-        // 3. 10 Dropshippers (1 wallet cada uno, saldo inicial 0)
+        // 3. 10 Dropshippers (1 wallet cada uno con saldo prepago para emitir pedidos)
         for ($i = 1; $i <= self::DROPSHIPPERS_COUNT; $i++) {
             $ds = $this->createUser('dropshipper', "ds{$i}@stress.bo", "Dropshipper {$i}");
-            Wallet::create([
+            $wallet = Wallet::create([
                 'tenant_id'         => $this->tenant->id,
                 'user_id'           => $ds->id,
                 'currency'          => 'BOB',
-                'balance_available' => 0,
+                'balance_available' => 50000.00,
                 'balance_pending'   => 0,
                 'balance_withdrawn' => 0,
+            ]);
+            \App\Models\WalletTransaction::create([
+                'tenant_id'        => $this->tenant->id,
+                'wallet_id'        => $wallet->id,
+                'transaction_type' => 'topup',
+                'amount'           => 50000.00,
+                'description'      => 'Recarga inicial capital de trabajo stress test',
+                'balance_after'    => 50000.00,
             ]);
             $this->dropshippers[] = $ds;
         }

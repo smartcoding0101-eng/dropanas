@@ -202,6 +202,9 @@
             aside.sidenav-light {
                 width: 16rem; /* 256px / md:w-64 */
             }
+            #layoutSidenav_content {
+                margin-left: 16rem; /* 256px / md:ml-64 espacio fijo garantizado en escritorio */
+            }
             html.sidebar-is-collapsed #layoutSidenav_content {
                 margin-left: 5rem !important; /* 80px / md:ml-20 */
             }
@@ -1576,9 +1579,10 @@
                 };
 
                 const step = (now) => {
-                    const progress = Math.min((now - startTime) / duration, 1);
-                    // Spring easeOutExpo curve
-                    const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    const elapsed = Math.max(0, now - startTime);
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Spring easeOutExpo curve (garantizado no-negativo en [0, 1])
+                    const eased = progress === 1 ? 1 : Math.max(0, 1 - Math.pow(2, -10 * progress));
                     const current = targetVal * eased;
                     el.textContent = `${prefix}${formatNum(current)}${suffix}`;
                     if (progress < 1) {

@@ -242,8 +242,10 @@ class SystemAuditFlowsTest extends TestCase
         $this->assertGreaterThan(0, $shippingFee);
         $this->assertGreaterThan(0, $platformFee);
 
-        // Regla contable: Total COD = Costo + Flete + Comisión Plataforma + Ganancia Dropshipper
-        $expectedSum = round($costAmount + $shippingFee + $platformFee + $dropshipperProfit, 2);
+        // Regla contable: Total COD = Costo + Flete + Comisión Plataforma Vendedor + Ganancia Dropshipper
+        // Nota: La comisión del proveedor de 5 Bs se descuenta del costo mayorista (150 - 5 = 145), por lo que sumar el fee total (10 Bs) duplicaría 5 Bs.
+        $sellerFee = (float) ($order->platform_fee_seller_bob > 0 ? $order->platform_fee_seller_bob : $platformFee);
+        $expectedSum = round($costAmount + $shippingFee + $sellerFee + $dropshipperProfit, 2);
         $this->assertEquals($totalAmount, $expectedSum, 'La suma de componentes debe igualar exactamente el monto COD');
 
         // 3. Verificar Guía de Courier generada

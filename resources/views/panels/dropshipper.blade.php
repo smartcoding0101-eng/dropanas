@@ -155,10 +155,16 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <button @click="topupModalOpen = true"
+                    class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-sm flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-qrcode text-amber-200"></i>
+                    <span>Recargar Saldo (QR / Banco)</span>
+                </button>
                 <button @click="withdrawModalOpen = true"
-                    class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Solicitar Retiro
+                    class="px-4 py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold shadow-sm flex items-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-arrow-up-from-bracket text-sky-300"></i>
+                    <span>Solicitar Retiro</span>
                 </button>
                 <span class="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 font-mono font-bold text-slate-900 text-xs">
                     BOB (Bolivianos)
@@ -191,6 +197,63 @@
                 <div class="text-[11px] text-slate-400">Transferencias exitosas realizadas</div>
             </div>
         </div>
+
+        <!-- Historial de Recargas Solicitadas -->
+        @if($walletTopups->isNotEmpty())
+        <div class="border-t border-slate-100 pt-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-indigo-600"></i>
+                    <span>Tus Solicitudes de Recarga Recientes</span>
+                </span>
+                <span class="text-[11px] text-slate-400">Verificadas por el Administrador</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-500 uppercase font-semibold">
+                        <tr>
+                            <th class="py-2.5 px-3">Código</th>
+                            <th class="py-2.5 px-3">Fecha</th>
+                            <th class="py-2.5 px-3">Método</th>
+                            <th class="py-2.5 px-3 text-right">Monto</th>
+                            <th class="py-2.5 px-3">Referencia</th>
+                            <th class="py-2.5 px-3">Comprobante</th>
+                            <th class="py-2.5 px-3 text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach($walletTopups as $topup)
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-2 px-3 font-mono font-bold text-slate-900">{{ $topup->topup_number }}</td>
+                            <td class="py-2 px-3 text-slate-500">{{ $topup->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="py-2 px-3 font-semibold">{{ $topup->payment_method === 'qr_bolivia' ? 'QR Simple' : 'Transferencia Bancaria' }}</td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-emerald-600">+Bs. {{ number_format($topup->amount_bob, 2) }}</td>
+                            <td class="py-2 px-3 font-mono text-slate-600">{{ $topup->bank_reference ?? 'N/A' }}</td>
+                            <td class="py-2 px-3">
+                                @if($topup->receipt_path)
+                                    <a href="{{ asset('storage/' . $topup->receipt_path) }}" target="_blank" class="text-indigo-600 hover:underline font-bold">
+                                        <i class="fa-solid fa-file-invoice"></i> Ver
+                                    </a>
+                                @else
+                                    <span class="text-slate-400">-</span>
+                                @endif
+                            </td>
+                            <td class="py-2 px-3 text-center">
+                                @if($topup->status === 'approved')
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aprobada</span>
+                                @elseif($topup->status === 'rejected')
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">Rechazada</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 animate-pulse">Pendiente</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
     </div>
     @endif
 
@@ -368,6 +431,89 @@
         </div>
     </div>
 
+    <!-- MODAL INTERACTIVO: SOLICITAR RECARGA DE SALDO CON QR / BANCO -->
+    <div x-show="topupModalOpen" x-cloak
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5"
+            @click.away="topupModalOpen = false">
+            
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 font-heading text-base">Recargar Billetera Dropana</h3>
+                        <p class="text-xs text-slate-500">Saldo actual: <strong class="text-emerald-600 font-mono">Bs {{ number_format($wallet?->balance_available ?? 0, 2) }}</strong></p>
+                    </div>
+                </div>
+                <button @click="topupModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Instrucciones de Pago Bancario Oficial Dropana -->
+            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
+                <div class="font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                    <span>Cuentas oficiales de acreditación Dropana Bolivia:</span>
+                </div>
+                <div class="text-[11px] text-slate-700 space-y-1">
+                    <div><strong>Banco:</strong> {{ $financialSettings->bank_name ?? 'Banco Unión S.A.' }}</div>
+                    <div><strong>Nro de Cuenta:</strong> <span class="font-mono font-bold">{{ $financialSettings->bank_account_number ?? '100000-4829104-BOB' }}</span></div>
+                    <div><strong>Titular:</strong> {{ $financialSettings->bank_account_holder ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}</div>
+                </div>
+                <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+                    Paga desde tu app bancaria (QR o transferencia) y sube tu comprobante abajo. El administrador lo verificará y liberará tu saldo para prepago de pedidos.
+                </p>
+            </div>
+
+            <form action="{{ route('wallet.topup.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+                @csrf
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Monto a Recargar (BOB):</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold font-mono">Bs</span>
+                        <input type="number" step="0.01" min="1" name="amount_bob" required placeholder="500.00"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Método Utilizado:</label>
+                    <select name="payment_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-500">
+                        <option value="qr_bolivia">Pago QR Simple (Cualquier Banco)</option>
+                        <option value="bank_transfer">Transferencia Bancaria Nacional</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nro de Referencia Bancaria / Comprobante:</label>
+                    <input type="text" name="bank_reference" required placeholder="Ej: OP-984321 o Código de autorización"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Adjuntar Comprobante de Pago (Imagen o PDF):</label>
+                    <input type="file" name="receipt" accept="image/*,application/pdf" required
+                        class="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" @click="topupModalOpen = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer transition">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                        <span>Enviar Solicitud de Recarga</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL INTERACTIVO: SOLICITUD DE RETIRO DE SALDO DISPONIBLE -->
     <div x-show="withdrawModalOpen" x-cloak
         class="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -541,6 +687,7 @@
 <script>
 function dropshipperDashboard() {
     return {
+        topupModalOpen: false,
         withdrawModalOpen: false,
         integrationModalOpen: false,
         submitting: false,

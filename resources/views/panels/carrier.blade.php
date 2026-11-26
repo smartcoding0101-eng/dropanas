@@ -48,6 +48,11 @@
         icon="fa-solid fa-truck-fast"
         badge="Módulo de Última Milla & Call Center">
         <x-slot:actions>
+            <button @click="openRendicionModal()"
+                class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 border border-indigo-400/40 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition cursor-pointer">
+                <i class="fa-solid fa-receipt text-amber-300"></i>
+                <span>Rendir Caja de Recaudos ({{ $deliveredOrdersToSettle->count() }})</span>
+            </button>
             <a href="{{ route('carrier.reportes') }}"
                 class="px-4 py-2 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/30 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition">
                 <i class="fa-solid fa-chart-pie text-amber-200"></i>
@@ -75,13 +80,16 @@
 
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-[#10B981] space-y-2 interactive-card">
             <div class="flex items-center justify-between text-slate-500 text-xs font-semibold">
-                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entregados</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Entregados con Recaudo</span>
                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#10B981] border border-emerald-200/80 flex items-center justify-center text-sm font-bold">
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-[#10B981] font-heading" data-countup>{{ $stats['delivered_today'] }}</div>
-            <div class="text-[11px] text-slate-400 font-medium">Con recaudación efectiva</div>
+            <div class="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-hand-holding-dollar text-[10px]"></i>
+                <span>Cobro efectivo / QR en mano</span>
+            </div>
         </div>
 
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm border-l-4 border-l-amber-500 space-y-2 interactive-card">
@@ -215,6 +223,88 @@
         </div>
     </div>
 
+    <!-- Historial de Rendiciones de Caja COD (Liquidaciones Enviadas a Dropana) -->
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/80">
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
+            <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-indigo-50 text-[#4F46E5] flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+                <div>
+                    <h3 class="text-base font-bold text-[#212832]">Historial de Rendiciones de Caja COD a Dropana</h3>
+                    <p class="text-xs text-slate-500">Liquidación de recaudos en efectivo/QR depositados a las cuentas centrales de la plataforma.</p>
+                </div>
+            </div>
+            <button @click="openRendicionModal()"
+                class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-xs transition cursor-pointer">
+                <i class="fa-solid fa-plus-circle text-amber-300"></i>
+                <span>Nueva Rendición ({{ $deliveredOrdersToSettle->count() }} pendientes)</span>
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                    <tr>
+                        <th class="py-3 px-4">Nro Rendición</th>
+                        <th class="py-3 px-4">Fecha Depósito</th>
+                        <th class="py-3 px-4">Órdenes</th>
+                        <th class="py-3 px-4 text-right">Recaudo Total</th>
+                        <th class="py-3 px-4 text-right">Fletes Retenidos</th>
+                        <th class="py-3 px-4 text-right">Depósito Neto</th>
+                        <th class="py-3 px-4">Comprobante</th>
+                        <th class="py-3 px-4 text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white">
+                    @forelse($carrierSettlements as $st)
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3 px-4 font-mono font-bold text-[#0F172A]">{{ $st->settlement_number }}</td>
+                            <td class="py-3 px-4 text-slate-500">{{ $st->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="py-3 px-4 font-bold text-slate-700">{{ $st->orders_count ?? $st->orders()->count() }} pedidos</td>
+                            <td class="py-3 px-4 text-right font-mono font-bold text-slate-900">Bs. {{ number_format($st->total_collected_bob, 2) }}</td>
+                            <td class="py-3 px-4 text-right font-mono text-emerald-600 font-bold">-Bs. {{ number_format($st->courier_fees_earned_bob, 2) }}</td>
+                            <td class="py-3 px-4 text-right font-mono font-black text-indigo-700">Bs. {{ number_format($st->net_deposit_amount_bob, 2) }}</td>
+                            <td class="py-3 px-4">
+                                @if($st->deposit_receipt_path)
+                                    <a href="{{ asset('storage/' . $st->deposit_receipt_path) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                        <span>Ver Voucher</span>
+                                    </a>
+                                @else
+                                    <span class="text-[11px] text-slate-400 font-mono">{{ $st->bank_reference ?? 'Sin referencia' }}</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                @if($st->status === 'approved')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        <i class="fa-solid fa-circle-check"></i> Aprobada & Conciliada
+                                    </span>
+                                @elseif($st->status === 'rejected')
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                        <i class="fa-solid fa-circle-xmark"></i> Rechazada
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
+                                        <i class="fa-solid fa-clock"></i> Pendiente Aprobación Dropana
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-8 text-center text-slate-400">
+                                <i class="fa-solid fa-money-bill-transfer text-2xl mb-1 text-slate-300"></i>
+                                <div>No hay rendiciones de caja registradas aún.</div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Modal de Registro de Novedades (DEX Call Center) -->
     <div x-show="modalNovedad.show" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-slate-200" @click.away="modalNovedad.show = false">
@@ -286,12 +376,131 @@
         </div>
     </div>
 
+    <!-- Modal de Rendición de Caja de Recaudos COD a Dropana -->
+    <div x-show="modalRendicion.show" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl p-6 shadow-2xl border border-slate-200" @click.away="modalRendicion.show = false">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-receipt"></i>
+                    </span>
+                    <div>
+                        <h3 class="font-bold text-[#212832] text-base">Rendir Caja de Recaudos COD a Dropana</h3>
+                        <p class="text-xs text-slate-500">Liquidación de efectivo/QR cobrado en destino tras entregas exitosas</p>
+                    </div>
+                </div>
+                <button @click="modalRendicion.show = false" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            @if($deliveredOrdersToSettle->isEmpty())
+                <div class="py-8 text-center space-y-2">
+                    <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="font-bold text-slate-800 text-sm">¡Al día! No tienes pedidos pendientes de rendir</div>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">Todos los pedidos entregados ya han sido declarados o conciliados con la administración central de Dropana.</p>
+                    <button type="button" @click="modalRendicion.show = false" class="mt-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Cerrar</button>
+                </div>
+            @else
+                <form action="{{ route('carrier.settlements.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 pt-4">
+                    @csrf
+                    @foreach($deliveredOrdersToSettle as $order)
+                        <input type="hidden" name="order_ids[]" value="{{ $order->id }}">
+                    @endforeach
+
+                    <!-- Resumen Financiero Automático -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Recaudo Bruto Cobrado:</span>
+                            <div class="text-base font-extrabold text-slate-900 font-mono">
+                                Bs. {{ number_format($deliveredOrdersToSettle->sum('total_amount_bob'), 2) }}
+                            </div>
+                            <div class="text-[10px] text-slate-500">{{ $deliveredOrdersToSettle->count() }} órdenes entregadas</div>
+                        </div>
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Tus Fletes Retenidos:</span>
+                            <div class="text-base font-extrabold text-emerald-600 font-mono">
+                                -Bs. {{ number_format($deliveredOrdersToSettle->sum('shipping_fee_bob'), 2) }}
+                            </div>
+                            <div class="text-[10px] text-emerald-600 font-semibold">Descontado directo para ti</div>
+                        </div>
+                        <div class="space-y-0.5 border-l-2 sm:border-l sm:pl-3 border-indigo-200">
+                            <span class="text-[10px] font-bold text-indigo-700 uppercase tracking-wider">Neto a Depositar:</span>
+                            <div class="text-lg font-black text-indigo-700 font-mono">
+                                Bs. {{ number_format(max(0, $deliveredOrdersToSettle->sum('total_amount_bob') - $deliveredOrdersToSettle->sum('shipping_fee_bob')), 2) }}
+                            </div>
+                            <div class="text-[10px] text-indigo-600 font-bold">Transferencia a Dropana</div>
+                        </div>
+                    </div>
+
+                    <!-- Datos Bancarios Oficiales de Dropana -->
+                    <div class="p-3 bg-indigo-50/70 border border-indigo-200/80 rounded-xl text-xs space-y-1">
+                        <div class="font-bold text-indigo-950 flex items-center gap-1.5">
+                            <i class="fa-solid fa-building-columns text-indigo-600"></i>
+                            <span>Depositar a la cuenta oficial de Dropana Bolivia:</span>
+                        </div>
+                        <div class="text-indigo-900 text-[11px] grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                            <div><strong>Banco:</strong> {{ $financialSettings->bank_name ?? 'Banco Unión S.A.' }}</div>
+                            <div><strong>Nro Cuenta:</strong> <span class="font-mono font-bold">{{ $financialSettings->bank_account_number ?? '100000-4829104-BOB' }}</span></div>
+                            <div class="sm:col-span-2"><strong>Titular:</strong> {{ $financialSettings->bank_account_holder ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Monto Depositado (Bs.):</label>
+                            <input type="number" step="0.01" name="deposit_amount_bob" required
+                                value="{{ max(0, $deliveredOrdersToSettle->sum('total_amount_bob') - $deliveredOrdersToSettle->sum('shipping_fee_bob')) }}"
+                                class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs font-mono font-bold focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Nro de Referencia / Transacción:</label>
+                            <input type="text" name="bank_reference" required placeholder="Ej: TRANSF-BCP-984310"
+                                class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-xs font-mono focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Adjuntar Comprobante de Depósito / QR (Imagen o PDF):</label>
+                        <input type="file" name="deposit_receipt" accept="image/*,application/pdf" required
+                            class="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Notas / Observaciones de la Ruta:</label>
+                        <textarea name="notes" rows="2" placeholder="Ej: Ruta zona Norte y Centro liquidada completa en Banco Unión."
+                            class="w-full p-2 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:bg-white focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-2">
+                        <button type="button" @click="modalRendicion.show = false"
+                            class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer transition">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                            <span>Enviar Rendición de Recaudo a Dropana</span>
+                        </button>
+                    </div>
+                </form>
+            @endif
+        </div>
+    </div>
+
 </div>
 
 <script>
 function carrierPanelApp() {
     return {
         toast: { show: false, message: '', type: 'success' },
+        modalRendicion: { show: false },
+        openRendicionModal() {
+            this.modalRendicion.show = true;
+        },
         modalNovedad: {
             show: false,
             orderId: '',

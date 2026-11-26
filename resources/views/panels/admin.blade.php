@@ -279,6 +279,269 @@
     </div>
 
     <!-- ===================================================================== -->
+    <!-- DROPANA FINTECH CLEARING HOUSE: RECARGAS, RENDICIONES & COMISIONES    -->
+    <!-- ===================================================================== -->
+    <div id="fintech-clearing-hub" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden"
+         x-data="{ activeFinTab: 'topups' }">
+        <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-[#0F172A] font-heading flex items-center gap-2">
+                        <span>Dropana FinTech Central Clearing House</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Billeteras &amp; Rendición COD</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">Aprobación de recargas prepago, liquidaciones de recaudo courier y control de comisiones (5 Bs)</p>
+                </div>
+            </div>
+
+            <!-- Tabs selector -->
+            <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button @click="activeFinTab = 'topups'"
+                    :class="activeFinTab === 'topups' ? 'bg-white text-indigo-700 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'"
+                    class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-qrcode text-emerald-600"></i>
+                    <span>Recargas Pendientes</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold">{{ $pendingTopups->count() }}</span>
+                </button>
+                <button @click="activeFinTab = 'settlements'"
+                    :class="activeFinTab === 'settlements' ? 'bg-white text-indigo-700 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'"
+                    class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-receipt text-indigo-600"></i>
+                    <span>Rendiciones Courier</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-600 text-white font-bold">{{ $pendingCarrierSettlements->count() }}</span>
+                </button>
+                <button @click="activeFinTab = 'settings'"
+                    :class="activeFinTab === 'settings' ? 'bg-white text-indigo-700 shadow-xs font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'"
+                    class="px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-sliders text-amber-500"></i>
+                    <span>Comisiones Dropana (5 Bs)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: RECARGAS PENDIENTES -->
+        <div x-show="activeFinTab === 'topups'" class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                    <tr>
+                        <th class="py-3 px-4">Código Recarga</th>
+                        <th class="py-3 px-4">Usuario / Rol</th>
+                        <th class="py-3 px-4">Fecha</th>
+                        <th class="py-3 px-4 text-right">Monto Solicitado</th>
+                        <th class="py-3 px-4">Método / Ref</th>
+                        <th class="py-3 px-4">Comprobante</th>
+                        <th class="py-3 px-4 text-center">Acciones de Aprobación</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white">
+                    @forelse($pendingTopups as $topup)
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4 font-mono font-bold text-[#0F172A]">{{ $topup->topup_number }}</td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900">{{ $topup->user?->name ?? 'Usuario' }}</div>
+                                <div class="text-[10px] text-slate-500 capitalize">{{ $topup->user?->role ?? 'dropshipper' }} • {{ $topup->user?->email }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500">{{ $topup->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="py-3.5 px-4 text-right font-mono font-black text-emerald-600 text-sm">
+                                Bs. {{ number_format($topup->amount_bob, 2) }}
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-semibold text-slate-800">{{ $topup->payment_method === 'qr_bolivia' ? 'QR Simple' : 'Transferencia Bancaria' }}</div>
+                                <div class="text-[10px] font-mono text-slate-500">Ref: {{ $topup->bank_reference ?? 'S/R' }}</div>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                @if($topup->receipt_path)
+                                    <a href="{{ asset('storage/' . $topup->receipt_path) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">
+                                        <i class="fa-solid fa-file-invoice"></i> Ver Voucher
+                                    </a>
+                                @else
+                                    <span class="text-slate-400">Sin voucher</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <form action="{{ route('admin.fintech.topups.approve', $topup->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" onclick="return confirm('¿Aprobar recarga de Bs. {{ number_format($topup->amount_bob, 2) }} y acreditar a la billetera de {{ $topup->user?->name }}?')"
+                                            class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center gap-1 cursor-pointer transition">
+                                            <i class="fa-solid fa-check"></i> Aprobar
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.fintech.topups.reject', $topup->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" onclick="return confirm('¿Rechazar esta solicitud de recarga?')"
+                                            class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1 cursor-pointer transition">
+                                            <i class="fa-solid fa-xmark"></i> Rechazar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-check text-2xl text-emerald-500 mb-1"></i>
+                                <div>No hay solicitudes de recarga pendientes de aprobación.</div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 2: RENDICIONES COURIER PENDIENTES -->
+        <div x-show="activeFinTab === 'settlements'" class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
+                    <tr>
+                        <th class="py-3 px-4">Nro Rendición</th>
+                        <th class="py-3 px-4">Carrier / Transportista</th>
+                        <th class="py-3 px-4">Fecha</th>
+                        <th class="py-3 px-4 text-right">Recaudo Total</th>
+                        <th class="py-3 px-4 text-right">Fletes Retenidos</th>
+                        <th class="py-3 px-4 text-right">Depósito Neto Dropana</th>
+                        <th class="py-3 px-4">Comprobante</th>
+                        <th class="py-3 px-4 text-center">Acciones de Liquidación</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white">
+                    @forelse($pendingCarrierSettlements as $st)
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4 font-mono font-bold text-[#0F172A]">{{ $st->settlement_number }}</td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900">{{ $st->carrier?->name ?? 'DEX Express' }}</div>
+                                <div class="text-[10px] text-slate-500">{{ $st->orders_count ?? $st->orders()->count() }} órdenes cubiertas</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500">{{ $st->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-900">
+                                Bs. {{ number_format($st->total_collected_bob, 2) }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right font-mono font-bold text-emerald-600">
+                                -Bs. {{ number_format($st->courier_fees_earned_bob, 2) }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right font-mono font-black text-indigo-700 text-sm">
+                                Bs. {{ number_format($st->net_deposit_amount_bob, 2) }}
+                            </td>
+                            <td class="py-3.5 px-4">
+                                @if($st->deposit_receipt_path)
+                                    <a href="{{ asset('storage/' . $st->deposit_receipt_path) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">
+                                        <i class="fa-solid fa-file-invoice"></i> Ver Voucher
+                                    </a>
+                                @else
+                                    <span class="text-slate-400 font-mono">{{ $st->bank_reference ?? 'S/R' }}</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <form action="{{ route('admin.fintech.carrier_settlements.approve', $st->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" onclick="return confirm('¿Aprobar liquidación de ruta? Esto dispersará automáticamente los fondos: reembolsará al vendedor su capital + utilidad, pagará al proveedor descontando 5 Bs, y liquidará los pedidos con cero descuadre contable.')"
+                                            class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs flex items-center gap-1 cursor-pointer transition">
+                                            <i class="fa-solid fa-bolt text-amber-300"></i> Liquidar y Dispersar
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.fintech.carrier_settlements.reject', $st->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" onclick="return confirm('¿Rechazar esta rendición de recaudo?')"
+                                            class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1 cursor-pointer transition">
+                                            <i class="fa-solid fa-xmark"></i> Rechazar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-8 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-check text-2xl text-indigo-500 mb-1"></i>
+                                <div>No hay rendiciones de caja courier pendientes de conciliación.</div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 3: CONFIGURACIÓN DE COMISIONES DROPANA (5 Bs) -->
+        <div x-show="activeFinTab === 'settings'" class="p-6">
+            <form action="{{ route('admin.fintech.settings.update') }}" method="POST" class="max-w-3xl space-y-5">
+                @csrf
+                <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-200/80 text-xs text-indigo-950 space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-sm">
+                        <i class="fa-solid fa-circle-info text-indigo-600"></i>
+                        <span>Reglas de Monetización Dropana FinTech:</span>
+                    </div>
+                    <p class="text-[11px] leading-relaxed text-indigo-900">
+                        Por cada transacción/pedido exitoso, la plataforma cobra una comisión configurable tanto al <strong>vendedor dropshipper</strong> (por venta realizada) como al <strong>proveedor mayorista</strong> (por liquidación de producto). El valor base inicial es de <strong>5.00 Bs</strong> para cada parte (total 10.00 Bs de margen para Dropana).
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Comisión Vendedor Dropshipper (Bs.):
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono font-bold">Bs</span>
+                            <input type="number" step="0.50" min="0" name="seller_commission_bob" required
+                                value="{{ $financialSettings->seller_commission_bob ?? 5.00 }}"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-mono font-bold text-sm focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1">Descontada al vendedor al prepagar la orden.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Comisión Proveedor Mayorista (Bs.):
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono font-bold">Bs</span>
+                            <input type="number" step="0.50" min="0" name="provider_commission_bob" required
+                                value="{{ $financialSettings->provider_commission_bob ?? 5.00 }}"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-mono font-bold text-sm focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <p class="text-[10px] text-slate-500 mt-1">Descontada del costo total mayorista al liquidar.</p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Datos Bancarios para Recaudaciones y Recargas Dropana</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Nombre del Banco:</label>
+                            <input type="text" name="bank_name" value="{{ $financialSettings->bank_name ?? 'Banco Unión S.A.' }}"
+                                class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Número de Cuenta Fiscal:</label>
+                            <input type="text" name="bank_account_number" value="{{ $financialSettings->bank_account_number ?? '100000-4829104-BOB' }}"
+                                class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-mono bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Titular de la Cuenta:</label>
+                            <input type="text" name="bank_account_holder" value="{{ $financialSettings->bank_account_holder ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}"
+                                class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end pt-2">
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-bold text-xs shadow-sm flex items-center gap-2 cursor-pointer transition">
+                        <i class="fa-solid fa-floppy-disk text-emerald-400"></i>
+                        <span>Guardar Configuración Financiera</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
     <!-- NUEVO MONITOR INTERACTIVO DE FLUJO COD & RADAR LOGÍSTICO EN TIEMPO REAL -->
     <!-- ===================================================================== -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6"
