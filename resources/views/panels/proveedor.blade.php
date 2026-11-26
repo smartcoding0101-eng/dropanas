@@ -1840,15 +1840,78 @@
             $totalHoldBob      = abs($recentKardex->where('movement_category', 'hold')->sum('total_cost_bob'));
         @endphp
 
-        <div id="kardex" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-24"
+        <div id="kardex" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm scroll-mt-24"
              x-data="{
                 records: {{ Js::from($providerKardexJson) }},
+                productsList: {{ Js::from($products->map(fn($p) => ['id' => (string)$p->id, 'name' => $p->name, 'sku' => $p->sku, 'internal_code' => $p->internal_code])) }},
+                warehousesList: {{ Js::from($allWarehouses->map(fn($w) => ['id' => (string)$w->id, 'name' => $w->name, 'city' => $w->city, 'department' => $w->department])) }},
+
                 filterProduct: 'all',
+                productDropdownOpen: false,
+                productSearchQuery: '',
+
                 filterWarehouse: 'all',
+                warehouseDropdownOpen: false,
+                warehouseSearchQuery: '',
+
                 filterCategory: 'all',
                 searchDoc: '',
                 selectedItem: null,
                 detailModalOpen: false,
+
+                get filteredProductsList() {
+                    const q = (this.productSearchQuery || '').toLowerCase().trim();
+                    if (!q) return this.productsList;
+                    return this.productsList.filter(p =>
+                        (p.name && p.name.toLowerCase().includes(q)) ||
+                        (p.sku && p.sku.toLowerCase().includes(q)) ||
+                        (p.internal_code && p.internal_code.toLowerCase().includes(q))
+                    );
+                },
+
+                get selectedProductName() {
+                    if (this.filterProduct === 'all') return 'Todos los Productos (' + this.productsList.length + ')';
+                    const found = this.productsList.find(p => p.id === this.filterProduct);
+                    return found ? (found.name + ' (' + found.sku + ')') : 'Producto Seleccionado';
+                },
+
+                selectProduct(id) {
+                    this.filterProduct = id;
+                    this.productDropdownOpen = false;
+                    this.productSearchQuery = '';
+                },
+
+                clearProductFilter() {
+                    this.filterProduct = 'all';
+                    this.productSearchQuery = '';
+                },
+
+                get filteredWarehousesList() {
+                    const q = (this.warehouseSearchQuery || '').toLowerCase().trim();
+                    if (!q) return this.warehousesList;
+                    return this.warehousesList.filter(w =>
+                        (w.name && w.name.toLowerCase().includes(q)) ||
+                        (w.city && w.city.toLowerCase().includes(q)) ||
+                        (w.department && w.department.toLowerCase().includes(q))
+                    );
+                },
+
+                get selectedWarehouseName() {
+                    if (this.filterWarehouse === 'all') return 'Todas las Bodegas (' + this.warehousesList.length + ')';
+                    const found = this.warehousesList.find(w => w.id === this.filterWarehouse);
+                    return found ? (found.name + ' (' + found.city + ')') : 'Bodega Seleccionada';
+                },
+
+                selectWarehouse(id) {
+                    this.filterWarehouse = id;
+                    this.warehouseDropdownOpen = false;
+                    this.warehouseSearchQuery = '';
+                },
+
+                clearWarehouseFilter() {
+                    this.filterWarehouse = 'all';
+                    this.warehouseSearchQuery = '';
+                },
 
                 get filteredRecords() {
                     return this.records.filter(r => {
@@ -1902,7 +1965,7 @@
              }">
 
             <!-- Encabezado Principal del Kardex -->
-            <div class="p-5 sm:p-6 border-b border-slate-200/90 bg-gradient-to-r from-slate-50 via-indigo-50/20 to-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="p-5 sm:p-6 border-b border-slate-200/90 bg-gradient-to-r from-slate-50 via-indigo-50/20 to-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-t-3xl">
                 <div class="flex items-start gap-3.5">
                     <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-[#4F46E5] flex items-center justify-center text-xl shadow-xs shrink-0">
                         <i class="fa-solid fa-clock-rotate-left"></i>
@@ -2013,26 +2076,194 @@
             <div class="p-4 sm:p-5 border-b border-slate-200 bg-white">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
-                    <!-- Filtro por Producto -->
-                    <div>
-                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Filtrar Producto</label>
-                        <select x-model="filterProduct" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
-                            <option value="all">Todos los Productos ({{ $products->count() }})</option>
-                            @foreach($products as $p)
-                                <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->sku }})</option>
-                            @endforeach
-                        </select>
+                    <!-- Filtro por Producto (Autocompletable) -->
+                    <div class="relative" @click.away="productDropdownOpen = false">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Filtrar Producto</label>
+                            <span x-show="filterProduct !== 'all'" @click="clearProductFilter()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer transition">
+                                <i class="fa-solid fa-xmark"></i> Limpiar
+                            </span>
+                        </div>
+
+                        <!-- Selector Autocompletable -->
+                        <button type="button"
+                                @click="productDropdownOpen = !productDropdownOpen; if (productDropdownOpen) $nextTick(() => $refs.productSearchInput?.focus())"
+                                class="w-full bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] flex items-center justify-between gap-2 transition cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5]"
+                                :class="productDropdownOpen ? 'ring-2 ring-[#4F46E5]/20 border-[#4F46E5] bg-white' : ''">
+                            <div class="flex items-center gap-2 truncate">
+                                <i class="fa-solid fa-box text-slate-400 text-xs shrink-0" :class="filterProduct !== 'all' ? 'text-[#4F46E5]' : ''"></i>
+                                <span class="truncate" x-text="selectedProductName"></span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0 text-slate-400">
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" :class="productDropdownOpen ? 'rotate-180 text-[#4F46E5]' : ''"></i>
+                            </div>
+                        </button>
+
+                        <!-- Menú Desplegable con Buscador en Vivo -->
+                        <div x-show="productDropdownOpen"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-1 scale-98"
+                             class="absolute z-40 left-0 right-0 mt-1.5 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden divide-y divide-slate-100 max-w-sm sm:max-w-none">
+                            
+                            <!-- Input de Búsqueda Instantánea -->
+                            <div class="p-2.5 bg-slate-50/80">
+                                <div class="relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text"
+                                           x-ref="productSearchInput"
+                                           x-model="productSearchQuery"
+                                           placeholder="Buscar por nombre, SKU o código..."
+                                           @keydown.escape="productDropdownOpen = false"
+                                           class="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-7 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#4F46E5] placeholder:text-slate-400">
+                                    <button type="button"
+                                            x-show="productSearchQuery.length > 0"
+                                            @click="productSearchQuery = ''; $refs.productSearchInput?.focus()"
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                                        <i class="fa-solid fa-circle-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Lista de Resultados -->
+                            <div class="max-h-56 overflow-y-auto divide-y divide-slate-50">
+                                <!-- Opción Todos -->
+                                <button type="button"
+                                        @click="selectProduct('all')"
+                                        class="w-full px-3.5 py-2.5 text-left text-xs flex items-center justify-between gap-2 transition cursor-pointer hover:bg-slate-50"
+                                        :class="filterProduct === 'all' ? 'bg-indigo-50/60 font-bold text-[#4F46E5]' : 'text-slate-700'">
+                                    <div class="flex items-center gap-2 truncate">
+                                        <i class="fa-solid fa-boxes-stacked text-xs text-slate-400" :class="filterProduct === 'all' ? 'text-[#4F46E5]' : ''"></i>
+                                        <span>Todos los Productos (<span x-text="productsList.length"></span>)</span>
+                                    </div>
+                                    <i x-show="filterProduct === 'all'" class="fa-solid fa-check text-[#4F46E5] text-xs"></i>
+                                </button>
+
+                                <!-- Items de Productos -->
+                                <template x-for="prod in filteredProductsList" :key="prod.id">
+                                    <button type="button"
+                                            @click="selectProduct(prod.id)"
+                                            class="w-full px-3.5 py-2.5 text-left text-xs flex items-center justify-between gap-2 transition cursor-pointer hover:bg-indigo-50/60"
+                                            :class="filterProduct === prod.id ? 'bg-indigo-50/70 font-bold text-[#4F46E5]' : 'text-slate-700'">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="truncate font-semibold text-slate-900" x-text="prod.name"></p>
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200" x-text="prod.sku"></span>
+                                                <span x-show="prod.internal_code" class="text-[10px] text-slate-400 font-mono" x-text="prod.internal_code"></span>
+                                            </div>
+                                        </div>
+                                        <i x-show="filterProduct === prod.id" class="fa-solid fa-check text-[#4F46E5] text-xs shrink-0"></i>
+                                    </button>
+                                </template>
+
+                                <!-- Estado Vacío -->
+                                <div x-show="filteredProductsList.length === 0" class="py-6 px-4 text-center text-slate-400">
+                                    <i class="fa-solid fa-box-open text-2xl text-slate-300 mb-1 block"></i>
+                                    <p class="text-xs">No se encontró ningún producto</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Intenta con otro término o SKU</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Filtro por Bodega -->
-                    <div>
-                        <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Filtrar Bodega</label>
-                        <select x-model="filterWarehouse" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] focus:bg-white focus:outline-none focus:border-[#4F46E5]">
-                            <option value="all">Todas las Bodegas ({{ $allWarehouses->count() }})</option>
-                            @foreach($allWarehouses as $w)
-                                <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->city }})</option>
-                            @endforeach
-                        </select>
+                    <!-- Filtro por Bodega (Autocompletable) -->
+                    <div class="relative" @click.away="warehouseDropdownOpen = false">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Filtrar Bodega</label>
+                            <span x-show="filterWarehouse !== 'all'" @click="clearWarehouseFilter()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer transition">
+                                <i class="fa-solid fa-xmark"></i> Limpiar
+                            </span>
+                        </div>
+
+                        <!-- Selector Autocompletable -->
+                        <button type="button"
+                                @click="warehouseDropdownOpen = !warehouseDropdownOpen; if (warehouseDropdownOpen) $nextTick(() => $refs.warehouseSearchInput?.focus())"
+                                class="w-full bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-[#0F172A] flex items-center justify-between gap-2 transition cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 focus:border-[#4F46E5]"
+                                :class="warehouseDropdownOpen ? 'ring-2 ring-[#4F46E5]/20 border-[#4F46E5] bg-white' : ''">
+                            <div class="flex items-center gap-2 truncate">
+                                <i class="fa-solid fa-warehouse text-slate-400 text-xs shrink-0" :class="filterWarehouse !== 'all' ? 'text-[#4F46E5]' : ''"></i>
+                                <span class="truncate" x-text="selectedWarehouseName"></span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0 text-slate-400">
+                                <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" :class="warehouseDropdownOpen ? 'rotate-180 text-[#4F46E5]' : ''"></i>
+                            </div>
+                        </button>
+
+                        <!-- Menú Desplegable con Buscador en Vivo -->
+                        <div x-show="warehouseDropdownOpen"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-y-1 scale-98"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-1 scale-98"
+                             class="absolute z-40 left-0 right-0 mt-1.5 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden divide-y divide-slate-100 max-w-sm sm:max-w-none">
+                            
+                            <!-- Input de Búsqueda Instantánea -->
+                            <div class="p-2.5 bg-slate-50/80">
+                                <div class="relative">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text"
+                                           x-ref="warehouseSearchInput"
+                                           x-model="warehouseSearchQuery"
+                                           placeholder="Buscar por bodega o ciudad..."
+                                           @keydown.escape="warehouseDropdownOpen = false"
+                                           class="w-full bg-white border border-slate-200 rounded-lg pl-8 pr-7 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#4F46E5] placeholder:text-slate-400">
+                                    <button type="button"
+                                            x-show="warehouseSearchQuery.length > 0"
+                                            @click="warehouseSearchQuery = ''; $refs.warehouseSearchInput?.focus()"
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                                        <i class="fa-solid fa-circle-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Lista de Resultados -->
+                            <div class="max-h-56 overflow-y-auto divide-y divide-slate-50">
+                                <!-- Opción Todas -->
+                                <button type="button"
+                                        @click="selectWarehouse('all')"
+                                        class="w-full px-3.5 py-2.5 text-left text-xs flex items-center justify-between gap-2 transition cursor-pointer hover:bg-slate-50"
+                                        :class="filterWarehouse === 'all' ? 'bg-indigo-50/60 font-bold text-[#4F46E5]' : 'text-slate-700'">
+                                    <div class="flex items-center gap-2 truncate">
+                                        <i class="fa-solid fa-building-circle-check text-xs text-slate-400" :class="filterWarehouse === 'all' ? 'text-[#4F46E5]' : ''"></i>
+                                        <span>Todas las Bodegas (<span x-text="warehousesList.length"></span>)</span>
+                                    </div>
+                                    <i x-show="filterWarehouse === 'all'" class="fa-solid fa-check text-[#4F46E5] text-xs"></i>
+                                </button>
+
+                                <!-- Items de Bodegas -->
+                                <template x-for="wh in filteredWarehousesList" :key="wh.id">
+                                    <button type="button"
+                                            @click="selectWarehouse(wh.id)"
+                                            class="w-full px-3.5 py-2.5 text-left text-xs flex items-center justify-between gap-2 transition cursor-pointer hover:bg-indigo-50/60"
+                                            :class="filterWarehouse === wh.id ? 'bg-indigo-50/70 font-bold text-[#4F46E5]' : 'text-slate-700'">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="truncate font-semibold text-slate-900" x-text="wh.name"></p>
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                <span class="text-[10px] text-slate-500 font-medium flex items-center gap-1">
+                                                    <i class="fa-solid fa-location-dot text-[9px] text-slate-400"></i>
+                                                    <span x-text="wh.city + (wh.department ? ' (' + wh.department + ')' : '')"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <i x-show="filterWarehouse === wh.id" class="fa-solid fa-check text-[#4F46E5] text-xs shrink-0"></i>
+                                    </button>
+                                </template>
+
+                                <!-- Estado Vacío -->
+                                <div x-show="filteredWarehousesList.length === 0" class="py-6 px-4 text-center text-slate-400">
+                                    <i class="fa-solid fa-warehouse text-2xl text-slate-300 mb-1 block"></i>
+                                    <p class="text-xs">No se encontró ninguna bodega</p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Intenta con otro nombre o ciudad</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Filtro por Flujo / Categoría -->
@@ -2211,7 +2442,7 @@
             </div>
 
             <!-- Footer Informativo de la Tabla -->
-            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 rounded-b-3xl">
                 <div>
                     Mostrando <strong class="text-[#0F172A]" x-text="filteredRecords.length"></strong> registros de <strong class="text-[#0F172A]" x-text="records.length"></strong> totales
                 </div>
