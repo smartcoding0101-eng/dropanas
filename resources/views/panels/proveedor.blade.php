@@ -163,7 +163,7 @@
     <!-- =========================================================
          MÓDULO BILLETERA VIRTUAL & MOVIMIENTOS MONETARIOS
     ========================================================= -->
-    <div id="billetera" class="space-y-6" x-data="{
+    <div id="billetera" class="space-y-6 scroll-mt-24" x-data="{
         withdrawModalOpen: false,
         submitting: false,
         form: {
@@ -435,7 +435,7 @@
     <!-- =========================================================
          MÓDULO ALMACENES — Tab nav de sección
     ========================================================= -->
-    <div id="almacenes" class="space-y-6" x-data="almacenModule()">
+    <div id="almacenes" class="space-y-6 scroll-mt-24" x-data="almacenModule()">
 
         <!-- Cabecera del módulo -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -1054,7 +1054,7 @@
     <!-- =========================================================
          MÓDULO RED COMERCIAL (VENDEDORES & CLIENTES + RESERVAS)
     ========================================================= -->
-    <div id="red-comercial" class="space-y-6" x-data="networkModule()">
+    <div id="red-comercial" class="space-y-6 scroll-mt-24" x-data="networkModule()">
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <!-- Cabecera de Red Comercial -->
@@ -1588,7 +1588,7 @@
     <!-- FIN MÓDULO RED COMERCIAL -->
 
     <!-- Bodegas con Inventario (#FFFFFF) con ancla #inventario -->
-    <div id="inventario" class="space-y-6">
+    <div id="inventario" class="space-y-6 scroll-mt-24">
         @if($warehouses->isNotEmpty())
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
@@ -1671,7 +1671,7 @@
         @endif
 
         <!-- Sección de Alertas y Reabastecimiento de Inventario (#alertas) -->
-        <div id="alertas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div id="alertas" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden scroll-mt-24">
             <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
                 <div class="flex items-center gap-2.5">
                     <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-[#0061f2] flex items-center justify-center font-bold text-base">
@@ -1800,7 +1800,7 @@
             $totalHoldBob      = abs($recentKardex->where('movement_category', 'hold')->sum('total_cost_bob'));
         @endphp
 
-        <div id="kardex" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-20"
+        <div id="kardex" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden scroll-mt-24"
              x-data="{
                 records: {{ Js::from($providerKardexJson) }},
                 filterProduct: 'all',
@@ -2354,7 +2354,7 @@
         <!-- ===================================================================
              MÓDULO MIS PEDIDOS — Estilo Dropanas (KPIs, Filtros, Tabla)
         =================================================================== -->
-        <div id="ventas" x-data="pedidosModule()" class="space-y-4">
+        <div id="ventas" x-data="pedidosModule()" class="space-y-4 scroll-mt-24">
 
             <!-- KPI Cards estilo Dropanas -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -2790,7 +2790,7 @@
     </div>
 
     <!-- Productos del Proveedor (#FFFFFF) -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="productos" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden scroll-mt-24">
         <div class="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-boxes-stacked text-[#0061f2]"></i>
@@ -4257,18 +4257,21 @@ function proveedorDashboard() {
                     { key: 'Garantía', value: '3 meses' }
                 ]
             };
-            try {
-                const res = await fetch('/warehouses', { headers: { 'Accept': 'application/json' } });
-                const data = await res.json();
-                if (data.status === 'success' && Array.isArray(data.data)) {
-                    this.warehousesList = data.data;
-                }
-            } catch (e) {}
-
-            if (!this.form.initial_warehouse_id || !this.warehousesList.find(w => w.id === this.form.initial_warehouse_id)) {
-                this.form.initial_warehouse_id = this.warehousesList[0]?.id || '';
-            }
+            // Abrir el modal de inmediato para retroalimentación instantánea
             this.productModalOpen = true;
+
+            // Sincronizar lista de bodegas en segundo plano sin bloquear la interfaz
+            fetch('/warehouses', { headers: { 'Accept': 'application/json' } })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
+                        this.warehousesList = data.data;
+                        if (!this.form.initial_warehouse_id || !this.warehousesList.find(w => w.id === this.form.initial_warehouse_id)) {
+                            this.form.initial_warehouse_id = this.warehousesList[0]?.id || '';
+                        }
+                    }
+                })
+                .catch(() => {});
         },
 
         async openEditProductModal(productId) {
