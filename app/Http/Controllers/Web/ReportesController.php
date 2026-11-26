@@ -22,6 +22,9 @@ class ReportesController extends Controller
         if ($authUser && $authUser->isCarrier()) {
             return redirect()->route('carrier.reportes');
         }
+        if ($authUser && $authUser->isDropshipper()) {
+            return redirect()->route('reporte.index');
+        }
 
         return $this->proveedor($request);
     }
@@ -34,6 +37,12 @@ class ReportesController extends Controller
         $authUser = $request->user();
 
         if (! $authUser || (! $authUser->isProvider() && ! $authUser->isTenantAdmin())) {
+            if ($authUser && $authUser->isDropshipper()) {
+                return redirect()->route('reporte.index');
+            }
+            if ($authUser && $authUser->isCarrier()) {
+                return redirect()->route('carrier.reportes');
+            }
             abort(403, 'Acceso restringido a proveedores y administradores.');
         }
 

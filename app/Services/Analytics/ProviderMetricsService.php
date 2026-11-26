@@ -37,7 +37,10 @@ class ProviderMetricsService
 
         // 2. Consulta base de OrderItems del proveedor en el periodo
         $orderItemsQuery = OrderItem::with(['order.carrier', 'order.warehouse', 'order.dropshipper', 'product'])
-            ->where('provider_id', $providerId)
+            ->where(function ($q) use ($providerId) {
+                $q->where('provider_id', $providerId)
+                  ->orWhereHas('product', fn($pq) => $pq->where('provider_id', $providerId));
+            })
             ->whereHas('order', function ($q) use ($from, $to, $tenantId) {
                 $q->where('tenant_id', $tenantId)
                   ->whereBetween('created_at', [$from, $to]);
@@ -222,22 +225,27 @@ class ProviderMetricsService
         $totalPotentialMargin = round($totalSugBob - $totalCostBob, 2);
         $markupPercent = $totalCostBob > 0 ? round(($totalPotentialMargin / $totalCostBob) * 100, 1) : 0;
 
-        // Añadir porcentaje sobre el total a cada bodega
+        // Añadir porcentaje sobre el total a cada bodega y compatibilidad de nombres
         $warehousesList = array_values(array_map(function ($wh) use ($totalCostBob) {
-            $wh['share_percent'] = $totalCostBob > 0 ? round(($wh['valuation_cost_bob'] / $totalCostBob) * 100, 1) : 0;
+            $share = $totalCostBob > 0 ? round(($wh['valuation_cost_bob'] / $totalCostBob) * 100, 1) : 0;
+            $wh['share_percent']           = $share;
+            $wh['participation_pct']       = $share;
+            $wh['warehouse_name']          = $wh['name'];
+            $wh['valuation_suggested_bob'] = $wh['valuation_sug_bob'];
             return $wh;
         }, $warehouseTotals));
 
         return [
-            'total_stock_physical'      => $totalPhysical,
-            'total_stock_reserved'      => $totalReserved,
-            'total_stock_available'     => $totalAvailable,
-            'total_valuation_cost_bob'  => round($totalCostBob, 2),
-            'total_valuation_sug_bob'   => round($totalSugBob, 2),
-            'total_potential_margin_bob'=> $totalPotentialMargin,
-            'average_markup_percent'    => $markupPercent,
-            'warehouses'                => $warehousesList,
-            'products'                  => $productValuations,
+            'total_stock_physical'          => $totalPhysical,
+            'total_stock_reserved'          => $totalReserved,
+            'total_stock_available'         => $totalAvailable,
+            'total_valuation_cost_bob'      => round($totalCostBob, 2),
+            'total_valuation_sug_bob'       => round($totalSugBob, 2),
+            'total_valuation_suggested_bob' => round($totalSugBob, 2),
+            'total_potential_margin_bob'    => $totalPotentialMargin,
+            'average_markup_percent'        => $markupPercent,
+            'warehouses'                    => $warehousesList,
+            'products'                      => $productValuations,
         ];
     }
 
@@ -296,6 +304,41 @@ class ProviderMetricsService
         $phase3Count = $uniqueOrders->whereIn('status', ['delivered', 'settled'])->count();
         $phase4Count = $uniqueOrders->whereIn('status', ['cancelled', 'returned'])->count();
 
+        // Costo mayorista de ítems agrupado por fase
+        $phase1Cost = (float) $orderItems->filter(fn($i) => in_array($i->order?->status, ['pending_confirmation', 'confirmed']))->sum(fn($i) => (float)$i->unit_cost_bob * $i->quantity);
+        $phase2Cost = (float) $orderItems->filter(fn($i) => in_array($i->order?->status, ['dispatched', 'in_transit']))->sum(fn($i) => (float)$i->unit_cost_bob * $i->quantity);
+        $phase3Cost = (float) $orderItems->filter(fn($i) => in_array($i->order?->status, ['delivered', 'settled']))->sum(fn($i) => (float)$i->unit_cost_bob * $i->quantity);
+        $phase4Cost = (float) $orderItems->filter(fn($i) => in_array($i->order?->status, ['cancelled', 'returned']))->sum(fn($i) => (float)$i->unit_cost_bob * $i->quantity);
+
+        $phase1Data = [
+            'label'       => 'Confirmación & Bodega',
+            'description' => 'Órdenes confirmadas preparándose para despacho en bodega',
+            'count'       => $phase1Count,
+            'total_bob'   => round($phase1Cost, 2),
+            'status_list' => ['pending_confirmation', 'confirmed'],
+        ];
+        $phase2Data = [
+            'label'       => 'En Ruta con DEX Courier',
+            'description' => 'Paquetes despachados en camino al cliente final (COD)',
+            'count'       => $phase2Count,
+            'total_bob'   => round($phase2Cost, 2),
+            'status_list' => ['dispatched', 'in_transit'],
+        ];
+        $phase3Data = [
+            'label'       => 'Entregados & Recaudados',
+            'description' => 'Entregas efectivas con cobro contra entrega confirmado',
+            'count'       => $phase3Count,
+            'total_bob'   => round($phase3Cost, 2),
+            'status_list' => ['delivered', 'settled'],
+        ];
+        $phase4Data = [
+            'label'       => 'Devoluciones / Novedades',
+            'description' => 'Entregas no concretadas o canceladas por el comprador',
+            'count'       => $phase4Count,
+            'total_bob'   => round($phase4Cost, 2),
+            'status_list' => ['cancelled', 'returned'],
+        ];
+
         // Tasa de éxito de entrega (Concluidas: delivered / (delivered + cancelled))
         $concludedCount = $phase3Count + $phase4Count;
         $deliveryRatePercent = $concludedCount > 0
@@ -305,42 +348,26 @@ class ProviderMetricsService
         $avgTicketCostBob = $totalOrdersCount > 0 ? round($totalProviderCostBob / $totalOrdersCount, 2) : 0;
 
         return [
-            'total_orders'               => $totalOrdersCount,
-            'total_units_sold'           => $totalUnitsSold,
-            'total_sales_public_bob'     => round($totalSalesPublicBob, 2),
-            'total_provider_cost_bob'    => round($totalProviderCostBob, 2),
-            'delivered_provider_cost_bob'=> round($deliveredProviderCost, 2),
-            'pending_provider_cost_bob'  => round($pendingProviderCost, 2),
-            'cancelled_provider_cost_bob'=> round($cancelledProviderCost, 2),
-            'avg_ticket_cost_bob'        => $avgTicketCostBob,
-            'delivery_rate_percent'      => $deliveryRatePercent,
+            'total_orders'                => $totalOrdersCount,
+            'total_units_sold'            => $totalUnitsSold,
+            'total_sales_public_bob'      => round($totalSalesPublicBob, 2),
+            'total_provider_cost_bob'     => round($totalProviderCostBob, 2),
+            'delivered_provider_cost_bob' => round($deliveredProviderCost, 2),
+            'pending_provider_cost_bob'   => round($pendingProviderCost, 2),
+            'cancelled_provider_cost_bob' => round($cancelledProviderCost, 2),
+            'avg_ticket_cost_bob'         => $avgTicketCostBob,
+            'delivery_rate_percent'       => $deliveryRatePercent,
+            'phase_1_prep'                => $phase1Data,
+            'phase_2_transit'             => $phase2Data,
+            'phase_3_delivered'           => $phase3Data,
+            'phase_4_novedades'           => $phase4Data,
             'phases' => [
-                'phase_1_prep' => [
-                    'label'       => 'Confirmación & Bodega',
-                    'description' => 'Órdenes confirmadas preparándose para despacho en bodega',
-                    'count'       => $phase1Count,
-                    'status_list' => ['pending_confirmation', 'confirmed'],
-                ],
-                'phase_2_transit' => [
-                    'label'       => 'En Ruta con DEX Courier',
-                    'description' => 'Paquetes despachados en camino al cliente final (COD)',
-                    'count'       => $phase2Count,
-                    'status_list' => ['dispatched', 'in_transit'],
-                ],
-                'phase_3_delivered' => [
-                    'label'       => 'Entregados & Recaudados',
-                    'description' => 'Entregas efectivas con cobro contra entrega confirmado',
-                    'count'       => $phase3Count,
-                    'status_list' => ['delivered', 'settled'],
-                ],
-                'phase_4_novedades' => [
-                    'label'       => 'Devoluciones / Novedades',
-                    'description' => 'Entregas no concretadas o canceladas por el comprador',
-                    'count'       => $phase4Count,
-                    'status_list' => ['cancelled', 'returned'],
-                ],
+                'phase_1_prep'      => $phase1Data,
+                'phase_2_transit'   => $phase2Data,
+                'phase_3_delivered' => $phase3Data,
+                'phase_4_novedades' => $phase4Data,
             ],
-            'counts_by_status'           => $countsByStatus,
+            'counts_by_status'            => $countsByStatus,
         ];
     }
 
@@ -377,7 +404,7 @@ class ProviderMetricsService
             $stockReserved  = (int) $p->warehouseInventories->sum('stock_reserved');
 
             $unitsSold = $sales['units_sold'];
-            if ($unitsSold > $maxSold) {
+            if ($unitsSold > 0 && $unitsSold > $maxSold) {
                 $maxSold  = $unitsSold;
                 $topMover = [
                     'id'   => $p->id,
@@ -396,7 +423,7 @@ class ProviderMetricsService
             } elseif ($velocityPerDay > 0) {
                 $runwayDays = (int) round($stockAvailable / $velocityPerDay);
             } else {
-                $runwayDays = 999; // Sin ventas en el período
+                $runwayDays = 9999; // Sin ventas en el período (compatible con indicador infinito)
             }
 
             // Tasa de rotación en el período (Turnover Ratio)
@@ -434,27 +461,29 @@ class ProviderMetricsService
             $img = (!empty($p->images) && is_array($p->images)) ? $p->images[0] : null;
 
             $itemsList[] = [
-                'product_id'        => $p->id,
-                'name'              => $p->name,
-                'sku'               => $p->sku,
-                'category'          => $p->category?->name ?? 'General',
-                'image_url'         => $img,
-                'cost_price_bob'    => (float) $p->cost_price_bob,
-                'suggested_price_bob'=> (float) $p->suggested_price_bob,
-                'stock_available'   => $stockAvailable,
-                'stock_physical'    => $stockPhysical,
-                'stock_reserved'    => $stockReserved,
-                'units_sold'        => $unitsSold,
-                'delivered_units'   => $sales['delivered_units'],
-                'orders_count'      => $sales['orders_count'],
-                'revenue_cost_bob'  => round($sales['total_cost_bob'], 2),
-                'velocity_per_day'  => $velocityPerDay,
-                'runway_days'       => $runwayDays,
-                'turnover_ratio'    => $turnoverRatio,
-                'abc_class'         => $abcClass,
-                'badge_color'       => $badgeColor,
-                'badge_text'        => $badgeText,
-                'recommendation'    => $recommendation,
+                'product_id'          => $p->id,
+                'name'                => $p->name,
+                'product_name'        => $p->name,
+                'sku'                 => $p->sku,
+                'category'            => $p->category?->name ?? 'General',
+                'image_url'           => $img,
+                'cost_price_bob'      => (float) $p->cost_price_bob,
+                'suggested_price_bob' => (float) $p->suggested_price_bob,
+                'stock_available'     => $stockAvailable,
+                'stock_physical'      => $stockPhysical,
+                'stock_reserved'      => $stockReserved,
+                'units_sold'          => $unitsSold,
+                'delivered_units'     => $sales['delivered_units'],
+                'orders_count'        => $sales['orders_count'],
+                'revenue_cost_bob'    => round($sales['total_cost_bob'], 2),
+                'velocity_per_day'    => $velocityPerDay,
+                'runway_days'         => $runwayDays,
+                'turnover_ratio'      => $turnoverRatio,
+                'rotation_rate'       => round($turnoverRatio * 100, 1),
+                'abc_class'           => $abcClass,
+                'badge_color'         => $badgeColor,
+                'badge_text'          => $badgeText,
+                'recommendation'      => $recommendation,
             ];
         }
 
@@ -501,8 +530,13 @@ class ProviderMetricsService
         usort($list, fn($a, $b) => $b['orders_count'] <=> $a['orders_count']);
 
         return array_map(function ($d) use ($totalOrders) {
-            $d['percentage'] = $totalOrders > 0 ? round(($d['orders_count'] / $totalOrders) * 100, 1) : 0;
-            $d['cost_bob']   = round($d['cost_bob'], 2);
+            $pct = $totalOrders > 0 ? round(($d['orders_count'] / $totalOrders) * 100, 1) : 0;
+            $d['percentage']        = $pct;
+            $d['participation_pct'] = $pct;
+            $d['orders']            = $d['orders_count'];
+            $d['units']             = $d['units_count'];
+            $d['total_cost_bob']    = round($d['cost_bob'], 2);
+            $d['cost_bob']          = round($d['cost_bob'], 2);
             return $d;
         }, $list);
     }
@@ -521,26 +555,39 @@ class ProviderMetricsService
             $dsId = $dropshipper->id;
             if (!isset($sellers[$dsId])) {
                 $sellers[$dsId] = [
-                    'id'           => $dsId,
-                    'name'         => $dropshipper->name,
-                    'store_name'   => $dropshipper->company_or_store_name ?? 'Tienda E-commerce',
-                    'city'         => $dropshipper->city ?? 'Bolivia',
-                    'department'   => $dropshipper->department ?? 'Nacional',
-                    'orders_count' => 0,
-                    'units_count'  => 0,
+                    'id'              => $dsId,
+                    'seller_id'       => $dsId,
+                    'name'            => $dropshipper->name,
+                    'seller_name'     => $dropshipper->name,
+                    'store_name'      => $dropshipper->company_or_store_name ?? 'Tienda E-commerce',
+                    'city'            => $dropshipper->city ?? 'Bolivia',
+                    'department'      => $dropshipper->department ?? 'Nacional',
+                    'orders'          => 0,
+                    'orders_count'    => 0,
+                    'units'           => 0,
+                    'units_count'     => 0,
+                    'total_cost_bob'  => 0.0,
                     'volume_cost_bob' => 0.0,
                 ];
             }
 
+            $cost = ((float) $item->unit_cost_bob * $item->quantity);
+            $sellers[$dsId]['orders']++;
             $sellers[$dsId]['orders_count']++;
+            $sellers[$dsId]['units'] += $item->quantity;
             $sellers[$dsId]['units_count'] += $item->quantity;
-            $sellers[$dsId]['volume_cost_bob'] += ((float) $item->unit_cost_bob * $item->quantity);
+            $sellers[$dsId]['total_cost_bob']  += $cost;
+            $sellers[$dsId]['volume_cost_bob'] += $cost;
         }
 
         $result = array_values($sellers);
         usort($result, fn($a, $b) => $b['units_count'] <=> $a['units_count']);
 
-        return array_slice($result, 0, 10);
+        return array_slice(array_map(function ($s) {
+            $s['total_cost_bob']  = round($s['total_cost_bob'], 2);
+            $s['volume_cost_bob'] = round($s['volume_cost_bob'], 2);
+            return $s;
+        }, $result), 0, 10);
     }
 
     /**
@@ -556,41 +603,46 @@ class ProviderMetricsService
             // Estado de liquidación financiero
             if ($status === 'settled') {
                 $settlementStatus = 'Acreditado en Billetera';
-                $settlementBadge  = 'emerald';
+                $settlementBadge  = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
             } elseif ($status === 'delivered') {
                 $settlementStatus = 'Recaudado COD (Por Liquidar)';
-                $settlementBadge  = 'blue';
+                $settlementBadge  = 'bg-sky-50 text-sky-700 border border-sky-200';
             } elseif (in_array($status, ['dispatched', 'in_transit'])) {
                 $settlementStatus = 'En Tránsito COD';
-                $settlementBadge  = 'amber';
+                $settlementBadge  = 'bg-amber-50 text-amber-700 border border-amber-200';
             } elseif (in_array($status, ['cancelled', 'returned'])) {
                 $settlementStatus = 'Cancelado / No Cobrado';
-                $settlementBadge  = 'red';
+                $settlementBadge  = 'bg-rose-50 text-rose-700 border border-rose-200';
             } else {
                 $settlementStatus = 'Pendiente Despacho';
-                $settlementBadge  = 'slate';
+                $settlementBadge  = 'bg-slate-100 text-slate-600 border border-slate-200';
             }
 
             return [
-                'id'                 => $item->id,
-                'order_id'           => $order?->id,
-                'order_number'       => $order?->order_number ?? 'S/N',
-                'tracking_number'    => $order?->tracking_number ?? ($order?->order_number ?? 'S/N'),
-                'date'               => $order?->created_at ? $order->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
-                'date_human'         => $order?->created_at ? $order->created_at->diffForHumans() : 'Reciente',
-                'product_name'       => $item->product?->name ?? 'Producto',
-                'product_sku'        => $item->product?->sku ?? 'S/SKU',
-                'quantity'           => (int) $item->quantity,
-                'unit_cost_bob'      => (float) $item->unit_cost_bob,
-                'subtotal_cost_bob'  => $costSubtotal,
-                'customer_name'      => $order?->customer_name ?? 'Consumidor Final',
-                'destination_city'   => $order?->shipping_city ?? 'Santa Cruz',
-                'destination_dept'   => $order?->shipping_department ?? 'Santa Cruz',
-                'carrier_name'       => $order?->carrier?->name ?? 'DEX Bolivia Express',
-                'order_status'       => $status,
-                'order_status_label' => ucfirst(str_replace('_', ' ', $status)),
-                'settlement_status'  => $settlementStatus,
-                'settlement_badge'   => $settlementBadge,
+                'id'                      => $item->id,
+                'order_item_id'           => $item->id,
+                'order_id'                => $order?->id,
+                'order_number'            => $order?->order_number ?? 'S/N',
+                'tracking_number'         => $order?->tracking_number ?? ($order?->order_number ?? 'S/N'),
+                'tracking_guide'          => $order?->tracking_number ?? ($order?->order_number ?? 'S/N'),
+                'date'                    => $order?->created_at ? $order->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
+                'created_at'              => $order?->created_at ? $order->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
+                'date_human'              => $order?->created_at ? $order->created_at->diffForHumans() : 'Reciente',
+                'product_name'            => $item->product?->name ?? 'Producto',
+                'product_sku'             => $item->product?->sku ?? 'S/SKU',
+                'quantity'                => (int) $item->quantity,
+                'unit_cost_bob'           => (float) $item->unit_cost_bob,
+                'subtotal_cost_bob'       => $costSubtotal,
+                'customer_name'           => $order?->customer_name ?? 'Consumidor Final',
+                'destination_city'        => $order?->shipping_city ?? 'Santa Cruz',
+                'customer_city'           => $order?->shipping_city ?? 'Santa Cruz',
+                'destination_dept'        => $order?->shipping_department ?? 'Santa Cruz',
+                'carrier_name'            => $order?->carrier?->name ?? 'DEX Bolivia Express',
+                'order_status'            => $status,
+                'order_status_label'      => ucfirst(str_replace('_', ' ', $status)),
+                'settlement_status'       => $settlementStatus,
+                'settlement_status_label' => $settlementStatus,
+                'settlement_badge'        => $settlementBadge,
             ];
         })->values()->toArray();
     }

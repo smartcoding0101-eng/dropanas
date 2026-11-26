@@ -15,7 +15,7 @@
         badge="Bolidrop Analytics • Inteligencia de Ventas & Inventario">
         <x-slot:actions>
             {{-- Selector de Proveedor para Administradores --}}
-            @if(Auth::user()->isTenantAdmin() && $providers->count() > 1)
+            @if(Auth::user()->isTenantAdmin() && $providers->count() >= 1)
             <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2 shadow-xs">
                 <i class="fa-solid fa-building text-sky-300 text-xs"></i>
                 <label class="text-[11px] font-bold text-white uppercase tracking-wider">Proveedor:</label>
@@ -37,7 +37,7 @@
             </a>
 
             {{-- Botón Volver al Panel --}}
-            <a href="{{ Auth::user()->isProvider() ? url('/panel/proveedor') : url('/panel/admin') }}"
+            <a href="{{ Auth::user()->isProvider() ? url('/panel/proveedor') : (Auth::user()->isDropshipper() ? url('/panel/dropshipper') : url('/panel/admin')) }}"
                class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs inline-flex items-center gap-2 backdrop-blur-sm transition">
                 <i class="fa-solid fa-arrow-left"></i>
                 <span>Volver al Panel</span>
@@ -516,18 +516,18 @@
                             </template>
                             <template x-for="wh in report?.valuation?.warehouses ?? []" :key="wh.warehouse_id">
                                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                    <td class="px-4 py-3 font-bold text-[#0F172A]" x-text="wh.warehouse_name"></td>
+                                    <td class="px-4 py-3 font-bold text-[#0F172A]" x-text="wh.warehouse_name || wh.name"></td>
                                     <td class="px-4 py-3 text-slate-500" x-text="wh.department"></td>
                                     <td class="px-4 py-3 text-center font-mono font-bold text-[#4F46E5]" x-text="wh.stock_available"></td>
                                     <td class="px-4 py-3 text-center font-mono text-slate-600" x-text="wh.stock_physical"></td>
                                     <td class="px-4 py-3 text-right font-black font-mono text-[#0F172A]" x-text="'Bs ' + wh.valuation_cost_bob"></td>
-                                    <td class="px-4 py-3 text-right font-black font-mono text-emerald-700" x-text="'Bs ' + wh.valuation_suggested_bob"></td>
+                                    <td class="px-4 py-3 text-right font-black font-mono text-emerald-700" x-text="'Bs ' + (wh.valuation_suggested_bob ?? wh.valuation_sug_bob ?? '0.00')"></td>
                                     <td class="px-4 py-3 text-center">
                                         <div class="flex items-center gap-2 justify-center">
                                             <div class="w-16 bg-slate-100 rounded-full h-2 overflow-hidden">
-                                                <div class="bg-[#4F46E5] h-2 rounded-full" :style="'width:' + wh.participation_pct + '%'"></div>
+                                                <div class="bg-[#4F46E5] h-2 rounded-full" :style="'width:' + (wh.participation_pct ?? wh.share_percent ?? 0) + '%'"></div>
                                             </div>
-                                            <span class="font-bold font-mono text-[#4F46E5]" x-text="wh.participation_pct + '%'"></span>
+                                            <span class="font-bold font-mono text-[#4F46E5]" x-text="(wh.participation_pct ?? wh.share_percent ?? 0) + '%'"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -696,8 +696,8 @@
                                     <td class="px-3 py-2.5 text-center">
                                         <span :class="{
                                             'bg-emerald-50 text-emerald-700 border border-emerald-200': mv.order_status === 'delivered' || mv.order_status === 'settled',
-                                            'bg-amber-50 text-amber-700 border border-amber-200': mv.order_status === 'dispatched',
-                                            'bg-indigo-50 text-indigo-700 border border-indigo-200': mv.order_status === 'confirmed',
+                                            'bg-amber-50 text-amber-700 border border-amber-200': mv.order_status === 'dispatched' || mv.order_status === 'in_transit',
+                                            'bg-indigo-50 text-indigo-700 border border-indigo-200': mv.order_status === 'confirmed' || mv.order_status === 'pending_confirmation',
                                             'bg-slate-100 text-slate-600 border border-slate-200': mv.order_status === 'pending',
                                             'bg-rose-50 text-rose-700 border border-rose-200': mv.order_status === 'cancelled' || mv.order_status === 'returned'
                                         }" class="px-2 py-0.5 rounded-full font-bold text-[10px] whitespace-nowrap" x-text="mv.order_status_label ?? mv.order_status"></span>
