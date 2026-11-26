@@ -69,13 +69,20 @@ class CommercialReportController extends Controller
             abort(401);
         }
 
-        $reportData = $this->buildReportData($request, $authUser);
+        $reportData = $this->buildReportData($request, $authUser, forExport: true);
         $kpis       = $reportData['kpis'];
-        $orders     = $reportData['recentOrders'];
+        $orders     = $reportData['exportOrders'];
+
+        $targetProviderId = null;
+        if ($authUser->isProvider()) {
+            $targetProviderId = $authUser->id;
+        } elseif ($authUser->isTenantAdmin() && $request->filled('provider_id')) {
+            $targetProviderId = $request->input('provider_id');
+        }
 
         $filename = 'reporte_comercial_bolidrop_' . now()->format('Ymd_His') . '.csv';
 
-        return response()->stream(function () use ($kpis, $orders, $reportData, $authUser) {
+        return response()->stream(function () use ($kpis, $orders, $reportData, $authUser, $targetProviderId) {
             $handle = fopen('php://output', 'w');
             // BOM UTF-8 para Excel
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
@@ -119,6 +126,19 @@ class CommercialReportController extends Controller
             ]);
 
             foreach ($orders as $o) {
+                $totalAmount  = (float) $o->total_amount_bob;
+                $costAmount   = (float) $o->cost_amount_bob;
+                $profitAmount = (float) $o->dropshipper_profit_bob;
+
+                if ($targetProviderId) {
+                    $providerItems = $o->items->filter(function ($i) use ($targetProviderId) {
+                        return $i->provider_id === $targetProviderId || ($i->product && $i->product->provider_id === $targetProviderId);
+                    });
+                    $costAmount   = $providerItems->sum(fn ($i) => (float) $i->unit_cost_bob * $i->quantity);
+                    $totalAmount  = $providerItems->sum(fn ($i) => (float) $i->subtotal_bob);
+                    $profitAmount = max(0.0, round($totalAmount - $costAmount, 2));
+                }
+
                 fputcsv($handle, [
                     $o->order_number,
                     $o->created_at ? $o->created_at->format('d/m/Y H:i') : '',
@@ -128,11 +148,11 @@ class CommercialReportController extends Controller
                     $o->shipping_city,
                     $o->payment_method === 'cash_on_delivery_bob' ? 'Efectivo COD' : 'QR Simple ACH',
                     $o->status,
-                    number_format((float) $o->total_amount_bob, 2),
-                    number_format((float) $o->cost_amount_bob, 2),
-                    number_format((float) $o->dropshipper_profit_bob, 2),
-                    number_format((float) $o->platform_fee_bob, 2),
-                    number_format((float) $o->shipping_fee_bob, 2),
+                    number_format($totalAmount, 2, '.', ''),
+                    number_format($costAmount, 2, '.', ''),
+                    number_format($profitAmount, 2, '.', ''),
+                    number_format((float) $o->platform_fee_bob, 2, '.', ''),
+                    number_format((float) $o->shipping_fee_bob, 2, '.', ''),
                 ]);
             }
 
@@ -146,7 +166,7 @@ class CommercialReportController extends Controller
     /**
      * Construye las métricas comerciales agregadas según rol y fechas.
      */
-    protected function buildReportData(Request $request, User $authUser): array
+    protected function buildReportData(Request $request, User $authUser, bool $forExport = false): array
     {
         $dateFrom = $request->input('date_from');
         $dateTo   = $request->input('date_to');
@@ -158,11 +178,15 @@ class CommercialReportController extends Controller
         $ordersQuery = Order::with(['items.product', 'items.provider', 'warehouse', 'carrier', 'dropshipper'])
             ->whereBetween('created_at', [$from, $to]);
 
+        $targetProviderId = null;
+
         // Filtro Multi-Rol
         if ($authUser->isProvider()) {
-            // Proveedor: solo pedidos que contengan al menos un producto provisto por él
+            $targetProviderId = $authUser->id;
+            // Proveedor: pedidos que contengan productos suyos
             $ordersQuery->whereHas('items', function ($q) use ($authUser) {
-                $q->where('provider_id', $authUser->id);
+                $q->where('provider_id', $authUser->id)
+                  ->orWhereHas('product', fn ($pq) => $pq->where('provider_id', $authUser->id));
             });
         } elseif ($authUser->isDropshipper()) {
             // Dropshipper: solo pedidos generados por él
@@ -170,7 +194,11 @@ class CommercialReportController extends Controller
         } else {
             // Administrador: puede filtrar opcionalmente por proveedor o dropshipper
             if ($request->filled('provider_id')) {
-                $ordersQuery->whereHas('items', fn ($q) => $q->where('provider_id', $request->input('provider_id')));
+                $targetProviderId = $request->input('provider_id');
+                $ordersQuery->whereHas('items', function ($q) use ($targetProviderId) {
+                    $q->where('provider_id', $targetProviderId)
+                      ->orWhereHas('product', fn ($pq) => $pq->where('provider_id', $targetProviderId));
+                });
             }
             if ($request->filled('dropshipper_id')) {
                 $ordersQuery->where('dropshipper_id', $request->input('dropshipper_id'));
@@ -206,14 +234,24 @@ class CommercialReportController extends Controller
             $orderPlat   = (float) $order->platform_fee_bob;
             $orderShip   = (float) $order->shipping_fee_bob;
 
-            // Si es proveedor, calculamos la cuota que corresponde a sus productos en ese pedido
-            if ($authUser->isProvider()) {
+            // Invariante de conciliación financiera:
+            // Comisión Bolidrop = 4% de GMV si no fue precalculada
+            if ($orderPlat <= 0 && $orderTotal > 0) {
+                $orderPlat = round($orderTotal * 0.04, 2);
+            }
+            // Margen dropshipper si no fue asignado = GMV - Costo - Flete - Comisión
+            if ($orderProfit <= 0 && $orderTotal > 0) {
+                $orderProfit = max(0.0, round($orderTotal - $orderCost - $orderShip - $orderPlat, 2));
+            }
+
+            // Si es proveedor o se filtró por uno, calculamos la cuota que corresponde a sus productos
+            if ($targetProviderId) {
                 $providerItemsCost = $order->items
-                    ->filter(fn ($i) => $i->provider_id === $authUser->id)
+                    ->filter(fn ($i) => $i->provider_id === $targetProviderId || ($i->product && $i->product->provider_id === $targetProviderId))
                     ->sum(fn ($i) => (float) $i->unit_cost_bob * $i->quantity);
 
                 $providerItemsSales = $order->items
-                    ->filter(fn ($i) => $i->provider_id === $authUser->id)
+                    ->filter(fn ($i) => $i->provider_id === $targetProviderId || ($i->product && $i->product->provider_id === $targetProviderId))
                     ->sum(fn ($i) => (float) $i->subtotal_bob);
 
                 $totalCostBob  += $providerItemsCost;
@@ -259,8 +297,12 @@ class CommercialReportController extends Controller
 
             // Productos
             foreach ($order->items as $item) {
-                // Si es proveedor, solo incluir sus productos
-                if ($authUser->isProvider() && $item->provider_id !== $authUser->id) {
+                $isTargetProduct = true;
+                if ($targetProviderId) {
+                    $isTargetProduct = ($item->provider_id === $targetProviderId) || ($item->product && $item->product->provider_id === $targetProviderId);
+                }
+
+                if (! $isTargetProduct) {
                     continue;
                 }
 
@@ -300,7 +342,40 @@ class CommercialReportController extends Controller
         // Ordenar departamentos por ventas descendente
         uasort($deptDistribution, fn ($a, $b) => $b['amount'] <=> $a['amount']);
 
-        return [
+        // Formatear pedidos reactivos para la vista y Alpine.js
+        $formattedRecentOrders = $orders->take(50)->map(function ($o) use ($targetProviderId) {
+            $totalAmount  = (float) $o->total_amount_bob;
+            $costAmount   = (float) $o->cost_amount_bob;
+            $profitAmount = (float) $o->dropshipper_profit_bob;
+
+            if ($targetProviderId) {
+                $providerItems = $o->items->filter(function ($i) use ($targetProviderId) {
+                    return $i->provider_id === $targetProviderId || ($i->product && $i->product->provider_id === $targetProviderId);
+                });
+                $costAmount   = $providerItems->sum(fn ($i) => (float) $i->unit_cost_bob * $i->quantity);
+                $totalAmount  = $providerItems->sum(fn ($i) => (float) $i->subtotal_bob);
+                $profitAmount = max(0.0, round($totalAmount - $costAmount, 2));
+            }
+
+            return [
+                'id'                     => $o->id,
+                'order_number'           => $o->order_number,
+                'created_at_formatted'   => $o->created_at ? $o->created_at->format('d/m/Y H:i') : '—',
+                'customer_name'          => $o->customer_name,
+                'customer_phone'         => $o->customer_phone,
+                'shipping_city'          => $o->shipping_city ?: 'Santa Cruz',
+                'shipping_department'    => $o->shipping_department ?: 'Santa Cruz',
+                'payment_method'         => $o->payment_method ?: 'cash_on_delivery_bob',
+                'status'                 => $o->status,
+                'total_amount_bob'       => round($totalAmount, 2),
+                'cost_amount_bob'        => round($costAmount, 2),
+                'dropshipper_profit_bob' => round($profitAmount, 2),
+                'shipping_fee_bob'       => (float) $o->shipping_fee_bob,
+                'platform_fee_bob'       => (float) $o->platform_fee_bob,
+            ];
+        })->values()->all();
+
+        $result = [
             'dateFrom'            => $from->format('Y-m-d'),
             'dateTo'              => $to->format('Y-m-d'),
             'kpis'                => [
@@ -319,7 +394,13 @@ class CommercialReportController extends Controller
             'paymentDistribution' => $paymentDistribution,
             'deptDistribution'    => $deptDistribution,
             'topProducts'         => $topProducts,
-            'recentOrders'        => $orders->take(25),
+            'recentOrders'        => $formattedRecentOrders,
         ];
+
+        if ($forExport) {
+            $result['exportOrders'] = $orders;
+        }
+
+        return $result;
     }
 }

@@ -375,7 +375,7 @@
                 <i class="fa-solid fa-receipt text-indigo-500 text-sm"></i>
                 <h3 class="font-bold text-slate-900 text-sm font-heading">Detalle de Pedidos en Periodo</h3>
             </div>
-            <span class="text-xs text-slate-500">Mostrando hasta 25 pedidos</span>
+            <span class="text-xs text-slate-500" x-text="'Mostrando ' + recentOrders.length + ' pedidos'"></span>
         </div>
 
         <div class="overflow-x-auto">
@@ -393,55 +393,45 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($recentOrders as $order)
+                    <template x-for="order in recentOrders" :key="order.id || order.order_number">
                         <tr class="hover:bg-slate-50/80 transition">
-                            <td class="px-5 py-3 font-mono font-bold text-slate-900">
-                                {{ $order->order_number }}
-                            </td>
-                            <td class="px-5 py-3 text-slate-500 text-[11px]">
-                                {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '—' }}
-                            </td>
+                            <td class="px-5 py-3 font-mono font-bold text-slate-900" x-text="order.order_number"></td>
+                            <td class="px-5 py-3 text-slate-500 text-[11px]" x-text="order.created_at_formatted"></td>
                             <td class="px-5 py-3">
-                                <div class="font-bold text-slate-800">{{ $order->customer_name }}</div>
+                                <div class="font-bold text-slate-800" x-text="order.customer_name"></div>
                                 <div class="text-[11px] text-slate-400">
                                     <i class="fa-solid fa-location-dot text-xs mr-0.5"></i>
-                                    {{ $order->shipping_city }} ({{ $order->shipping_department }})
+                                    <span x-text="(order.shipping_city || '—') + ' (' + (order.shipping_department || '—') + ')'"></span>
                                 </div>
                             </td>
                             <td class="px-5 py-3">
-                                @if($order->payment_method === 'qr_interoperable')
+                                <template x-if="order.payment_method === 'qr_interoperable'">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
                                         <i class="fa-solid fa-qrcode text-[9px]"></i> QR Simple
                                     </span>
-                                @else
+                                </template>
+                                <template x-if="order.payment_method !== 'qr_interoperable'">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <i class="fa-solid fa-money-bill-wave text-[9px]"></i> Efectivo COD
                                     </span>
-                                @endif
+                                </template>
                             </td>
                             <td class="px-5 py-3">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold capitalize
-                                    {{ in_array($order->status, ['delivered', 'settled', 'entregado']) ? 'bg-emerald-100 text-emerald-800' : (in_array($order->status, ['novelty', 'en novedad']) ? 'bg-amber-100 text-amber-800' : (in_array($order->status, ['cancelled', 'devolucion']) ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800')) }}">
-                                    {{ $order->status }}
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold capitalize"
+                                      :class="statusBadgeClass(order.status)"
+                                      x-text="order.status">
                                 </span>
                             </td>
-                            <td class="px-5 py-3 text-right font-mono font-bold text-slate-900">
-                                Bs {{ number_format((float) $order->total_amount_bob, 2) }}
-                            </td>
-                            <td class="px-5 py-3 text-right font-mono text-purple-700 font-semibold">
-                                Bs {{ number_format((float) $order->cost_amount_bob, 2) }}
-                            </td>
-                            <td class="px-5 py-3 text-right font-mono text-emerald-600 font-bold">
-                                Bs {{ number_format((float) $order->dropshipper_profit_bob, 2) }}
-                            </td>
+                            <td class="px-5 py-3 text-right font-mono font-bold text-slate-900" x-text="formatBob(order.total_amount_bob)"></td>
+                            <td class="px-5 py-3 text-right font-mono text-purple-700 font-semibold" x-text="formatBob(order.cost_amount_bob)"></td>
+                            <td class="px-5 py-3 text-right font-mono text-emerald-600 font-bold" x-text="formatBob(order.dropshipper_profit_bob)"></td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="px-5 py-8 text-center text-slate-400">
-                                No se encontraron pedidos registrados en el periodo seleccionado.
-                            </td>
-                        </tr>
-                    @endforelse
+                    </template>
+                    <tr x-show="recentOrders.length === 0">
+                        <td colspan="8" class="px-5 py-8 text-center text-slate-400">
+                            No se encontraron pedidos registrados en el periodo seleccionado.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -461,9 +451,24 @@ function commercialReportApp() {
         paymentDistribution: @json($paymentDistribution),
         deptDistribution: @json($deptDistribution),
         topProducts: @json($topProducts),
+        recentOrders: @json($recentOrders),
 
         init() {
             // Inicializado con datos pasados por Blade
+        },
+
+        statusBadgeClass(status) {
+            const st = (status || '').toLowerCase();
+            if (['delivered', 'settled', 'entregado', 'pagado', 'liquidado'].includes(st)) {
+                return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+            }
+            if (['novelty', 'en novedad', 'novedad'].includes(st)) {
+                return 'bg-amber-100 text-amber-800 border border-amber-200';
+            }
+            if (['cancelled', 'cancelado', 'devolucion', 'returned'].includes(st)) {
+                return 'bg-rose-100 text-rose-800 border border-rose-200';
+            }
+            return 'bg-blue-100 text-blue-800 border border-blue-200';
         },
 
         setPreset(days) {
@@ -532,6 +537,7 @@ function commercialReportApp() {
                     this.paymentDistribution = json.data.paymentDistribution;
                     this.deptDistribution = json.data.deptDistribution;
                     this.topProducts = json.data.topProducts;
+                    this.recentOrders = json.data.recentOrders || [];
                 }
             } catch (e) {
                 console.error('Error fetching report data:', e);
