@@ -86,7 +86,7 @@
 
     <!-- Tarjetas de estadísticas (Stripe & Linear Executive Overlap) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 !-mt-14 relative z-10">
-        
+
         <!-- Ingresos por liquidaciones (#4F46E5 Electric Indigo) -->
         <div class="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#4F46E5] rounded-2xl p-5 text-white shadow-sm space-y-2 border border-indigo-400/20 interactive-card">
             <div class="flex items-center gap-2 text-indigo-200 text-xs font-bold uppercase tracking-wider">
@@ -124,8 +124,8 @@
             <div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-wider">
                 <i class="fa-solid fa-cart-flatbed text-[#4F46E5]"></i> Pedidos & Despachos
             </div>
-            <div class="text-2xl font-extrabold text-[#0F172A] font-heading" data-countup>{{ $stats['total_sales'] ?? 0 }} pedidos</div>
-            <div class="text-slate-500 text-[11px]">{{ $stats['pending_orders'] ?? 0 }} en proceso / {{ $stats['delivered_orders'] ?? 0 }} entregados</div>
+            <div class="text-2xl font-extrabold text-[#0F172A] font-heading" data-countup>{{ $orderStatusCounts['total'] ?? 0 }} pedidos</div>
+            <div class="text-slate-500 text-[11px]">{{ $orderStatusCounts['in_process'] ?? 0 }} en proceso · {{ ($orderStatusCounts['delivered'] ?? 0) + ($orderStatusCounts['settled'] ?? 0) }} entregados</div>
         </div>
     </div>
 
@@ -181,7 +181,7 @@
             }
             this.submitting = true;
             try {
-                const res = await fetch('{{ route('wallet.withdraw.store') }}', {
+                const res = await fetch('{{ route('wallet.withdraw') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -249,7 +249,7 @@
                             <i class="fa-solid fa-truck-fast text-indigo-500 text-sm"></i>
                         </div>
                         <div class="text-3xl font-extrabold text-[#4F46E5] font-mono" data-countup>
-                            Bs {{ number_format((float)($wallet?->balance_pending ?? 0), 2) }}
+                            Bs {{ number_format(max((float)($wallet?->balance_pending ?? 0), (float)($stats['pending_revenue'] ?? 0)), 2) }}
                         </div>
                         <div class="text-[11px] text-slate-400">Se acredita a tu saldo cuando el courier confirme la entrega y cobre el dinero</div>
                     </div>
@@ -346,10 +346,10 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0">
-            
+
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 relative"
                 @click.away="withdrawModalOpen = false">
-                
+
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-lg bg-indigo-50 text-[#4F46E5] flex items-center justify-center">
@@ -1890,7 +1890,7 @@
             <!-- Resumen Gráfico y Métricas de Flujo (Inbound vs Outbound vs Reservas) -->
             <div class="p-5 sm:p-6 bg-slate-50/60 border-b border-slate-200/80">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                    
+
                     <!-- KPI Entradas (Inbound) -->
                     <div class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-2xs flex flex-col justify-between">
                         <div class="flex items-center justify-between">
@@ -1969,7 +1969,7 @@
             <!-- Filtros Reactivos en Tiempo Real (Producto + Bodega + Categoría + Buscador) -->
             <div class="p-4 sm:p-5 border-b border-slate-200 bg-white">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    
+
                     <!-- Filtro por Producto -->
                     <div>
                         <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">Filtrar Producto</label>
@@ -2038,7 +2038,7 @@
                     <tbody class="divide-y divide-slate-100">
                         <template x-for="item in filteredRecords" :key="item.id">
                             <tr class="hover:bg-indigo-50/40 transition cursor-pointer group" @click="openDetail(item)">
-                                
+
                                 <!-- Fecha y Tipo Movimiento -->
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <div class="font-bold text-slate-900" x-text="item.created_at"></div>
@@ -2162,14 +2162,14 @@
             <div x-show="detailModalOpen" x-cloak
                  class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
                  @keydown.escape.window="closeDetail()">
-                
+
                 <div @click.stop
                      x-show="detailModalOpen"
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 scale-95"
                      x-transition:enter-end="opacity-100 scale-100"
                      class="relative w-full max-w-2xl bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden">
-                    
+
                     <!-- Top Beam Gradient -->
                     <div class="h-1.5 w-full bg-gradient-to-r from-[#4F46E5] via-[#38BDF8] to-[#10B981]"></div>
 
@@ -2237,7 +2237,7 @@
 
                         <!-- Tarjetas de los 3 Actores de la Transacción -->
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            
+
                             <!-- 1. Proveedor -->
                             <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
                                 <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1">
@@ -2276,7 +2276,7 @@
                             <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
                                 <span><i class="fa-solid fa-scale-balanced mr-1 text-[#4F46E5]"></i>Invariante de Stock (Físico Antes → Movimiento → Físico Después)</span>
                             </div>
-                            
+
                             <div class="grid grid-cols-3 gap-2 text-center">
                                 <div class="bg-white rounded-xl p-3 border border-slate-200/80 shadow-2xs">
                                     <div class="text-[9px] text-slate-400 uppercase font-semibold">Físico Anterior</div>
@@ -2919,10 +2919,10 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        
+
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 my-auto"
             @click.away="alertModalOpen = false">
-            
+
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center font-bold text-lg shadow-sm">
@@ -3003,10 +3003,10 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        
+
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 my-auto"
             @click.away="transferModalOpen = false">
-            
+
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-[#0061f2] border border-emerald-200 flex items-center justify-center font-bold text-lg shadow-sm">
@@ -3154,10 +3154,10 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        
+
         <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 my-auto"
             @click.away="closeProductModal()">
-            
+
             <!-- Encabezado del Modal -->
             <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                 <div class="flex items-center gap-3">
@@ -3194,10 +3194,10 @@
             </div>
 
             <form novalidate @submit.prevent="submitProduct()" class="text-xs space-y-4">
-                
+
                 <!-- PESTAÑA 1: DATOS COMERCIALES Y BODEGA -->
                 <div x-show="productModalTab === 'general'" class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
-                    
+
                     <!-- COLUMNA IZQUIERDA: Datos Básicos y Fotografía -->
                     <div class="space-y-3">
                         <div>

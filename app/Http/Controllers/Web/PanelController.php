@@ -133,22 +133,6 @@ class PanelController extends Controller
             $stats['active_products']  = Product::where('provider_id', $provider->id)->where('status', 'published')->count();
             $stats['total_warehouses'] = Warehouse::where('provider_id', $provider->id)->count();
             
-            // Total recaudado / ingresos liquidados por costo mayorista
-            $stats['total_revenue'] = (float) OrderItem::where('provider_id', $provider->id)
-                ->whereHas('order', fn ($q) => $q->where('status', 'settled'))
-                ->selectRaw('SUM(unit_cost_bob * quantity) as total')
-                ->value('total') ?? 0;
-
-            // Cantidad de unidades y pedidos asociados
-            $providerOrderIds = OrderItem::where('provider_id', $provider->id)->pluck('order_id')->unique();
-            $stats['total_sales'] = $providerOrderIds->count();
-            $stats['pending_orders'] = Order::whereIn('id', $providerOrderIds)
-                ->whereIn('status', ['pending_confirmation', 'confirmed', 'dispatched', 'in_transit'])
-                ->count();
-            $stats['delivered_orders'] = Order::whereIn('id', $providerOrderIds)
-                ->whereIn('status', ['delivered', 'settled'])
-                ->count();
-
             $products = Product::with(['category', 'warehouseInventories.warehouse'])
                 ->where('provider_id', $provider->id)
                 ->latest()
@@ -161,28 +145,14 @@ class PanelController extends Controller
                 ->where('provider_id', $provider->id)
                 ->get();
 
-            $wallet = Wallet::firstOrCreate(
-                ['user_id' => $provider->id],
-                [
-                    'tenant_id'         => $provider->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb',
-                    'currency'          => 'BOB',
-                    'balance_available' => 0.00,
-                    'balance_pending'   => 0.00,
-                    'balance_withdrawn' => 0.00,
-                ]
-            );
-
-            $walletTransactions = $wallet
-                ? \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->latest()->limit(25)->get()
-                : collect();
-
             // Pedidos y ventas del proveedor con detalle de items, cliente, courier y destino
+            $providerOrderIds = OrderItem::where('provider_id', $provider->id)->pluck('order_id')->unique();
             $salesOrders = Order::with(['items' => fn($q) => $q->where('provider_id', $provider->id)->with('product'), 'carrier', 'warehouse', 'dropshipper'])
                 ->whereIn('id', $providerOrderIds)
                 ->latest()
                 ->get();
 
-            // Contadores de estado para los KPIs y pills de Dropanas
+            // Contadores de estado para los KPIs y pills sincronizados al 100%
             $orderStatusCounts = [
                 'total'      => $salesOrders->count(),
                 'pending'    => $salesOrders->whereIn('status', ['pending_confirmation'])->count(),
@@ -196,6 +166,45 @@ class PanelController extends Controller
                 'novedad'    => $salesOrders->filter(fn($o) => !empty($o->novedad_reason))->count(),
                 'in_process' => $salesOrders->whereIn('status', ['confirmed', 'in_transit', 'dispatched'])->count(),
             ];
+
+            // Métricas de ventas y pedidos superiores sincronizadas
+            $stats['total_sales']       = $orderStatusCounts['total'];
+            $stats['pending_orders']     = $orderStatusCounts['pending'];
+            $stats['in_process_orders']  = $orderStatusCounts['in_process'];
+            $stats['delivered_orders']   = $orderStatusCounts['delivered'];
+            $stats['settled_orders']     = $orderStatusCounts['settled'];
+
+            // Total recaudado / ingresos liquidados por costo mayorista
+            $stats['total_revenue'] = (float) OrderItem::where('provider_id', $provider->id)
+                ->whereHas('order', fn ($q) => $q->where('status', 'settled'))
+                ->selectRaw('SUM(unit_cost_bob * quantity) as total')
+                ->value('total') ?? 0;
+
+            // Total ingresos en tránsito (despachados o en ruta pendientes de liquidación)
+            $stats['pending_revenue'] = (float) OrderItem::where('provider_id', $provider->id)
+                ->whereHas('order', fn ($q) => $q->whereIn('status', ['confirmed', 'dispatched', 'in_transit', 'delivered']))
+                ->selectRaw('SUM(unit_cost_bob * quantity) as total')
+                ->value('total') ?? 0;
+
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $provider->id],
+                [
+                    'tenant_id'         => $provider->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb',
+                    'currency'          => 'BOB',
+                    'balance_available' => 0.00,
+                    'balance_pending'   => 0.00,
+                    'balance_withdrawn' => 0.00,
+                ]
+            );
+
+            // Reflejar fondos en tránsito si existen despachos activos
+            if ($wallet && (float)$wallet->balance_pending == 0.0 && $stats['pending_revenue'] > 0) {
+                $wallet->balance_pending = $stats['pending_revenue'];
+            }
+
+            $walletTransactions = $wallet
+                ? \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->latest()->limit(25)->get()
+                : collect();
 
             // Historial de Trazabilidad Kardex de sus productos en bodegas con relaciones completas
             $recentKardex = \App\Models\InventoryKardex::withoutGlobalScopes()
