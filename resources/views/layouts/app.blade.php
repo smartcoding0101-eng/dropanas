@@ -1023,9 +1023,9 @@
                         <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Mi Negocio Dropshipping
                         </div>
-                        <a href="{{ url('/panel/dropshipper') }}" title="Mi Dashboard" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/dropshipper') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/dropshipper') }}" title="Control" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/dropshipper') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/dropshipper') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Mi Dashboard</span>
+                            <span>Control</span>
                         </a>
                         <a href="{{ url('/catalogo') }}" title="Megabodega" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
@@ -1056,29 +1056,21 @@
                         <div class="sidebar-heading px-5 pt-4 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Panel de Proveedor
                         </div>
-                        <a href="{{ url('/panel/proveedor') }}" title="Mi Dashboard" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/proveedor') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/panel/proveedor') }}" title="Control" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/proveedor') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/proveedor') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Mi Dashboard</span>
+                            <span>Control</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" title="Catálogo Publicado" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Catálogo" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Catálogo Publicado</span>
+                            <span>Catálogo</span>
                         </a>
                         <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reporte Comercial</span>
                         </a>
-                        <a href="{{ url('/reportes') }}" title="Reportes & Métricas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reportes') }}" title="Métricas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Reportes & Métricas</span>
-                        </a>
-                        <a href="{{ url('/panel/proveedor') }}#inventario" title="Mi Inventario Físico" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
-                            <i class="fa-solid fa-warehouse w-4 text-center text-[#a7aeb8]"></i>
-                            <span>Mi Inventario Físico</span>
-                        </a>
-                        <a href="{{ url('/panel/proveedor') }}#alertas" title="Alertas de Stock" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
-                            <i class="fa-solid fa-triangle-exclamation w-4 text-center text-[#a7aeb8]"></i>
-                            <span>Alertas de Stock</span>
+                            <span>Métricas</span>
                         </a>
                     @endif
 
@@ -1139,9 +1131,9 @@
                             <i class="fa-solid fa-magnifying-glass-location w-4 text-center {{ request()->is('tracking*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Rastrear Guía</span>
                         </a>
-                        <a href="{{ url('/contactenos') }}" title="Sedes & Almacenes" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
-                            <i class="fa-solid fa-map-location-dot w-4 text-center {{ request()->is('contactenos*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Sedes & Almacenes</span>
+                        <a href="{{ url('/contactenos') }}" title="Contactos" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('contactenos*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-address-book w-4 text-center {{ request()->is('contactenos*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
+                            <span>Contactos</span>
                         </a>
                         <a href="{{ url('/soporte') }}" title="Centro de Soporte" class="nav-item-transition flex items-center gap-3 px-4 py-2 text-[13px] {{ request()->is('soporte*') ? 'text-[#4F46E5] bg-blue-50/70 font-bold border-r-4 border-[#38BDF8]' : 'text-[#0F172A] hover:text-[#4F46E5] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-headset w-4 text-center {{ request()->is('soporte*') ? 'text-[#38BDF8]' : 'text-[#a7aeb8]' }}"></i>
