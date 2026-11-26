@@ -99,15 +99,16 @@
         </div>
 
         <!-- Saldo billetera (#FFFFFF) -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card">
-            <div class="flex items-center gap-2 text-[#4F46E5] text-xs font-bold uppercase tracking-wider">
-                <i class="fa-solid fa-wallet text-[#4F46E5]"></i> Saldo Billetera
+        <a href="#billetera" class="block bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card group/card">
+            <div class="flex items-center justify-between text-[#4F46E5] text-xs font-bold uppercase tracking-wider">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-wallet text-[#4F46E5]"></i> Saldo Billetera</span>
+                <span class="text-[10px] text-slate-400 group-hover/card:text-[#4F46E5] transition flex items-center gap-1 font-semibold lowercase">ver movimientos →</span>
             </div>
             <div class="text-2xl font-extrabold font-mono text-[#10B981]" data-countup>
                 Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}
             </div>
             <div class="text-slate-500 text-[11px]">Disponible para retiro inmediato</div>
-        </div>
+        </a>
 
         <!-- Stock Total Físico (#FFFFFF) -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2 interactive-card">
@@ -130,6 +131,9 @@
 
     <!-- Barra de Navegación Rápida entre Secciones del Panel -->
     <nav class="sticky top-14 z-30 bg-white/95 backdrop-blur-sm border border-slate-200 rounded-2xl shadow-sm px-2 py-1.5 flex items-center gap-1 overflow-x-auto">
+        <a href="#billetera" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-wallet text-emerald-600"></i> Mi Billetera & Finanzas
+        </a>
         <a href="#almacenes" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
             <i class="fa-solid fa-warehouse text-indigo-500"></i> Almacenes
         </a>
@@ -155,6 +159,278 @@
             <i class="fa-solid fa-chart-pie text-violet-500"></i> Reportes &amp; Métricas <span class="bg-violet-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold ml-1">Nuevo</span>
         </a>
     </nav>
+
+    <!-- =========================================================
+         MÓDULO BILLETERA VIRTUAL & MOVIMIENTOS MONETARIOS
+    ========================================================= -->
+    <div id="billetera" class="space-y-6" x-data="{
+        withdrawModalOpen: false,
+        submitting: false,
+        form: {
+            amount: 0,
+            bank_name: 'Banco Unión',
+            account_number: '',
+            account_holder: '{{ addslashes($provider->name ?? '') }}',
+            document_id: '{{ addslashes($provider->document_id ?? '') }}',
+            notes: ''
+        },
+        async submitWithdraw() {
+            if (this.form.amount <= 0 || this.form.amount > {{ (float)($wallet?->balance_available ?? 0) }}) {
+                alert('El monto ingresado es inválido o supera tu saldo disponible.');
+                return;
+            }
+            this.submitting = true;
+            try {
+                const res = await fetch('{{ route('wallet.withdraw.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(this.form)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    alert(data.message || 'Solicitud de retiro enviada exitosamente.');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Error al procesar la solicitud de retiro.');
+                }
+            } catch (err) {
+                alert('Error de conexión al enviar la solicitud.');
+            } finally {
+                this.submitting = false;
+            }
+        }
+    }">
+
+        <!-- Contenedor Principal Billetera -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-sm font-heading flex items-center gap-2">
+                            <span>Mi Billetera Virtual (Bolivia COD)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">BOB (Bolivianos)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">Ingresos por ventas de productos mayoristas, deducción de comisiones Dropana y retiros a tu banco</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" @click="withdrawModalOpen = true"
+                        class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 cursor-pointer transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-building-columns text-amber-200"></i>
+                        <span>Solicitar Retiro a Cuenta Bancaria</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- 3 Tarjetas Financieras del Proveedor -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div class="bg-slate-50/80 p-5 rounded-2xl border border-slate-200 space-y-1">
+                        <div class="text-xs text-slate-500 font-medium flex items-center justify-between">
+                            <span>Saldo Disponible para Retiro</span>
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold text-emerald-600 font-mono" data-countup>
+                            Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}
+                        </div>
+                        <div class="text-[11px] text-slate-400">Fondos líquidos listos para transferir a tu cuenta nacional</div>
+                    </div>
+
+                    <div class="bg-slate-50/80 p-5 rounded-2xl border border-slate-200 space-y-1">
+                        <div class="text-xs text-slate-500 font-medium flex items-center justify-between">
+                            <span>Saldo en Tránsito (En Ruta COD)</span>
+                            <i class="fa-solid fa-truck-fast text-indigo-500 text-sm"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold text-[#4F46E5] font-mono" data-countup>
+                            Bs {{ number_format((float)($wallet?->balance_pending ?? 0), 2) }}
+                        </div>
+                        <div class="text-[11px] text-slate-400">Se acredita a tu saldo cuando el courier confirme la entrega y cobre el dinero</div>
+                    </div>
+
+                    <div class="bg-slate-50/80 p-5 rounded-2xl border border-slate-200 space-y-1">
+                        <div class="text-xs text-slate-500 font-medium flex items-center justify-between">
+                            <span>Total Histórico Retirado</span>
+                            <i class="fa-solid fa-receipt text-slate-400 text-sm"></i>
+                        </div>
+                        <div class="text-3xl font-extrabold text-slate-800 font-mono" data-countup>
+                            Bs {{ number_format((float)($wallet?->balance_withdrawn ?? 0), 2) }}
+                        </div>
+                        <div class="text-[11px] text-slate-400">Transferencias bancarias completadas con éxito</div>
+                    </div>
+                </div>
+
+                <!-- Banner Informativo de Comisión Dropana -->
+                <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-start gap-3 text-xs text-indigo-900">
+                    <i class="fa-solid fa-circle-info text-indigo-600 text-sm mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-bold">Regla de Liquidación Dropana:</span> Por cada pedido contra entrega entregado efectivamente, Dropana liquida el 100% del costo mayorista de tu producto y deduce automáticamente la comisión de intermediación de <strong class="text-indigo-950 font-bold">Bs. {{ number_format($financialSettings->platform_fee_provider_bob ?? 5.00, 2) }}</strong>. No pagas comisiones por órdenes canceladas ni devueltas.
+                    </div>
+                </div>
+
+                <!-- Tabla de Historial de Movimientos Monetarios -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-receipt text-indigo-600"></i>
+                            <span>Historial de Movimientos Monetarios (Ingresos y Egresos)</span>
+                        </h4>
+                        <span class="text-[11px] text-slate-400">Libro mayor contable inmutable</span>
+                    </div>
+
+                    @if($walletTransactions->isEmpty())
+                        <div class="py-12 px-4 rounded-xl border border-dashed border-slate-200 text-center space-y-2 bg-slate-50/50">
+                            <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+                            <h5 class="text-xs font-bold text-slate-700">Aún no tienes movimientos monetarios registrados</h5>
+                            <p class="text-[11px] text-slate-400 max-w-md mx-auto">
+                                Cuando los transportistas cobren en destino y se dispersen los fondos de tus ventas, verás aquí el detalle de cada liquidación (+) y cada retiro a tu banco (-) al centavo.
+                            </p>
+                        </div>
+                    @else
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b border-slate-200 tracking-wider">
+                                    <tr>
+                                        <th class="py-3 px-3.5">Fecha y Hora</th>
+                                        <th class="py-3 px-3.5">Tipo / Concepto</th>
+                                        <th class="py-3 px-3.5">Referencia / Pedido</th>
+                                        <th class="py-3 px-3.5 text-right">Monto</th>
+                                        <th class="py-3 px-3.5 text-right">Saldo Posterior</th>
+                                        <th class="py-3 px-3.5 text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach($walletTransactions as $tx)
+                                    <tr class="hover:bg-slate-50/80 transition">
+                                        <td class="py-2.5 px-3.5 text-slate-500 font-mono text-[11px]">{{ $tx->created_at->format('d/m/Y H:i') }}</td>
+                                        <td class="py-2.5 px-3.5">
+                                            <span class="font-bold text-slate-800 block">{{ $tx->description ?? 'Movimiento de Billetera' }}</span>
+                                            <span class="text-[10px] text-slate-400 font-mono uppercase">{{ $tx->transaction_type }}</span>
+                                        </td>
+                                        <td class="py-2.5 px-3.5 font-mono text-slate-600">{{ $tx->reference_id ?? '-' }}</td>
+                                        <td class="py-2.5 px-3.5 text-right font-mono font-bold {{ (float)$tx->amount >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                            {{ (float)$tx->amount >= 0 ? '+' : '' }}Bs. {{ number_format((float)$tx->amount, 2) }}
+                                        </td>
+                                        <td class="py-2.5 px-3.5 text-right font-mono text-slate-700 font-semibold">
+                                            Bs. {{ number_format((float)$tx->balance_after, 2) }}
+                                        </td>
+                                        <td class="py-2.5 px-3.5 text-center">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Completado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Solicitar Retiro Bancario -->
+        <div x-show="withdrawModalOpen" x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
+            
+            <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 relative"
+                @click.away="withdrawModalOpen = false">
+                
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-[#4F46E5] flex items-center justify-center">
+                            <i class="fa-solid fa-building-columns text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">Solicitud de Retiro Bancario</h4>
+                            <p class="text-[11px] text-slate-500">Transfiere tus ganancias a tu cuenta bancaria boliviana</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="withdrawModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+                    <span class="text-emerald-900 font-medium">Saldo Disponible para Retiro:</span>
+                    <span class="font-extrabold font-mono text-emerald-700 text-base">Bs {{ number_format((float)($wallet?->balance_available ?? 0), 2) }}</span>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Monto a Retirar (Bs.) *</label>
+                        <input type="number" step="0.01" min="1" max="{{ (float)($wallet?->balance_available ?? 0) }}" x-model.number="form.amount"
+                            placeholder="0.00"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 font-mono text-sm font-bold focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Banco Nacional Destino *</label>
+                        <select x-model="form.bank_name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                            <option value="Banco Unión">Banco Unión S.A.</option>
+                            <option value="Banco de Crédito BCP">Banco de Crédito BCP</option>
+                            <option value="Banco Nacional de Bolivia (BNB)">Banco Nacional de Bolivia (BNB)</option>
+                            <option value="Banco Mercantil Santa Cruz">Banco Mercantil Santa Cruz</option>
+                            <option value="Banco Ganadero">Banco Ganadero</option>
+                            <option value="Banco FIE">Banco FIE</option>
+                            <option value="Banco Sol">Banco Sol</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Número de Cuenta Bancaria *</label>
+                            <input type="text" x-model="form.account_number" placeholder="Ej: 1000002891283"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">C.I. / NIT Titular *</label>
+                            <input type="text" x-model="form.document_id" placeholder="Ej: 1029384 SC"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nombre Completo del Titular *</label>
+                        <input type="text" x-model="form.account_holder" placeholder="Ej: Juan Pérez"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Notas o Glosa para Transferencia</label>
+                        <input type="text" x-model="form.notes" placeholder="Ej: Retiro ganancias semana 48"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs focus:bg-white focus:outline-none focus:border-[#4F46E5]">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" @click="withdrawModalOpen = false" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="button" @click="submitWithdraw()" :disabled="submitting || form.amount <= 0 || form.amount > {{ (float)($wallet?->balance_available ?? 0) }}"
+                        class="btn-scarlet px-5 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50">
+                        <i class="fa-solid fa-paper-plane" x-show="!submitting"></i>
+                        <i class="fa-solid fa-spinner fa-spin" x-show="submitting"></i>
+                        <span x-text="submitting ? 'Enviando Solicitud...' : 'Confirmar y Solicitar Retiro'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- =========================================================
          MÓDULO ALMACENES — Tab nav de sección

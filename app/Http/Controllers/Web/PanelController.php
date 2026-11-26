@@ -161,7 +161,20 @@ class PanelController extends Controller
                 ->where('provider_id', $provider->id)
                 ->get();
 
-            $wallet = Wallet::where('user_id', $provider->id)->first();
+            $wallet = Wallet::firstOrCreate(
+                ['user_id' => $provider->id],
+                [
+                    'tenant_id'         => $provider->tenant_id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb',
+                    'currency'          => 'BOB',
+                    'balance_available' => 0.00,
+                    'balance_pending'   => 0.00,
+                    'balance_withdrawn' => 0.00,
+                ]
+            );
+
+            $walletTransactions = $wallet
+                ? \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->latest()->limit(25)->get()
+                : collect();
 
             // Pedidos y ventas del proveedor con detalle de items, cliente, courier y destino
             $salesOrders = Order::with(['items' => fn($q) => $q->where('provider_id', $provider->id)->with('product'), 'carrier', 'warehouse', 'dropshipper'])
@@ -268,7 +281,7 @@ class PanelController extends Controller
 
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
-            'wallet', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
+            'wallet', 'walletTransactions', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
             'recentKardex', 'stockTransfers', 'inventoryAlerts',
             'financialSettings', 'providerTopups',
             'dropshippers', 'transferProductsList', 'allProviders', 'isAdmin'
