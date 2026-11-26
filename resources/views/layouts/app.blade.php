@@ -202,10 +202,14 @@
             aside.sidenav-light {
                 width: 16rem; /* 256px / md:w-64 */
             }
-            #layoutSidenav_content {
-                margin-left: 16rem; /* 256px / md:ml-64 espacio fijo garantizado en escritorio */
+            .has-sidebar #layoutSidenav_content,
+            #layoutSidenav.has-sidebar #layoutSidenav_content,
+            #layoutSidenav_content.has-sidebar-content {
+                margin-left: 16rem; /* 256px / md:ml-64 espacio fijo garantizado en escritorio con sidebar */
             }
-            html.sidebar-is-collapsed #layoutSidenav_content {
+            html.sidebar-is-collapsed .has-sidebar #layoutSidenav_content,
+            html.sidebar-is-collapsed #layoutSidenav.has-sidebar #layoutSidenav_content,
+            html.sidebar-is-collapsed #layoutSidenav_content.has-sidebar-content {
                 margin-left: 5rem !important; /* 80px / md:ml-20 */
             }
             html.sidebar-is-collapsed aside.sidenav-light {
@@ -215,6 +219,11 @@
             html.sidebar-is-collapsed .sidebar-heading,
             html.sidebar-is-collapsed .sidebar-hide-mini {
                 display: none !important;
+            }
+            .no-sidebar #layoutSidenav_content,
+            #layoutSidenav.no-sidebar #layoutSidenav_content,
+            #layoutSidenav_content.no-sidebar-content {
+                margin-left: 0 !important;
             }
         }
 
@@ -606,7 +615,7 @@
         })();
     </script>
 </head>
-<body class="preload-transitions min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC]"
+<body class="preload-transitions min-h-screen flex flex-col antialiased selection:bg-[#4F46E5] selection:text-white bg-[#F8FAFC] {{ (Auth::check() && !request()->is('/')) ? 'has-sidebar' : 'no-sidebar' }}"
       x-data="{ 
           sidenavOpen: true, 
           sidebarCollapsed: localStorage.getItem('dropana_sidebar_collapsed') === 'true', 
@@ -888,7 +897,7 @@
     <!-- ===================================================================== -->
     <!-- SB ADMIN PRO LAYOUT SIDENAV + CONTENT WRAPPER                         -->
     <!-- ===================================================================== -->
-    <div id="layoutSidenav" class="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)] relative">
+    <div id="layoutSidenav" class="flex-grow flex flex-col md:flex-row min-h-[calc(100vh-4rem)] relative {{ (Auth::check() && !request()->is('/')) ? 'has-sidebar' : 'no-sidebar' }}">
 
         @if(Auth::check() && !request()->is('/'))
         <!-- Mobile Backdrop Overlay (< 768px) -->
@@ -1172,9 +1181,9 @@
                  'md:ml-20': sidenavOpen && sidebarCollapsed,
                  'md:!ml-0': !sidenavOpen
              }"
-             class="md:ml-64 flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-300 ease-in-out"
+             class="has-sidebar-content md:ml-64 flex-grow flex flex-col min-w-0 bg-[#F8FAFC] transition-[margin] duration-300 ease-in-out"
              @else
-             class="flex-grow flex flex-col min-w-0 bg-[#F8FAFC]"
+             class="no-sidebar-content flex-grow flex flex-col min-w-0 bg-[#F8FAFC] !ml-0"
              @endif>
             
             <main id="main-content" class="px-4 py-3 sm:px-8 sm:py-5 pb-20 md:pb-6 flex-grow">
