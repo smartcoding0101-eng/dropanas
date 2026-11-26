@@ -1796,6 +1796,7 @@
                     'id' => (string) $k->id,
                     'created_at' => $k->created_at->format('d/m/Y H:i'),
                     'date_raw' => $k->created_at->format('Y-m-d'),
+                    'timestamp' => (int) $k->created_at->timestamp,
                     'product_id' => (string) $k->product_id,
                     'product_name' => $k->product?->name ?? 'Producto',
                     'sku' => $k->product?->sku ?? '',
@@ -1859,6 +1860,15 @@
                 selectedItem: null,
                 detailModalOpen: false,
 
+                // Carrusel / Paginación de hasta 30 registros
+                currentPage: 1,
+                perPage: 30,
+
+                init() {
+                    this.$watch('filterCategory', () => { this.currentPage = 1; });
+                    this.$watch('searchDoc', () => { this.currentPage = 1; });
+                },
+
                 get filteredProductsList() {
                     const q = (this.productSearchQuery || '').toLowerCase().trim();
                     if (!q) return this.productsList;
@@ -1879,11 +1889,13 @@
                     this.filterProduct = id;
                     this.productDropdownOpen = false;
                     this.productSearchQuery = '';
+                    this.currentPage = 1;
                 },
 
                 clearProductFilter() {
                     this.filterProduct = 'all';
                     this.productSearchQuery = '';
+                    this.currentPage = 1;
                 },
 
                 get filteredWarehousesList() {
@@ -1906,15 +1918,17 @@
                     this.filterWarehouse = id;
                     this.warehouseDropdownOpen = false;
                     this.warehouseSearchQuery = '';
+                    this.currentPage = 1;
                 },
 
                 clearWarehouseFilter() {
                     this.filterWarehouse = 'all';
                     this.warehouseSearchQuery = '';
+                    this.currentPage = 1;
                 },
 
                 get filteredRecords() {
-                    return this.records.filter(r => {
+                    const list = this.records.filter(r => {
                         const matchProd = this.filterProduct === 'all' || r.product_id === this.filterProduct;
                         const matchWh   = this.filterWarehouse === 'all' || r.warehouse_id === this.filterWarehouse;
                         const matchCat  = this.filterCategory === 'all' ||
@@ -1929,6 +1943,63 @@
                                           (r.responsible_user && r.responsible_user.toLowerCase().includes(q));
                         return matchProd && matchWh && matchCat && matchText;
                     });
+                    // Los nuevos registros siempre en la parte superior (orden cronológico estricto)
+                    return list.sort((a, b) => {
+                        const timeB = b.timestamp || 0;
+                        const timeA = a.timestamp || 0;
+                        if (timeB !== timeA) return timeB - timeA;
+                        return (b.id || '').localeCompare(a.id || '');
+                    });
+                },
+
+                get totalPages() {
+                    return Math.max(1, Math.ceil(this.filteredRecords.length / this.perPage));
+                },
+
+                get paginatedRecords() {
+                    const start = (this.currentPage - 1) * this.perPage;
+                    return this.filteredRecords.slice(start, start + this.perPage);
+                },
+
+                get pageNumbers() {
+                    const total = this.totalPages;
+                    const current = this.currentPage;
+                    if (total <= 7) {
+                        return Array.from({ length: total }, (_, i) => i + 1);
+                    }
+                    const pages = [1];
+                    let start = Math.max(2, current - 1);
+                    let end = Math.min(total - 1, current + 1);
+                    if (current <= 3) {
+                        start = 2;
+                        end = 4;
+                    } else if (current >= total - 2) {
+                        start = total - 3;
+                        end = total - 1;
+                    }
+                    if (start > 2) pages.push('...');
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (end < total - 1) pages.push('...');
+                    pages.push(total);
+                    return pages;
+                },
+
+                prevPage() {
+                    if (this.currentPage > 1) this.currentPage--;
+                },
+
+                nextPage() {
+                    if (this.currentPage < this.totalPages) this.currentPage++;
+                },
+
+                goToPage(p) {
+                    if (p === '...') return;
+                    this.currentPage = Math.max(1, Math.min(p, this.totalPages));
+                },
+
+                setPerPage(val) {
+                    this.perPage = parseInt(val, 10) || 30;
+                    this.currentPage = 1;
                 },
 
                 get inCount() {
@@ -2311,7 +2382,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        <template x-for="item in filteredRecords" :key="item.id">
+                        <template x-for="item in paginatedRecords" :key="item.id">
                             <tr class="hover:bg-indigo-50/40 transition cursor-pointer group" @click="openDetail(item)">
 
                                 <!-- Fecha y Tipo Movimiento -->
@@ -2441,14 +2512,92 @@
                 </table>
             </div>
 
-            <!-- Footer Informativo de la Tabla -->
-            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/90 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 rounded-b-3xl">
-                <div>
-                    Mostrando <strong class="text-[#0F172A]" x-text="filteredRecords.length"></strong> registros de <strong class="text-[#0F172A]" x-text="records.length"></strong> totales
+            <!-- Footer con Carrusel de Paginación y Selector Dinámico de Registros -->
+            <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200/90 flex flex-col lg:flex-row items-center justify-between gap-3 text-xs text-slate-500 rounded-b-3xl">
+                
+                <!-- Conteo y Selector de Tamaño de Vista (10, 20, 30 registros) -->
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div>
+                        Mostrando
+                        <span class="font-bold text-[#0F172A]" x-text="filteredRecords.length === 0 ? 0 : (currentPage - 1) * perPage + 1"></span>
+                        a
+                        <span class="font-bold text-[#0F172A]" x-text="Math.min(currentPage * perPage, filteredRecords.length)"></span>
+                        de
+                        <span class="font-bold text-[#0F172A]" x-text="filteredRecords.length"></span>
+                        movimientos
+                        <span x-show="filteredRecords.length !== records.length" class="text-slate-400 text-[11px]">
+                            (filtrados de <span x-text="records.length"></span> totales)
+                        </span>
+                    </div>
+
+                    <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+
+                    <!-- Selector de registros por carrusel -->
+                    <div class="flex items-center gap-1.5 text-[11px]">
+                        <span class="text-slate-400 font-medium">Ver por vista:</span>
+                        <div class="inline-flex rounded-lg border border-slate-200 bg-white p-0.5 shadow-2xs">
+                            <button type="button" @click="setPerPage(10)"
+                                    class="px-2 py-0.5 rounded-md font-bold transition cursor-pointer text-[10px]"
+                                    :class="perPage === 10 ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:text-[#4F46E5]'">10</button>
+                            <button type="button" @click="setPerPage(20)"
+                                    class="px-2 py-0.5 rounded-md font-bold transition cursor-pointer text-[10px]"
+                                    :class="perPage === 20 ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:text-[#4F46E5]'">20</button>
+                            <button type="button" @click="setPerPage(30)"
+                                    class="px-2 py-0.5 rounded-md font-bold transition cursor-pointer text-[10px]"
+                                    :class="perPage === 30 ? 'bg-[#4F46E5] text-white shadow-2xs' : 'text-slate-600 hover:text-[#4F46E5]'">30</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-[11px] text-slate-400">
+
+                <!-- Controles de Navegación del Carrusel (Anterior, Páginas numéricas, Siguiente) -->
+                <div class="flex items-center gap-1.5 flex-wrap justify-center" x-show="totalPages > 1">
+                    
+                    <!-- Botón Anterior -->
+                    <button type="button"
+                            @click="prevPage()"
+                            :disabled="currentPage === 1"
+                            class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-xs text-slate-700 flex items-center gap-1.5 transition shadow-2xs hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        <span>Anterior</span>
+                    </button>
+
+                    <!-- Números de Página Interactivos -->
+                    <div class="flex items-center gap-1">
+                        <template x-for="(p, idx) in pageNumbers" :key="idx">
+                            <span>
+                                <template x-if="p === '...'">
+                                    <span class="px-2 py-1 text-slate-400 font-bold select-none text-xs">…</span>
+                                </template>
+                                <template x-if="p !== '...'">
+                                    <button type="button"
+                                            @click="goToPage(p)"
+                                            class="w-7 h-7 rounded-lg text-xs font-bold transition flex items-center justify-center cursor-pointer"
+                                            :class="currentPage === p ? 'bg-[#4F46E5] text-white shadow-2xs' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'"
+                                            x-text="p"></button>
+                                </template>
+                            </span>
+                        </template>
+                    </div>
+
+                    <!-- Botón Siguiente -->
+                    <button type="button"
+                            @click="nextPage()"
+                            :disabled="currentPage === totalPages"
+                            class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-xs text-slate-700 flex items-center gap-1.5 transition shadow-2xs hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+
+                    <!-- Badge de Página -->
+                    <span class="ml-1 text-[11px] font-mono text-slate-400 font-semibold">
+                        (Pág. <span class="text-[#0F172A]" x-text="currentPage"></span>/<span x-text="totalPages"></span>)
+                    </span>
+                </div>
+
+                <div x-show="totalPages <= 1" class="text-[11px] text-slate-400">
                     Kardex inmutable sincronizado con Ledger Nacional Bolidrop
                 </div>
+
             </div>
 
             <!-- Modal de Trazabilidad 360° del Movimiento -->

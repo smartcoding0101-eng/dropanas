@@ -213,8 +213,9 @@ class PanelController extends Controller
                     'warehouse', 'product.provider', 'user', 'order.dropshipper', 'order.carrier',
                     'stockTransfer.fromWarehouse', 'stockTransfer.toWarehouse', 'stockTransfer.requester'
                 ])
-                ->latest('created_at')
-                ->limit(100)
+                ->orderByDesc('created_at')
+                ->orderByDesc('id')
+                ->limit(500)
                 ->get();
 
             // Transferencias entre bodegas de sus productos
