@@ -374,7 +374,8 @@
         .bg-white.rounded-2xl,
         .bg-white.rounded-3xl,
         .white-card {
-            animation: fadeUpSpring 0.55s var(--ease-spring) both;
+            /* 'backwards' evita dejar un transform residual que rompe los modales position:fixed */
+            animation: fadeUpSpring 0.55s var(--ease-spring) backwards;
         }
         .grid > div:nth-child(1) { animation-delay: 0.04s; }
         .grid > div:nth-child(2) { animation-delay: 0.10s; }
@@ -447,6 +448,19 @@
             transform: translateY(-4px);
             box-shadow: 0 18px 36px -8px rgba(15, 23, 42, 0.12), 0 6px 16px -3px rgba(79, 70, 229, 0.12);
             border-color: rgba(79, 70, 229, 0.42);
+        }
+
+        /* Guardia de modales: si una tarjeta contiene un modal fixed abierto, se anulan
+           transform/animación para que el modal se ancle al viewport y no a la tarjeta. */
+        .bg-white.rounded-2xl:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])),
+        .bg-white.rounded-3xl:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])),
+        .white-card:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])),
+        .kpi-card:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])),
+        .interactive-card:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])),
+        .card:has(.fixed.inset-0:not(.hidden):not([style*="display: none"])) {
+            transform: none !important;
+            animation: none !important;
+            filter: none !important;
         }
 
         /* 5. Button Shine Sweep, Ripple & Active Press Physics */

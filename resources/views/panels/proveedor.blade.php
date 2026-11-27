@@ -4330,6 +4330,7 @@
     <!-- ===================================================================== -->
     <!-- MODAL: REGISTRAR NUEVO PROVEEDOR MAYORISTA (SUPER ADMIN)              -->
     <!-- ===================================================================== -->
+    <template x-teleport="body">
     <div x-show="createProviderModalOpen" x-cloak
         class="fixed inset-0 z-[120] overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
         @click.self="createProviderModalOpen = false">
@@ -4437,6 +4438,7 @@
             </form>
         </div>
     </div>
+    </template>
     @endif
 
 </div>
