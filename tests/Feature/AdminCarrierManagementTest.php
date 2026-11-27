@@ -209,4 +209,59 @@ class AdminCarrierManagementTest extends TestCase
             'id' => $coverage->id,
         ]);
     }
+
+    public function test_admin_can_create_carrier_with_all_nine_departments_of_bolivia(): void
+    {
+        $payload = [
+            'name'            => 'Bolivia Post Total 9D',
+            'code'            => 'bolivia_post_9d',
+            'contact_name'    => 'Gerencia Nacional',
+            'contact_phone'   => '+591 71234567',
+            'contact_email'   => 'nacional@boliviapost.bo',
+            'has_cod_service' => '1',
+            'departments'     => [
+                'Santa Cruz' => ['enabled' => '1', 'city' => 'Santa Cruz de la Sierra', 'shipping_fee' => '18.00', 'delivery_days' => 1],
+                'La Paz'     => ['enabled' => '1', 'city' => 'La Paz / El Alto',        'shipping_fee' => '25.00', 'delivery_days' => 2],
+                'Cochabamba' => ['enabled' => '1', 'city' => 'Cochabamba',              'shipping_fee' => '22.00', 'delivery_days' => 2],
+                'Oruro'      => ['enabled' => '1', 'city' => 'Oruro',                   'shipping_fee' => '25.00', 'delivery_days' => 2],
+                'Potosí'     => ['enabled' => '1', 'city' => 'Potosí',                  'shipping_fee' => '28.00', 'delivery_days' => 3],
+                'Chuquisaca' => ['enabled' => '1', 'city' => 'Sucre',                   'shipping_fee' => '25.00', 'delivery_days' => 2],
+                'Tarija'     => ['enabled' => '1', 'city' => 'Tarija',                  'shipping_fee' => '28.00', 'delivery_days' => 2],
+                'Beni'       => ['enabled' => '1', 'city' => 'Trinidad',                'shipping_fee' => '30.00', 'delivery_days' => 3],
+                'Pando'      => ['enabled' => '1', 'city' => 'Cobija',                  'shipping_fee' => '35.00', 'delivery_days' => 4],
+            ],
+        ];
+
+        $response = $this->actingAs($this->admin)->post('/admin/carriers', $payload);
+        $response->assertSessionHas('success');
+
+        $carrier = Carrier::where('code', 'bolivia_post_9d')->first();
+        $this->assertNotNull($carrier);
+        $this->assertEquals('Bolivia Post Total 9D', $carrier->name);
+
+        // Verificar que los 9 departamentos fueron creados en carrier_coverages
+        $expectedDepartments = [
+            'Santa Cruz' => 18.00,
+            'La Paz'     => 25.00,
+            'Cochabamba' => 22.00,
+            'Oruro'      => 25.00,
+            'Potosí'     => 28.00,
+            'Chuquisaca' => 25.00,
+            'Tarija'     => 28.00,
+            'Beni'       => 30.00,
+            'Pando'      => 35.00,
+        ];
+
+        $coverages = CarrierCoverage::where('carrier_id', $carrier->id)->get();
+        $this->assertCount(9, $coverages);
+
+        foreach ($expectedDepartments as $dept => $fee) {
+            $this->assertDatabaseHas('carrier_coverages', [
+                'carrier_id'        => $carrier->id,
+                'department'        => $dept,
+                'base_shipping_bob' => $fee,
+                'is_active'         => true,
+            ]);
+        }
+    }
 }

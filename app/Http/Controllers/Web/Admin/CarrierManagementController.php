@@ -81,7 +81,9 @@ class CarrierManagementController extends Controller
             'contact_email'            => 'nullable|email|max:120',
             'has_cod_service'          => 'nullable|boolean',
             'integration_mode'         => 'nullable|string|in:manifest_file,b2b_webhook,direct_api',
-            // Tarifas iniciales opcionales
+            // Departamentos completos de Bolivia
+            'departments'              => 'nullable|array',
+            // Tarifas iniciales opcionales legadas
             'default_shipping_scz_bob' => 'nullable|numeric|min:0',
             'default_shipping_lpz_bob' => 'nullable|numeric|min:0',
             'default_shipping_cbb_bob' => 'nullable|numeric|min:0',
@@ -111,46 +113,72 @@ class CarrierManagementController extends Controller
             'is_active'        => true,
         ]);
 
-        // Crear coberturas base si se proporcionaron
-        if (!empty($validated['default_shipping_scz_bob'])) {
+        // 1. Procesar coberturas enviadas en el array de departamentos de Bolivia
+        if ($request->has('departments') && is_array($request->input('departments'))) {
+            foreach ($request->input('departments') as $depName => $depData) {
+                $isEnabled = !empty($depData['enabled']) && in_array($depData['enabled'], ['1', 1, true, 'true', 'on'], true);
+                $fee = isset($depData['shipping_fee']) && $depData['shipping_fee'] !== '' ? (float) $depData['shipping_fee'] : null;
+
+                if ($isEnabled && $fee !== null && $fee >= 0) {
+                    CarrierCoverage::updateOrCreate(
+                        [
+                            'tenant_id'  => $tenantId,
+                            'carrier_id' => $carrier->id,
+                            'department' => $depName,
+                        ],
+                        [
+                            'city'                    => !empty($depData['city']) ? $depData['city'] : $depName,
+                            'zone_type'               => $depData['zone_type'] ?? 'urban',
+                            'base_shipping_bob'       => $fee,
+                            'cod_fee_percentage'      => 0.00,
+                            'estimated_delivery_days' => (int) ($depData['delivery_days'] ?? 2),
+                            'is_active'               => true,
+                        ]
+                    );
+                }
+            }
+        }
+
+        // 2. Fallbacks para compatibilidad hacia atrás
+        if (!empty($validated['default_shipping_scz_bob']) && !$carrier->coverages()->where('department', 'Santa Cruz')->exists()) {
             CarrierCoverage::create([
-                'tenant_id'              => $tenantId,
-                'carrier_id'             => $carrier->id,
-                'department'             => 'Santa Cruz',
-                'city'                   => 'Santa Cruz de la Sierra',
-                'zone_type'              => 'urban',
-                'base_shipping_bob'      => (float) $validated['default_shipping_scz_bob'],
-                'cod_fee_percentage'     => 0.00,
-                'estimated_delivery_days'=> 1,
-                'is_active'              => true,
+                'tenant_id'               => $tenantId,
+                'carrier_id'              => $carrier->id,
+                'department'              => 'Santa Cruz',
+                'city'                    => 'Santa Cruz de la Sierra',
+                'zone_type'               => 'urban',
+                'base_shipping_bob'       => (float) $validated['default_shipping_scz_bob'],
+                'cod_fee_percentage'      => 0.00,
+                'estimated_delivery_days' => 1,
+                'is_active'               => true,
             ]);
         }
 
-        if (!empty($validated['default_shipping_lpz_bob'])) {
+        if (!empty($validated['default_shipping_lpz_bob']) && !$carrier->coverages()->where('department', 'La Paz')->exists()) {
             CarrierCoverage::create([
-                'tenant_id'              => $tenantId,
-                'carrier_id'             => $carrier->id,
-                'department'             => 'La Paz',
-                'city'                   => 'La Paz / El Alto',
-                'zone_type'              => 'urban',
-                'base_shipping_bob'      => (float) $validated['default_shipping_lpz_bob'],
-                'cod_fee_percentage'     => 0.00,
-                'estimated_delivery_days'=> 2,
-                'is_active'              => true,
+                'tenant_id'               => $tenantId,
+                'carrier_id'              => $carrier->id,
+                'department'              => 'La Paz',
+                'city'                    => 'La Paz / El Alto',
+                'zone_type'               => 'urban',
+                'base_shipping_bob'       => (float) $validated['default_shipping_lpz_bob'],
+                'cod_fee_percentage'      => 0.00,
+                'estimated_delivery_days' => 2,
+                'is_active'               => true,
             ]);
         }
 
-        if (!empty($validated['default_shipping_cbb_bob'])) {
+        if (!empty($validated['default_shipping_cbb_bob']) && !$carrier->coverages()->where('department', 'Cochabamba')->exists()) {
             CarrierCoverage::create([
-                'tenant_id'              => $tenantId,
-                'carrier_id'             => $carrier->id,
-                'department'             => 'Cochabamba',
-                'city'                   => 'Cochabamba',
-                'zone_type'              => 'urban',
-                'base_shipping_bob'      => (float) $validated['default_shipping_cbb_bob'],
-                'cod_fee_percentage'     => 0.00,
-                'estimated_delivery_days'=> 2,
-                'is_active'              => true,
+                'tenant_id'               => $tenantId,
+                'carrier_id'              => $carrier->id,
+                'department'              => 'Cochabamba',
+                'city'                    => 'Cochabamba',
+                'zone_type'               => 'urban',
+                'base_shipping_bob'       => (float) $validated['default_shipping_cbb_bob'],
+                'cod_fee_percentage'      => 0.00,
+                'estimated_delivery_days' => 2,
+                'is_active'               => true,
             ]);
         }
 

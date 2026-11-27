@@ -282,7 +282,7 @@
     <!-- ========================================================================= -->
     <div x-show="createModalOpen" x-cloak
         class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-5 md:p-6 py-6 sm:py-8">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative"
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative max-h-[92vh] overflow-y-auto"
              @click.away="createModalOpen = false">
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -345,30 +345,75 @@
                     </label>
                 </div>
 
-                <!-- Tarifas Base Iniciales Eje Troncal (Opcionales para ahorrar tiempo) -->
-                <div class="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-2.5">
-                    <div class="font-bold text-slate-800 flex items-center gap-1.5">
-                        <i class="fa-solid fa-bolt text-amber-500"></i>
-                        <span>Tarifas de Flete Iniciales Eje Troncal (Opcional):</span>
+                <!-- Coberturas y Tarifas de Flete en los 9 Departamentos de Bolivia -->
+                <div class="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100/70 pb-2.5">
+                        <div>
+                            <div class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-map-location-dot text-indigo-600"></i>
+                                <span>Tarifas de Flete en los 9 Departamentos de Bolivia</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Marca los departamentos que cubre esta empresa e indica el costo de flete en Bolivianos (BOB).</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button type="button" @click="selectAllDepartments(true)"
+                                class="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-700 font-bold text-[10px] transition cursor-pointer">
+                                <i class="fa-solid fa-check-double mr-1"></i> Todos (9)
+                            </button>
+                            <button type="button" @click="selectTroncalOnly()"
+                                class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition cursor-pointer">
+                                Eje Troncal (3)
+                            </button>
+                            <button type="button" @click="selectAllDepartments(false)"
+                                class="px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 font-medium text-[10px] transition cursor-pointer">
+                                Desmarcar
+                            </button>
+                        </div>
                     </div>
-                    <p class="text-[11px] text-slate-500">Fija el costo de envío estándar en BOB que se cobrará al dropshipper al generar órdenes.</p>
-                    
-                    <div class="grid grid-cols-3 gap-2.5 pt-1">
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1">Santa Cruz (Bs):</label>
-                            <input type="number" step="0.5" name="default_shipping_scz_bob" placeholder="18.00" value="18.00"
-                                class="w-full p-2 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono font-bold text-center focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1">La Paz (Bs):</label>
-                            <input type="number" step="0.5" name="default_shipping_lpz_bob" placeholder="25.00" value="25.00"
-                                class="w-full p-2 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono font-bold text-center focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1">Cochabamba (Bs):</label>
-                            <input type="number" step="0.5" name="default_shipping_cbb_bob" placeholder="22.00" value="22.00"
-                                class="w-full p-2 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono font-bold text-center focus:outline-none focus:border-indigo-500">
-                        </div>
+
+                    <!-- Grilla de los 9 Departamentos -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                        <template x-for="dep in departmentsList" :key="dep.name">
+                            <div class="p-2.5 rounded-xl border transition"
+                                 :class="dep.enabled ? 'bg-white border-indigo-200 shadow-2xs' : 'bg-slate-100/70 border-slate-200 opacity-60'">
+                                
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                                        <input type="checkbox" :name="'departments[' + dep.name + '][enabled]'" value="1"
+                                            x-model="dep.enabled"
+                                            class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                        <span class="font-extrabold text-xs text-slate-900" x-text="dep.name"></span>
+                                    </label>
+                                    <span class="text-[10px] font-mono text-slate-400" x-text="dep.city"></span>
+                                </div>
+
+                                <input type="hidden" :name="'departments[' + dep.name + '][city]'" :value="dep.city">
+                                <input type="hidden" :name="'departments[' + dep.name + '][zone_type]'" value="urban">
+
+                                <div class="grid grid-cols-2 gap-1.5 pt-1" x-show="dep.enabled">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Flete (BOB):</label>
+                                        <div class="relative">
+                                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold font-mono">Bs</span>
+                                            <input type="number" step="0.5" :name="'departments[' + dep.name + '][shipping_fee]'"
+                                                x-model.number="dep.fee" min="0" placeholder="20.00"
+                                                class="w-full pl-6 pr-2 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 font-mono font-extrabold text-xs text-center focus:bg-white focus:outline-none focus:border-indigo-500">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Entrega:</label>
+                                        <select :name="'departments[' + dep.name + '][delivery_days]'" x-model.number="dep.days"
+                                            class="w-full p-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 text-[11px] font-semibold focus:bg-white focus:outline-none focus:border-indigo-500">
+                                            <option value="1">1 día</option>
+                                            <option value="2">2 días</option>
+                                            <option value="3">3 días</option>
+                                            <option value="4">4 días</option>
+                                            <option value="5">5 días</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
@@ -568,6 +613,27 @@ function carrierManager() {
         coverageForm: {
             department: 'Santa Cruz',
             city: 'Santa Cruz de la Sierra'
+        },
+
+        departmentsList: [
+            { name: 'Santa Cruz', city: 'Santa Cruz de la Sierra', fee: 18.00, days: 1, enabled: true },
+            { name: 'La Paz', city: 'La Paz / El Alto', fee: 25.00, days: 2, enabled: true },
+            { name: 'Cochabamba', city: 'Cochabamba', fee: 22.00, days: 2, enabled: true },
+            { name: 'Oruro', city: 'Oruro', fee: 25.00, days: 2, enabled: true },
+            { name: 'Potosí', city: 'Potosí', fee: 28.00, days: 3, enabled: true },
+            { name: 'Chuquisaca', city: 'Sucre', fee: 25.00, days: 2, enabled: true },
+            { name: 'Tarija', city: 'Tarija', fee: 28.00, days: 2, enabled: true },
+            { name: 'Beni', city: 'Trinidad', fee: 30.00, days: 3, enabled: true },
+            { name: 'Pando', city: 'Cobija', fee: 35.00, days: 4, enabled: true }
+        ],
+
+        selectAllDepartments(enabled) {
+            this.departmentsList.forEach(d => d.enabled = enabled);
+        },
+
+        selectTroncalOnly() {
+            const troncal = ['Santa Cruz', 'La Paz', 'Cochabamba'];
+            this.departmentsList.forEach(d => d.enabled = troncal.includes(d.name));
         },
 
         openCreateModal() {
