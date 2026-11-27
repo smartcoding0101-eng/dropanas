@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
+use App\Services\Finance\WalletWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WalletController extends Controller
 {
+    public function __construct(
+        protected WalletWithdrawalService $withdrawalService
+    ) {}
     /**
      * Consulta el estado de la billetera del usuario autenticado (Disponible, Retenido, Retirado).
      */
@@ -73,50 +77,37 @@ class WalletController extends Controller
 
         $amount = (float) $validated['amount'];
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $amount, $validated): JsonResponse {
-            $wallet = Wallet::where('user_id', $user->id)
-                ->where('currency', 'BOB')
-                ->lockForUpdate()
-                ->firstOrFail();
+        $payoutData = [
+            'payout_method'    => $validated['payout_method'],
+            'beneficiary_name' => $validated['account_details']['beneficiary_name'],
+            'document_id'      => $validated['account_details']['document_id'],
+            'bank_name'        => $validated['account_details']['bank_name'] ?? null,
+            'account_number'   => $validated['account_details']['account_number'] ?? null,
+            'binance_pay_id'   => $validated['account_details']['binance_pay_id'] ?? null,
+        ];
 
-            if ((float) $wallet->balance_available < $amount) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Saldo disponible insuficiente para realizar el retiro.',
-                    'balance_available' => (float) $wallet->balance_available,
-                    'requested_amount' => $amount,
-                ], 422);
-            }
-
-            $wallet->balance_available -= $amount;
-            $wallet->balance_withdrawn += $amount;
-            $wallet->save();
-
-            $transaction = WalletTransaction::create([
-                'tenant_id' => $user->tenant_id,
-                'wallet_id' => $wallet->id,
-                'transaction_type' => 'withdrawal_request',
-                'amount' => -$amount,
-                'balance_after' => $wallet->balance_available,
-                'reference_type' => 'withdrawal_request',
-                'reference_id' => null,
-                'description' => "Solicitud de retiro de fondos ({$validated['payout_method']})",
-                'metadata' => [
-                    'payout_method' => $validated['payout_method'],
-                    'details' => $validated['account_details'],
-                    'status' => 'pending_payout',
-                ],
-            ]);
+        try {
+            $withdrawal = $this->withdrawalService->requestWithdrawal(
+                $user,
+                $amount,
+                $payoutData,
+                $request->file('qr_code')
+            );
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Solicitud de retiro procesada correctamente.',
-                'data' => [
-                    'transaction' => $transaction,
-                    'wallet' => $wallet->fresh(),
+                'data'    => [
+                    'withdrawal' => $withdrawal,
+                    'wallet'     => Wallet::where('user_id', $user->id)->where('currency', 'BOB')->first(),
                 ],
             ], 201);
-        });
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 }
 

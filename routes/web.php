@@ -148,12 +148,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export',  [\App\Http\Controllers\Web\Admin\KardexController::class, 'export'])->name('export');
     });
 
-    // Historial y Validación de Solicitudes de Recarga (Ruta y Menú Independiente Administrador)
+    // Historial y Validación de Solicitudes de Recarga y Retiro (Ruta y Menú Independiente Administrador)
     Route::middleware(['admin'])->prefix('admin/recargas')->name('admin.recargas.')->group(function () {
-        Route::get('/',              [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'index'])         ->name('index');
-        Route::post('/{id}/approve', [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'approve'])       ->name('approve');
-        Route::post('/{id}/reject',  [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'reject'])        ->name('reject');
-        Route::post('/settings',     [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/',                          [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'index'])            ->name('index');
+        Route::post('/{id}/approve',             [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'approve'])          ->name('approve');
+        Route::post('/{id}/reject',              [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'reject'])           ->name('reject');
+        Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'approveWithdrawal'])->name('withdrawals.approve');
+        Route::post('/withdrawals/{id}/reject',  [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'rejectWithdrawal']) ->name('withdrawals.reject');
+        Route::post('/settings',                 [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'updateSettings'])   ->name('settings.update');
     });
 
     // Configuración Manual o Sincronización de Tipo de Cambio BCB (Admin)

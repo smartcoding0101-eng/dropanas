@@ -668,6 +668,32 @@
                     <input type="text" x-model="form.account_details.binance_pay_id" placeholder="Ej: 123456789 o correo@ejemplo.com"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs focus:outline-none focus:border-emerald-500">
                 </div>
+
+                <!-- Adjuntar Código QR de Cobro Personal -->
+                <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-3.5 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-qrcode text-indigo-600 text-sm"></i>
+                            Adjuntar tu Código QR de Cobro (Recomendado):
+                        </label>
+                        <span class="text-[10px] font-bold text-indigo-700 bg-indigo-100/70 px-2 py-0.5 rounded-full uppercase">QR Simple Bolivia</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="file" id="withdrawal_qr_input" @change="previewWithdrawalQr($event)" accept="image/png,image/jpeg,image/webp"
+                            class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                        <template x-if="qrPreviewUrl">
+                            <div class="relative shrink-0">
+                                <img :src="qrPreviewUrl" class="w-12 h-12 object-contain rounded-xl border-2 border-indigo-300 bg-white shadow-sm" alt="Preview QR">
+                                <button type="button" @click="clearWithdrawalQr()" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                        Sube la captura de tu QR bancario (BCP, BNB, Banco Unión, Bisa, Mercantil, Ganadero). El administrador lo escaneará para transferir tus fondos de forma ágil y segura.
+                    </p>
+                </div>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -684,6 +710,7 @@
             </div>
 
         </div>
+    </div>
 
     <!-- MODAL INTERACTIVO: CONECTAR TIENDA SHOPIFY O WOOCOMMERCE -->
     <div x-show="integrationModalOpen" x-cloak
@@ -780,6 +807,8 @@ function dropshipperDashboard() {
             store_url: '',
             auto_dispatch: false
         },
+        qrPreviewUrl: null,
+        qrFile: null,
         form: {
             amount: 50,
             payout_method: 'qr_simple',
@@ -790,6 +819,21 @@ function dropshipperDashboard() {
                 account_number: '150-098765-01',
                 binance_pay_id: ''
             }
+        },
+
+        previewWithdrawalQr(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.qrFile = file;
+                this.qrPreviewUrl = URL.createObjectURL(file);
+            }
+        },
+
+        clearWithdrawalQr() {
+            this.qrFile = null;
+            this.qrPreviewUrl = null;
+            const input = document.getElementById('withdrawal_qr_input');
+            if (input) input.value = '';
         },
 
         showToast(message, type = 'success') {
@@ -831,19 +875,36 @@ function dropshipperDashboard() {
         },
 
         async submitWithdraw() {
+            if (this.form.amount < 10) {
+                this.showToast('El monto mínimo para retiro es de Bs 10.00', 'error');
+                return;
+            }
+
             this.submitting = true;
 
             try {
-                const token = '{{ $apiToken ?? "" }}';
+                const formData = new FormData();
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('amount', this.form.amount);
+                formData.append('payout_method', this.form.payout_method);
+                formData.append('beneficiary_name', this.form.account_details.beneficiary_name || '');
+                formData.append('document_id', this.form.account_details.document_id || '');
+                formData.append('bank_name', this.form.account_details.bank_name || '');
+                formData.append('account_number', this.form.account_details.account_number || '');
+                formData.append('binance_pay_id', this.form.account_details.binance_pay_id || '');
 
-                const response = await fetch('/api/v1/wallet/withdraw', {
+                const qrInput = document.getElementById('withdrawal_qr_input');
+                if (qrInput && qrInput.files[0]) {
+                    formData.append('qr_code', qrInput.files[0]);
+                }
+
+                const response = await fetch('{{ route("wallet.withdraw") }}', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify(this.form)
+                    body: formData
                 });
 
                 const result = await response.json();
@@ -853,7 +914,7 @@ function dropshipperDashboard() {
                     this.withdrawModalOpen = false;
                     setTimeout(() => { window.location.reload(); }, 1500);
                 } else {
-                    this.showToast(result.message || 'Error al procesar retiro.', 'error');
+                    this.showToast(result.message || (result.errors ? Object.values(result.errors)[0][0] : 'Error al procesar retiro.'), 'error');
                 }
             } catch (err) {
                 this.showToast('Error de conexión con el servidor.', 'error');

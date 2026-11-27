@@ -9,8 +9,10 @@ use App\Models\Order;
 use App\Models\Wallet;
 use App\Models\WalletTopup;
 use App\Models\WalletTransaction;
+use App\Models\WalletWithdrawal;
 use App\Services\Finance\CarrierSettlementService;
 use App\Services\Finance\WalletTopupService;
+use App\Services\Finance\WalletWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +23,8 @@ class FintechWalletController extends Controller
 {
     public function __construct(
         protected WalletTopupService $topupService,
-        protected CarrierSettlementService $carrierSettlementService
+        protected CarrierSettlementService $carrierSettlementService,
+        protected WalletWithdrawalService $withdrawalService
     ) {}
 
     /**
@@ -282,70 +285,70 @@ class FintechWalletController extends Controller
     }
 
     /**
-     * Vendedor o Proveedor solicita retiro de saldo a su cuenta bancaria personal.
+     * Vendedor o Proveedor solicita retiro de saldo a su cuenta bancaria o QR Simple.
      */
     public function submitWithdrawal(Request $request): JsonResponse|RedirectResponse
     {
         $user = Auth::user();
 
+        // Normalizar estructura si los campos vienen agrupados o planos
+        $beneficiaryName = $request->input('beneficiary_name') 
+            ?? $request->input('account_holder') 
+            ?? $request->input('account_details.beneficiary_name')
+            ?? $user->name;
+
+        $documentId = $request->input('document_id') 
+            ?? $request->input('account_details.document_id');
+
+        $bankName = $request->input('bank_name') 
+            ?? $request->input('account_details.bank_name');
+
+        $accountNumber = $request->input('account_number') 
+            ?? $request->input('account_details.account_number');
+
+        $binancePayId = $request->input('binance_pay_id') 
+            ?? $request->input('account_details.binance_pay_id');
+
         $validated = $request->validate([
-            'amount'          => 'required|numeric|min:1',
-            'bank_name'       => 'required|string|max:100',
-            'account_number'  => 'required|string|max:60',
-            'account_holder'  => 'required|string|max:150',
-            'document_id'     => 'nullable|string|max:30',
-            'notes'           => 'nullable|string|max:255',
+            'amount'           => 'required|numeric|min:10',
+            'payout_method'    => 'nullable|string|in:qr_simple,bank_transfer,binance_pay',
+            'qr_code'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         $amount = (float) $validated['amount'];
+        $payoutMethod = $validated['payout_method'] ?? 'qr_simple';
 
-        return DB::transaction(function () use ($user, $amount, $validated, $request) {
-            $wallet = Wallet::where('user_id', $user->id)
-                ->where('tenant_id', $user->tenant_id)
-                ->where('currency', 'BOB')
-                ->lockForUpdate()
-                ->firstOrFail();
+        $payoutData = [
+            'payout_method'    => $payoutMethod,
+            'beneficiary_name' => $beneficiaryName,
+            'document_id'      => $documentId,
+            'bank_name'        => $bankName,
+            'account_number'   => $accountNumber,
+            'binance_pay_id'   => $binancePayId,
+        ];
 
-            if ((float) $wallet->balance_available < $amount) {
-                $errorMsg = "Saldo insuficiente. Disponible: Bs. {$wallet->balance_available}, solicitado: Bs. {$amount}.";
-                if ($request->wantsJson()) {
-                    return response()->json(['status' => 'error', 'message' => $errorMsg], 422);
-                }
-                return back()->withErrors(['error' => $errorMsg]);
-            }
-
-            // Debitar saldo de la billetera
-            $wallet->balance_available -= $amount;
-            $wallet->balance_withdrawn += $amount;
-            $wallet->save();
-
-            // Registrar transacción en el Ledger
-            $tx = WalletTransaction::create([
-                'tenant_id'        => $user->tenant_id,
-                'wallet_id'        => $wallet->id,
-                'transaction_type' => 'withdrawal',
-                'amount'           => -$amount,
-                'balance_after'    => $wallet->balance_available,
-                'reference_type'   => 'withdrawal_request',
-                'description'      => "Solicitud de retiro bancario a {$validated['bank_name']} (Cta: {$validated['account_number']})",
-                'notes'            => "Titular: {$validated['account_holder']} — " . ($validated['notes'] ?? ''),
-                'metadata'         => [
-                    'bank_name'      => $validated['bank_name'],
-                    'account_number' => $validated['account_number'],
-                    'account_holder' => $validated['account_holder'],
-                    'document_id'    => $validated['document_id'] ?? null,
-                ],
-            ]);
+        try {
+            $withdrawal = $this->withdrawalService->requestWithdrawal(
+                $user,
+                $amount,
+                $payoutData,
+                $request->file('qr_code')
+            );
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'status'  => 'success',
-                    'message' => "Solicitud de retiro por Bs. {$amount} enviada al Administrador para transferencia bancaria.",
-                    'data'    => $tx,
+                    'message' => "Solicitud de retiro #{$withdrawal->withdrawal_number} por Bs. " . number_format($amount, 2) . " enviada. Tus fondos fueron congelados de forma segura y el Administrador fue notificado para realizar la transferencia.",
+                    'data'    => $withdrawal,
                 ]);
             }
 
-            return back()->with('success', "Solicitud de retiro por Bs. {$amount} enviada correctamente. El administrador realizará la transferencia a tu cuenta bancaria.");
-        });
+            return back()->with('success', "Solicitud de retiro #{$withdrawal->withdrawal_number} por Bs. " . number_format($amount, 2) . " enviada exitosamente. Tu saldo fue congelado y se notificó al Administrador para procesar el desembolso.");
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
+            }
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }
