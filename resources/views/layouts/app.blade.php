@@ -1006,6 +1006,10 @@
                         <div class="sidebar-heading px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Logística & Operaciones
                         </div>
+                        <a href="{{ route('admin.carriers.index') }}" title="Transportadoras & Coberturas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('admin/carriers*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <i class="fa-solid fa-truck-fast w-4 text-center {{ request()->is('admin/carriers*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                            <span>Transportadoras & Coberturas</span>
+                        </a>
                         <a href="{{ route('admin.kardex.index') }}" title="Kardex Global & Stock" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-clipboard-list w-4 text-center {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Kardex Global & Stock</span>

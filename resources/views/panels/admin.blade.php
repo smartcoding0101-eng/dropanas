@@ -281,6 +281,13 @@
                         <i class="fa-solid fa-chart-pie text-[10px] text-purple-300"></i>
                     </a>
                 </div>
+                <div class="pt-1">
+                    <a href="{{ route('admin.carriers.index') }}"
+                        class="w-full py-1.5 px-2.5 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-truck-fast text-sky-300 text-[11px]"></i>
+                        <span>Gestionar Couriers & Coberturas</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

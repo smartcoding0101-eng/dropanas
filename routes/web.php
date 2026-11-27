@@ -158,6 +158,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/settings',                 [\App\Http\Controllers\Web\Admin\TopupManagementController::class, 'updateSettings'])   ->name('settings.update');
     });
 
+    // Gestión de Transportadoras & Coberturas COD Bolivia (Administración Central)
+    Route::middleware(['admin'])->prefix('admin/carriers')->name('admin.carriers.')->group(function () {
+        Route::get('/',                          [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'index'])          ->name('index');
+        Route::post('/',                         [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'store'])          ->name('store');
+        Route::put('/{id}',                      [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'update'])         ->name('update');
+        Route::post('/{id}/toggle-status',       [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'toggleStatus'])   ->name('toggle_status');
+        Route::post('/{id}/coverages',           [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'storeCoverage'])  ->name('coverages.store');
+        Route::delete('/coverages/{coverageId}', [\App\Http\Controllers\Web\Admin\CarrierManagementController::class, 'deleteCoverage']) ->name('coverages.delete');
+    });
+
     // Configuración Manual o Sincronización de Tipo de Cambio BCB (Admin)
     Route::post('/panel/admin/exchange-rate', [PanelController::class, 'updateExchangeRate'])->name('admin.exchange-rate.update');
 

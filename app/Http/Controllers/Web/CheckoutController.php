@@ -48,7 +48,7 @@ class CheckoutController extends Controller
         })->values();
 
         $warehouses = Warehouse::where('is_active', true)->get();
-        $carriers   = Carrier::where('has_cod_service', true)->get();
+        $carriers   = Carrier::where('has_cod_service', true)->where('is_active', true)->get();
 
         $selectedProduct = null;
         if ($request->filled('product_id')) {
