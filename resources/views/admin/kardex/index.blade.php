@@ -102,78 +102,132 @@
     </div>
 
     <!-- 2. Filtros de Búsqueda y Navegación -->
-    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <form method="GET" action="{{ route('admin.kardex.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
-            <!-- Bodega -->
-            <div>
-                <label class="block font-bold text-slate-600 mb-1">Bodega / Almacén</label>
-                <select name="warehouse_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
-                    <option value="">— Todas las Bodegas —</option>
-                    @foreach($warehouses as $wh)
-                    <option value="{{ $wh->id }}" {{ request('warehouse_id') == $wh->id ? 'selected' : '' }}>
-                        {{ $wh->name }} ({{ $wh->city }})
-                    </option>
-                    @endforeach
-                </select>
+    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+        <form method="GET" action="{{ route('admin.kardex.index') }}" class="space-y-3 text-xs">
+            
+            <!-- Fila 1: Bodega, Producto, Flujo y Vendedor / Usuario -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Bodega -->
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Bodega / Almacén</label>
+                    <select name="warehouse_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                        <option value="">— Todas las Bodegas —</option>
+                        @foreach($warehouses as $wh)
+                        <option value="{{ $wh->id }}" {{ request('warehouse_id') == $wh->id ? 'selected' : '' }}>
+                            {{ $wh->name }} ({{ $wh->city }})
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Producto -->
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Producto</label>
+                    <select name="product_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                        <option value="">— Todos los Productos —</option>
+                        @foreach($products as $p)
+                        <option value="{{ $p->id }}" {{ request('product_id') == $p->id ? 'selected' : '' }}>
+                            {{ $p->name }} [{{ $p->sku }}]
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Tipo de Movimiento -->
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Tipo de Movimiento</label>
+                    <select name="movement_type" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                        <option value="">— Todos los Flujos —</option>
+                        <option value="opening_balance" {{ request('movement_type') == 'opening_balance' ? 'selected' : '' }}>Saldo de Apertura</option>
+                        <option value="purchase_receipt" {{ request('movement_type') == 'purchase_receipt' ? 'selected' : '' }}>Ingreso por Compra (PO)</option>
+                        <option value="sale_reservation" {{ request('movement_type') == 'sale_reservation' ? 'selected' : '' }}>Reserva por Venta COD</option>
+                        <option value="sale_dispatch" {{ request('movement_type') == 'sale_dispatch' ? 'selected' : '' }}>Salida Pedido Entregado</option>
+                        <option value="order_cancellation" {{ request('movement_type') == 'order_cancellation' ? 'selected' : '' }}>Cancelación de Pedido</option>
+                        <option value="order_annulment" {{ request('movement_type') == 'order_annulment' ? 'selected' : '' }}>Anulación por Administrador</option>
+                        <option value="return_restock" {{ request('movement_type') == 'return_restock' ? 'selected' : '' }}>Devolución Apta (Reingreso)</option>
+                        <option value="return_damaged" {{ request('movement_type') == 'return_damaged' ? 'selected' : '' }}>Devolución Dañada (Merma)</option>
+                        <option value="transfer_out" {{ request('movement_type') == 'transfer_out' ? 'selected' : '' }}>Transferencia (Salida Origen)</option>
+                        <option value="transfer_in" {{ request('movement_type') == 'transfer_in' ? 'selected' : '' }}>Transferencia (Entrada Destino)</option>
+                        <option value="audit_adjustment_in" {{ request('movement_type') == 'audit_adjustment_in' ? 'selected' : '' }}>Ajuste Positivo Auditoría</option>
+                        <option value="audit_adjustment_out" {{ request('movement_type') == 'audit_adjustment_out' ? 'selected' : '' }}>Ajuste Negativo Auditoría</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Usuario / Vendedor Dropshipper -->
+                <div>
+                    <label class="block font-bold text-emerald-800 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-store text-emerald-600"></i>
+                        <span>Vendedor Dropshipper / Usuario</span>
+                    </label>
+                    <select name="user_id" class="w-full border border-emerald-200 bg-emerald-50/40 rounded-xl px-3 py-2 text-slate-800 font-semibold focus:bg-white outline-none">
+                        <option value="">— Todos los Vendedores y Operadores —</option>
+                        <optgroup label="Vendedores Dropshippers">
+                            @foreach($dropshippers as $seller)
+                            <option value="{{ $seller->id }}" {{ request('user_id') == $seller->id ? 'selected' : '' }}>
+                                {{ $seller->name }} ({{ $seller->company_or_store_name ?? 'Tienda COD' }})
+                            </option>
+                            @endforeach
+                        </optgroup>
+                        @if(isset($operators) && $operators->count() > 0)
+                        <optgroup label="Operadores y Administradores">
+                            @foreach($operators as $op)
+                            <option value="{{ $op->id }}" {{ request('user_id') == $op->id ? 'selected' : '' }}>
+                                {{ $op->name }} ({{ ucfirst(str_replace('_', ' ', $op->role)) }})
+                            </option>
+                            @endforeach
+                        </optgroup>
+                        @endif
+                    </select>
+                </div>
             </div>
 
-            <!-- Producto -->
-            <div>
-                <label class="block font-bold text-slate-600 mb-1">Producto</label>
-                <select name="product_id" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
-                    <option value="">— Todos los Productos —</option>
-                    @foreach($products as $p)
-                    <option value="{{ $p->id }}" {{ request('product_id') == $p->id ? 'selected' : '' }}>
-                        {{ $p->name }} [{{ $p->sku }}]
-                    </option>
-                    @endforeach
-                </select>
-            </div>
+            <!-- Fila 2: Comprador Final, Fechas y Búsqueda General -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+                <!-- Filtro por Comprador (Cliente Final) (3 cols) -->
+                <div class="lg:col-span-3">
+                    <label class="block font-bold text-indigo-900 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-tag text-indigo-600"></i>
+                        <span>Comprador (Cliente Final)</span>
+                    </label>
+                    <input type="text" name="customer" value="{{ request('customer') }}"
+                           placeholder="Nombre, Teléfono o CI del cliente..."
+                           class="w-full border border-indigo-200 bg-indigo-50/30 rounded-xl px-3 py-2 text-slate-800 placeholder-slate-400 focus:bg-white outline-none">
+                </div>
 
-            <!-- Tipo de Movimiento -->
-            <div>
-                <label class="block font-bold text-slate-600 mb-1">Tipo de Movimiento</label>
-                <select name="movement_type" class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
-                    <option value="">— Todos los Flujos —</option>
-                    <option value="opening_balance" {{ request('movement_type') == 'opening_balance' ? 'selected' : '' }}>Saldo de Apertura</option>
-                    <option value="purchase_receipt" {{ request('movement_type') == 'purchase_receipt' ? 'selected' : '' }}>Ingreso por Compra (PO)</option>
-                    <option value="sale_reservation" {{ request('movement_type') == 'sale_reservation' ? 'selected' : '' }}>Reserva por Venta COD</option>
-                    <option value="sale_dispatch" {{ request('movement_type') == 'sale_dispatch' ? 'selected' : '' }}>Salida Pedido Entregado</option>
-                    <option value="order_cancellation" {{ request('movement_type') == 'order_cancellation' ? 'selected' : '' }}>Cancelación de Pedido</option>
-                    <option value="order_annulment" {{ request('movement_type') == 'order_annulment' ? 'selected' : '' }}>Anulación por Administrador</option>
-                    <option value="return_restock" {{ request('movement_type') == 'return_restock' ? 'selected' : '' }}>Devolución Apta (Reingreso)</option>
-                    <option value="return_damaged" {{ request('movement_type') == 'return_damaged' ? 'selected' : '' }}>Devolución Dañada (Merma)</option>
-                    <option value="transfer_out" {{ request('movement_type') == 'transfer_out' ? 'selected' : '' }}>Transferencia (Salida Origen)</option>
-                    <option value="transfer_in" {{ request('movement_type') == 'transfer_in' ? 'selected' : '' }}>Transferencia (Entrada Destino)</option>
-                    <option value="audit_adjustment_in" {{ request('movement_type') == 'audit_adjustment_in' ? 'selected' : '' }}>Ajuste Positivo Auditoría</option>
-                    <option value="audit_adjustment_out" {{ request('movement_type') == 'audit_adjustment_out' ? 'selected' : '' }}>Ajuste Negativo Auditoría</option>
-                </select>
-            </div>
+                <!-- Rango Desde (2 cols) -->
+                <div class="lg:col-span-2">
+                    <label class="block font-bold text-slate-600 mb-1">Desde Fecha</label>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                </div>
 
-            <!-- Rango Desde -->
-            <div>
-                <label class="block font-bold text-slate-600 mb-1">Desde Fecha</label>
-                <input type="date" name="date_from" value="{{ request('date_from') }}"
-                       class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
-            </div>
+                <!-- Rango Hasta (2 cols) -->
+                <div class="lg:col-span-2">
+                    <label class="block font-bold text-slate-600 mb-1">Hasta Fecha</label>
+                    <input type="date" name="date_to" value="{{ request('date_to') }}"
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                </div>
 
-            <!-- Rango Hasta -->
-            <div>
-                <label class="block font-bold text-slate-600 mb-1">Hasta Fecha</label>
-                <input type="date" name="date_to" value="{{ request('date_to') }}"
-                       class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
-            </div>
+                <!-- Búsqueda General / Nro Doc / Glosa (3 cols) -->
+                <div class="lg:col-span-3">
+                    <label class="block font-bold text-slate-600 mb-1">Buscar Documento / Glosa</label>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           placeholder="Doc ref, guía, observación..."
+                           class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
+                </div>
 
-            <input type="hidden" name="per_page" value="{{ $perPage ?? 30 }}">
+                <input type="hidden" name="per_page" value="{{ $perPage ?? 30 }}">
 
-            <!-- Botones -->
-            <div class="flex items-end gap-2">
-                <button type="submit" class="btn-scarlet px-4 py-2 rounded-xl text-white font-bold flex-1 shadow-xs">
-                    <i class="fa-solid fa-filter mr-1"></i> Filtrar
-                </button>
-                <a href="{{ route('admin.kardex.index') }}" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold" title="Limpiar Filtros">
-                    <i class="fa-solid fa-rotate-left"></i>
-                </a>
+                <!-- Botones Filtrar y Limpiar (2 cols) -->
+                <div class="lg:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn-scarlet px-4 py-2 rounded-xl text-white font-bold flex-1 shadow-xs h-[38px] flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-filter"></i>
+                        <span>Filtrar</span>
+                    </button>
+                    <a href="{{ route('admin.kardex.index') }}" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold h-[38px] flex items-center justify-center transition cursor-pointer" title="Limpiar Filtros">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
             </div>
         </form>
     </div>
@@ -222,7 +276,7 @@
                         <th class="py-3.5 px-4 text-right">Total Costo</th>
                         <th class="py-3.5 px-4 text-center">Saldo Físico</th>
                         <th class="py-3.5 px-4 text-center">Saldo Disp.</th>
-                        <th class="py-3.5 px-4">Operador / Glosa</th>
+                        <th class="py-3.5 px-4">Intervinientes (Vendedor / Comprador / Operador)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -329,13 +383,45 @@
                             <strong class="text-emerald-700">{{ $row->stock_available_after }}</strong>
                         </td>
 
-                        <!-- Usuario & Notas -->
-                        <td class="py-3 px-4 max-w-xs">
-                            <div class="text-[11px] font-semibold text-slate-800 truncate" title="{{ $row->notes }}">
+                        <!-- Usuario, Vendedor, Comprador & Notas -->
+                        <td class="py-3 px-4 max-w-xs space-y-1">
+                            @if($row->order)
+                                <div class="space-y-0.5">
+                                    @if($row->order->dropshipper)
+                                        <div class="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5" title="Vendedor Dropshipper">
+                                            <span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[9px] shrink-0">
+                                                <i class="fa-solid fa-store"></i>
+                                            </span>
+                                            <span class="truncate font-semibold">{{ $row->order->dropshipper->company_or_store_name ?? $row->order->dropshipper->name }}</span>
+                                        </div>
+                                    @endif
+                                    @if($row->order->customer_name)
+                                        <div class="text-[10px] text-indigo-700 font-semibold flex items-center gap-1.5" title="Comprador / Cliente Final">
+                                            <span class="w-4 h-4 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[9px] shrink-0">
+                                                <i class="fa-solid fa-user"></i>
+                                            </span>
+                                            <span class="truncate">{{ $row->order->customer_name }}</span>
+                                            @if($row->order->customer_phone)
+                                                <span class="text-[9px] text-indigo-400 font-mono">({{ $row->order->customer_phone }})</span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            @elseif($row->user)
+                                <div class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-[9px] shrink-0">
+                                        <i class="fa-solid fa-user-gear"></i>
+                                    </span>
+                                    <span>{{ $row->user->name }}</span>
+                                </div>
+                            @else
+                                <div class="text-[10px] text-slate-400 italic">
+                                    <i class="fa-solid fa-robot mr-1 text-[9px]"></i> Sistema Automático
+                                </div>
+                            @endif
+
+                            <div class="text-[10px] text-slate-500 truncate pt-0.5 border-t border-slate-100/80" title="{{ $row->notes }}">
                                 {{ $row->notes ?? 'Sin observaciones adicionales' }}
-                            </div>
-                            <div class="text-[10px] text-slate-400">
-                                {{ $row->user ? $row->user->name : 'Sistema Automático' }}
                             </div>
                         </td>
                     </tr>
