@@ -38,6 +38,11 @@
             </div>
             @endif
 
+            <a href="{{ url('/panel/admin') }}#crear-dropshipper"
+                class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm cursor-pointer">
+                <i class="fa-solid fa-plus font-bold"></i> Registrar Nuevo Dropshipper
+            </a>
+
             <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
                 <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
             </a>

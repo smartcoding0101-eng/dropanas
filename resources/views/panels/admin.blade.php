@@ -250,11 +250,18 @@
                 <p class="text-[11px] text-slate-300 leading-snug">
                     Controla carteras, billeteras de comisiones, integraciones de tienda Shopify y retiros bancarios.
                 </p>
-                <div class="pt-1">
+                <div class="pt-1 flex items-center gap-2">
+                    <button type="button" @click.stop="openCreateDropshipperModal()"
+                        class="flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                        title="Abrir formulario para registrar un nuevo vendedor dropshipper">
+                        <i class="fa-solid fa-plus font-black"></i>
+                        <span>Crear Vendedor</span>
+                    </button>
                     <a href="{{ url('/panel/dropshipper') }}"
-                        class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <span>Gestionar Dropshippers</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        class="py-2 px-3 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1.5"
+                        title="Supervisar Tienda y Billetera del Dropshipper">
+                        <i class="fa-solid fa-store text-emerald-300"></i>
+                        <span>Ver Tienda</span>
                     </a>
                 </div>
             </div>
@@ -1437,6 +1444,12 @@
                     <span>Al registrar el proveedor mayorista, se creará automáticamente su megabodega y su <strong>Billetera en BOB</strong> para liquidaciones de ventas COD.</span>
                 </div>
 
+                <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-[11px] leading-snug flex items-start gap-2"
+                     x-show="newUserForm.role === 'dropshipper'">
+                    <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5 shrink-0"></i>
+                    <span>Al registrar el vendedor dropshipper, se creará automáticamente su tienda virtual y su <strong>Billetera en BOB</strong> para ganancias de ventas COD.</span>
+                </div>
+
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                     <button type="button" @click="userModalOpen = false"
                         class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
@@ -1445,7 +1458,7 @@
                     <button type="submit" :disabled="creatingUser"
                         class="btn-scarlet px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer">
                         <i class="fa-solid fa-check"></i>
-                        <span x-show="!creatingUser" x-text="newUserForm.role === 'provider' ? 'Registrar Proveedor' : 'Crear Usuario'"></span>
+                        <span x-show="!creatingUser" x-text="newUserForm.role === 'provider' ? 'Registrar Proveedor' : (newUserForm.role === 'dropshipper' ? 'Registrar Vendedor' : 'Crear Usuario')"></span>
                         <span x-show="creatingUser">Registrando...</span>
                     </button>
                 </div>
@@ -1489,11 +1502,26 @@ function adminDashboard() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('open_modal') === 'provider' || window.location.hash === '#crear-proveedor') {
                 this.openCreateProviderModal();
+            } else if (urlParams.get('open_modal') === 'dropshipper' || window.location.hash === '#crear-dropshipper' || window.location.hash === '#crear-vendedor') {
+                this.openCreateDropshipperModal();
             }
         },
 
         openCreateProviderModal() {
             this.newUserForm.role = 'provider';
+            this.newUserForm.name = '';
+            this.newUserForm.email = '';
+            this.newUserForm.password = '';
+            this.newUserForm.document_id = '';
+            this.newUserForm.phone = '+591 ';
+            this.newUserForm.company_or_store_name = '';
+            this.newUserForm.department = 'Santa Cruz';
+            this.newUserForm.city = 'Santa Cruz de la Sierra';
+            this.userModalOpen = true;
+        },
+
+        openCreateDropshipperModal() {
+            this.newUserForm.role = 'dropshipper';
             this.newUserForm.name = '';
             this.newUserForm.email = '';
             this.newUserForm.password = '';
@@ -1539,6 +1567,12 @@ function adminDashboard() {
                         this.userModalOpen = false;
                         setTimeout(() => {
                             window.location.href = '{{ url("/panel/proveedor") }}?provider_id=' + data.data.id;
+                        }, 900);
+                    } else if (this.newUserForm.role === 'dropshipper' && data.data && data.data.id) {
+                        this.showToast('Vendedor dropshipper registrado exitosamente. Redirigiendo a su tienda...', 'success');
+                        this.userModalOpen = false;
+                        setTimeout(() => {
+                            window.location.href = '{{ url("/panel/dropshipper") }}?dropshipper_id=' + data.data.id;
                         }, 900);
                     } else {
                         this.showToast('Usuario creado exitosamente.', 'success');
