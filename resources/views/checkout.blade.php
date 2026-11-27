@@ -4,8 +4,7 @@
 
 @section('content')
 @php
-    $currentApiToken = null;
-    if (Auth::check()) {
+    if (!isset($currentApiToken) && Auth::check()) {
         try {
             $currentApiToken = Auth::user()->createToken('checkout_web_session')->plainTextToken;
         } catch (\Throwable $e) {
@@ -23,7 +22,7 @@
     </x-page-header>
 
     <!-- Layout 2 columnas (SB Admin Pro Overlap) -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 !-mt-12 relative z-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-start gap-8 !-mt-12 relative z-10">
 
         <!-- Formulario principal (2/3) -->
         <div class="lg:col-span-2 space-y-6">
@@ -469,22 +468,39 @@
                     </button>
                 </div>
 
-                <!-- Alerta inmediata de error debajo del botón -->
-                <div x-show="errorMsg" x-cloak class="p-4 bg-red-50 border-2 border-red-300 rounded-xl text-xs text-red-800 flex items-start gap-2.5 shadow-sm">
-                    <i class="fa-solid fa-circle-xmark mt-0.5 text-red-600 text-sm"></i>
-                    <div>
-                        <div class="font-bold text-red-900 mb-0.5">No se pudo registrar la venta:</div>
-                        <span x-text="errorMsg"></span>
+                <!-- Alerta estructurada de error con scroll automático y acciones directas -->
+                <div x-show="errorMsg" x-cloak id="checkout-error-alert" class="p-4 sm:p-5 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-300 rounded-2xl shadow-sm space-y-3 transition-all">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-red-100 border border-red-200 flex items-center justify-center shrink-0 text-red-600 mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-bold text-red-900 text-sm" x-text="errorMsg && errorMsg.includes('Saldo insuficiente') ? 'Billetera sin Saldo para Prepago' : 'Error al registrar el pedido'"></span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-200/80 text-red-800"
+                                      x-text="errorMsg && errorMsg.includes('Saldo insuficiente') ? 'Prepago Requerido' : 'Validación / Sistema'"></span>
+                            </div>
+                            <p class="text-xs text-red-700 mt-1.5 leading-relaxed font-medium break-words" x-text="errorMsg"></p>
+                        </div>
+                    </div>
+                    <div x-show="errorMsg && errorMsg.includes('Saldo insuficiente')" class="pt-2 border-t border-red-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <span class="text-[11px] text-red-600 flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info"></i>
+                            El prepago cubre: Costo proveedor + Flete DEX + Comisión plataforma.
+                        </span>
+                        <a href="{{ url('/panel/dropshipper') }}" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition shrink-0">
+                            <i class="fa-solid fa-wallet"></i> Ver Billetera y Recargar
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Panel lateral: Resumen + Resultado -->
-        <div class="space-y-5" id="checkout-sidebar-summary">
+        <!-- Panel lateral: Resumen + Resultado (Sticky en el contenedor padre) -->
+        <div class="space-y-5 lg:sticky lg:top-24 lg:self-start z-20" id="checkout-sidebar-summary">
 
             <!-- Resumen del pedido -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4 sticky top-20">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
                 <h3 class="font-bold text-slate-900 text-sm border-b border-slate-100 pb-3">Resumen del Pedido</h3>
 
                 <div x-show="!form.product_id" class="text-center py-6 text-slate-400 text-xs">
@@ -680,12 +696,17 @@
                 </div>
             </div>
 
-            <!-- Error -->
-            <div x-show="errorMsg" x-cloak class="bg-red-50 border border-red-200 rounded-2xl p-4 text-xs text-red-700 flex items-start gap-2">
-                <i class="fa-solid fa-circle-xmark mt-0.5 text-red-500"></i>
-                <div>
-                    <div class="font-bold mb-1">Error al procesar el pedido:</div>
-                    <span x-text="errorMsg"></span>
+            <!-- Error en Sidebar con jerarquía visual clara y sin solapamiento -->
+            <div x-show="errorMsg" x-cloak class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-xs text-red-800 shadow-sm space-y-2.5">
+                <div class="flex items-center gap-2 font-bold text-red-900 text-xs">
+                    <i class="fa-solid fa-circle-xmark text-red-600 text-sm"></i>
+                    <span x-text="errorMsg && errorMsg.includes('Saldo insuficiente') ? 'Saldo Insuficiente en Billetera' : 'Error al Procesar Pedido'"></span>
+                </div>
+                <div class="text-[11px] text-red-700 leading-relaxed font-medium break-words bg-white/80 p-3 rounded-xl border border-red-100 shadow-2xs" x-text="errorMsg"></div>
+                <div x-show="errorMsg && errorMsg.includes('Saldo insuficiente')" class="pt-0.5">
+                    <a href="{{ url('/panel/dropshipper') }}" target="_blank" class="w-full text-center inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition shadow-xs">
+                        <i class="fa-solid fa-wallet"></i> Recargar Billetera Dropana
+                    </a>
                 </div>
             </div>
         </div>
@@ -929,9 +950,21 @@ function checkoutDemo() {
                     });
                 } else {
                     this.errorMsg = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : JSON.stringify(data));
+                    this.$nextTick(() => {
+                        const errElem = document.getElementById('checkout-error-alert');
+                        if (errElem) {
+                            errElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
                 }
             } catch (e) {
                 this.errorMsg = e.message || 'Error de comunicación al procesar el pedido.';
+                this.$nextTick(() => {
+                    const errElem = document.getElementById('checkout-error-alert');
+                    if (errElem) {
+                        errElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
             } finally {
                 this.loading = false;
             }
