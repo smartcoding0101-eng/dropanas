@@ -594,8 +594,6 @@
             </div>
         </div>
     </div>
-        </div>
-    </div>
 
     <!-- MODAL INTERACTIVO: SOLICITUD DE RETIRO DE SALDO DISPONIBLE -->
     <div x-show="withdrawModalOpen" x-cloak
