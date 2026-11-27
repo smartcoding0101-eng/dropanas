@@ -1027,17 +1027,17 @@
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/dropshipper') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Control</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" title="Megabodega" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Bodega" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Megabodega</span>
+                            <span>Bodega</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" title="Crear Pedido COD" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/checkout-demo') }}" title="Pedidos" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-cart-shopping w-4 text-center {{ request()->is('checkout-demo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Crear Pedido COD</span>
+                            <span>Pedidos</span>
                         </a>
-                        <a href="{{ url('/panel/dropshipper') }}#billetera" title="Mi Billetera & Ganancias" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
+                        <a href="{{ url('/panel/dropshipper') }}#billetera" title="Billetera" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium">
                             <i class="fa-solid fa-wallet w-4 text-center text-[#a7aeb8]"></i>
-                            <span>Mi Billetera & Ganancias</span>
+                            <span>Billetera</span>
                         </a>
                         <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
