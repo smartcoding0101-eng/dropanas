@@ -38,10 +38,10 @@
             </div>
             @endif
 
-            <a href="{{ url('/panel/admin?open_modal=provider#seccion-usuarios') }}"
-                class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-user-plus"></i> Registrar Nuevo Proveedor
-            </a>
+            <button type="button" @click.stop="openCreateProviderModal()"
+                class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm cursor-pointer">
+                <i class="fa-solid fa-plus font-bold"></i> Registrar Nuevo Proveedor
+            </button>
 
             <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
                 <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
@@ -4326,6 +4326,119 @@
         </div>
     </div>
 
+    @if($isAdmin ?? false)
+    <!-- ===================================================================== -->
+    <!-- MODAL: REGISTRAR NUEVO PROVEEDOR MAYORISTA (SUPER ADMIN)              -->
+    <!-- ===================================================================== -->
+    <div x-show="createProviderModalOpen" x-cloak
+        class="fixed inset-0 z-[120] overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+        @click.self="createProviderModalOpen = false">
+
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative max-h-[92vh] overflow-y-auto">
+
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-base shadow-xs">
+                        <i class="fa-solid fa-warehouse"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900 font-heading">Registrar Nuevo Proveedor Mayorista</h3>
+                        <p class="text-xs text-slate-500">Alta oficial de empresa mayorista y megabodega central en Bolidrop.</p>
+                    </div>
+                </div>
+                <button type="button" @click="createProviderModalOpen = false" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="submitCreateProvider()" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">
+                        Razón Social / Empresa Mayorista: <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" x-model="newProviderForm.name" required
+                        placeholder="Ej: Importadora Andina Mayorista S.R.L."
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-bold focus:bg-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Correo Electrónico (Acceso): <span class="text-rose-500">*</span></label>
+                        <input type="email" x-model="newProviderForm.email" required placeholder="mayorista@bolidrop.bo"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Contraseña Inicial: <span class="text-rose-500">*</span></label>
+                        <input type="password" x-model="newProviderForm.password" required placeholder="Mínimo 8 caracteres"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:bg-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">NIT Bolivia / C.I.: <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="newProviderForm.document_id" required placeholder="Ej: 1029384019"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:bg-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp (+591): <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="newProviderForm.phone" required placeholder="Ej: +591 71234567"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:bg-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nombre Comercial de la Megabodega: (opcional)</label>
+                    <input type="text" x-model="newProviderForm.company_or_store_name"
+                        placeholder="Ej: Megabodega Santa Cruz Parque Industrial"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Departamento (Sede Central): <span class="text-rose-500">*</span></label>
+                        <select x-model="newProviderForm.department" required
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-semibold focus:bg-white focus:outline-none focus:border-amber-500">
+                            <option value="Santa Cruz">Santa Cruz</option>
+                            <option value="La Paz">La Paz</option>
+                            <option value="Cochabamba">Cochabamba</option>
+                            <option value="Oruro">Oruro</option>
+                            <option value="Potosí">Potosí</option>
+                            <option value="Chuquisaca">Chuquisaca</option>
+                            <option value="Tarija">Tarija</option>
+                            <option value="Beni">Beni</option>
+                            <option value="Pando">Pando</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Ciudad / Municipio: <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="newProviderForm.city" required placeholder="Ej: Santa Cruz de la Sierra"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-snug flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0"></i>
+                    <span>Al registrar el proveedor mayorista, se creará automáticamente su megabodega y su <strong>Billetera en BOB</strong> para liquidación de ventas COD.</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" @click="createProviderModalOpen = false"
+                        class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" :disabled="creatingProvider"
+                        class="btn-scarlet px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer">
+                        <i class="fa-solid fa-check"></i>
+                        <span x-show="!creatingProvider">Registrar Proveedor</span>
+                        <span x-show="creatingProvider">Registrando...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
 </div>
 
 <script>
@@ -4358,6 +4471,71 @@ function proveedorDashboard() {
             id: null,
             name: '',
             description: ''
+        },
+        createProviderModalOpen: false,
+        creatingProvider: false,
+        newProviderForm: {
+            name: '',
+            email: '',
+            password: '',
+            role: 'provider',
+            document_id: '',
+            phone: '+591 ',
+            company_or_store_name: '',
+            department: 'Santa Cruz',
+            city: 'Santa Cruz de la Sierra'
+        },
+
+        openCreateProviderModal() {
+            this.newProviderForm = {
+                name: '',
+                email: '',
+                password: '',
+                role: 'provider',
+                document_id: '',
+                phone: '+591 ',
+                company_or_store_name: '',
+                department: 'Santa Cruz',
+                city: 'Santa Cruz de la Sierra'
+            };
+            this.createProviderModalOpen = true;
+        },
+
+        async submitCreateProvider() {
+            this.creatingProvider = true;
+            try {
+                const token = '{{ $apiToken ?? "" }}';
+                const res = await fetch('/api/v1/admin/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(this.newProviderForm)
+                });
+
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    this.toast.type = 'success';
+                    this.toast.message = 'Proveedor mayorista registrado exitosamente. Abriendo su megabodega...';
+                    this.toast.show = true;
+                    this.createProviderModalOpen = false;
+                    setTimeout(() => {
+                        window.location.href = '{{ url("/panel/proveedor") }}?provider_id=' + data.data.id;
+                    }, 900);
+                } else {
+                    this.toast.type = 'error';
+                    this.toast.message = data.message || 'Error al registrar proveedor.';
+                    this.toast.show = true;
+                }
+            } catch (err) {
+                this.toast.type = 'error';
+                this.toast.message = 'Error de conexión al registrar proveedor.';
+                this.toast.show = true;
+            } finally {
+                this.creatingProvider = false;
+            }
         },
         init() {
             const urlParams = new URLSearchParams(window.location.search);

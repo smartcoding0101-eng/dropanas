@@ -292,12 +292,14 @@ class PanelController extends Controller
             ? WalletTopup::where('user_id', $provider->id)->latest()->limit(10)->get()
             : collect();
 
+        $apiToken = ($isAdmin && $authUser) ? $authUser->createToken('admin-supervisor-web-session')->plainTextToken : '';
+
         return view('panels.proveedor', compact(
             'provider', 'stats', 'products', 'warehouses', 'allWarehouses',
             'wallet', 'walletTransactions', 'categories', 'salesOrders', 'salesOrdersJson', 'orderStatusCounts',
             'recentKardex', 'stockTransfers', 'inventoryAlerts',
             'financialSettings', 'providerTopups',
-            'dropshippers', 'transferProductsList', 'allProviders', 'isAdmin'
+            'dropshippers', 'transferProductsList', 'allProviders', 'isAdmin', 'apiToken'
         ));
     }
 

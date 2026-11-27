@@ -218,17 +218,18 @@
                     Supervisa catálogos de fábrica, stock en almacenes y liquidaciones de costo mayorista.
                 </p>
                 <div class="pt-1 flex items-center gap-2">
-                    <a href="{{ url('/panel/proveedor') }}"
-                        class="flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <span>Supervisar Bodega</span>
-                        <i class="fa-solid fa-warehouse text-[10px]"></i>
-                    </a>
                     <button type="button" @click.stop="openCreateProviderModal()"
-                        class="py-2 px-3 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1 cursor-pointer"
-                        title="Crear Nuevo Proveedor Mayorista">
-                        <i class="fa-solid fa-plus text-amber-300"></i>
-                        <span>Nuevo</span>
+                        class="flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                        title="Abrir formulario para registrar un nuevo proveedor mayorista">
+                        <i class="fa-solid fa-plus font-black"></i>
+                        <span>Crear Proveedor</span>
                     </button>
+                    <a href="{{ url('/panel/proveedor') }}"
+                        class="py-2 px-3 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1.5"
+                        title="Supervisar Megabodega de Proveedores">
+                        <i class="fa-solid fa-warehouse text-amber-300"></i>
+                        <span>Ver Bodega</span>
+                    </a>
                 </div>
             </div>
 
@@ -1209,11 +1210,18 @@
                 </div>
             </div>
 
-            <button type="button" @click.stop="openCreateUserModal('dropshipper')"
-                class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm self-start sm:self-auto cursor-pointer">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>Crear Nuevo Usuario</span>
-            </button>
+            <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                <button type="button" @click.stop="openCreateProviderModal()"
+                    class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center gap-2 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-warehouse"></i>
+                    <span>Crear Proveedor</span>
+                </button>
+                <button type="button" @click.stop="openCreateUserModal('dropshipper')"
+                    class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Crear Nuevo Usuario</span>
+                </button>
+            </div>
         </div>
 
         <!-- Tabla de Usuarios -->
@@ -1523,9 +1531,17 @@ function adminDashboard() {
 
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
-                    this.showToast('Usuario creado exitosamente.', 'success');
-                    this.userModalOpen = false;
-                    setTimeout(() => { window.location.reload(); }, 1200);
+                    if (this.newUserForm.role === 'provider' && data.data && data.data.id) {
+                        this.showToast('Proveedor registrado exitosamente. Redirigiendo a su megabodega...', 'success');
+                        this.userModalOpen = false;
+                        setTimeout(() => {
+                            window.location.href = '{{ url("/panel/proveedor") }}?provider_id=' + data.data.id;
+                        }, 900);
+                    } else {
+                        this.showToast('Usuario creado exitosamente.', 'success');
+                        this.userModalOpen = false;
+                        setTimeout(() => { window.location.reload(); }, 1200);
+                    }
                 } else {
                     this.showToast(data.message || 'Error al crear usuario.', 'error');
                 }
