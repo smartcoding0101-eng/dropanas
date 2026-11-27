@@ -962,21 +962,21 @@
                             <i class="fa-solid fa-gauge-high w-4 text-center {{ request()->is('panel/admin') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Dashboard Central</span>
                         </a>
-                        <a href="{{ url('/catalogo') }}" title="Megabodega Nacional" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/catalogo') }}" title="Bodega" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('catalogo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Megabodega Nacional</span>
+                            <span>Bodega</span>
                         </a>
-                        <a href="{{ url('/checkout-demo') }}" title="Crear Pedido COD" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/checkout-demo') }}" title="Pedidos" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('checkout-demo') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-cart-shopping w-4 text-center {{ request()->is('checkout-demo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Crear Pedido COD</span>
+                            <span>Pedidos</span>
                         </a>
 
                         <div class="sidebar-heading px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Finanzas & Conciliación
                         </div>
-                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reportes" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Reporte Comercial</span>
+                            <span>Reportes</span>
                         </a>
                         <a href="{{ url('/settlements') }}" title="Liquidaciones Bancarias" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('settlements*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-building-columns w-4 text-center {{ request()->is('settlements*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
@@ -998,9 +998,9 @@
                             <i class="fa-solid fa-clipboard-list w-4 text-center {{ request()->is('panel/admin/kardex*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Kardex Global & Stock</span>
                         </a>
-                        <a href="{{ url('/returns') }}" title="Devoluciones & Log. Inv." class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Devoluciones" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Devoluciones & Log. Inv.</span>
+                            <span>Devoluciones</span>
                         </a>
                         <a href="{{ url('/carrier/cobro') }}" title="Cobro QR Repartidor" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('carrier/cobro*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-qrcode w-4 text-center {{ request()->is('carrier/cobro*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
@@ -1039,13 +1039,13 @@
                             <i class="fa-solid fa-wallet w-4 text-center text-[#a7aeb8]"></i>
                             <span>Billetera</span>
                         </a>
-                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reportes" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Reporte Comercial</span>
+                            <span>Reportes</span>
                         </a>
-                        <a href="{{ url('/returns') }}" title="Mis Devoluciones" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/returns') }}" title="Devoluciones" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('returns*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-rotate-left w-4 text-center {{ request()->is('returns*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Mis Devoluciones</span>
+                            <span>Devoluciones</span>
                         </a>
                     @endif
 
@@ -1064,9 +1064,9 @@
                             <i class="fa-solid fa-boxes-stacked w-4 text-center {{ request()->is('catalogo') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Catálogo</span>
                         </a>
-                        <a href="{{ url('/reporte') }}" title="Reporte Comercial" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                        <a href="{{ url('/reporte') }}" title="Reportes" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
-                            <span>Reporte Comercial</span>
+                            <span>Reportes</span>
                         </a>
                         <a href="{{ url('/reportes') }}" title="Métricas" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reportes*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-chart-pie w-4 text-center {{ request()->is('reportes*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
