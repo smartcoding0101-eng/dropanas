@@ -357,8 +357,8 @@
     <!-- MODAL 1: VISOR DE COMPROBANTE / VOUCHER (IMAGEN O PDF)                    -->
     <!-- ========================================================================= -->
     <div x-show="receiptModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-5 md:p-6 py-6 sm:py-8">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 my-auto relative"
              @click.away="receiptModalOpen = false">
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -408,8 +408,8 @@
     <!-- MODAL 2: RECHAZAR SOLICITUD DE RECARGA CON MOTIVO                         -->
     <!-- ========================================================================= -->
     <div x-show="rejectModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-200 space-y-4"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-5 md:p-6 py-6 sm:py-8">
+        <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-rose-200 space-y-4 my-auto relative"
              @click.away="rejectModalOpen = false">
             
             <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
@@ -466,8 +466,8 @@
     <!-- MODAL 3: AJUSTES DE ACREDITACIÓN, CORREO OFICIAL & CÓDIGO QR ADMIN        -->
     <!-- ========================================================================= -->
     <div x-show="settingsModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-5 md:p-6 py-6 sm:py-8">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative"
              @click.away="settingsModalOpen = false">
             
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
