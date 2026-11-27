@@ -223,7 +223,7 @@
                         <span>Supervisar Bodega</span>
                         <i class="fa-solid fa-warehouse text-[10px]"></i>
                     </a>
-                    <button type="button" @click="openCreateProviderModal()"
+                    <button type="button" @click.stop="openCreateProviderModal()"
                         class="py-2 px-3 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1 cursor-pointer"
                         title="Crear Nuevo Proveedor Mayorista">
                         <i class="fa-solid fa-plus text-amber-300"></i>
@@ -1209,8 +1209,8 @@
                 </div>
             </div>
 
-            <button @click="userModalOpen = true"
-                class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm self-start sm:self-auto">
+            <button type="button" @click.stop="openCreateUserModal('dropshipper')"
+                class="btn-scarlet px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm self-start sm:self-auto cursor-pointer">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>Crear Nuevo Usuario</span>
             </button>
@@ -1315,87 +1315,94 @@
         </div>
     </div>
 
-    <!-- MODAL: CREAR NUEVO USUARIO -->
+    <!-- ===================================================================== -->
+    <!-- MODAL: REGISTRAR / CREAR NUEVO USUARIO & PROVEEDOR                     -->
+    <!-- ===================================================================== -->
     <div x-show="userModalOpen" x-cloak
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0">
+        class="fixed inset-0 z-[120] overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+        @click.self="userModalOpen = false">
 
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto"
-            @click.away="userModalOpen = false">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative max-h-[92vh] overflow-y-auto">
 
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center text-xs">
-                        <i class="fa-solid fa-user-plus"></i>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-base shadow-xs"
+                         :class="newUserForm.role === 'provider' ? 'bg-amber-100 text-amber-700' : (newUserForm.role === 'dropshipper' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700')">
+                        <i class="fa-solid" :class="newUserForm.role === 'provider' ? 'fa-warehouse' : (newUserForm.role === 'dropshipper' ? 'fa-store' : 'fa-user-plus')"></i>
                     </div>
-                    <h3 class="text-base font-bold text-slate-900 font-heading">Crear Nuevo Usuario</h3>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900 font-heading"
+                            x-text="newUserForm.role === 'provider' ? 'Registrar Proveedor Mayorista' : (newUserForm.role === 'dropshipper' ? 'Registrar Nuevo Dropshipper' : 'Registrar Nuevo Usuario')">
+                        </h3>
+                        <p class="text-xs text-slate-500">Alta de cuenta oficial y activación de billetera virtual en Bolivia.</p>
+                    </div>
                 </div>
-                <button @click="userModalOpen = false" class="text-slate-400 hover:text-slate-600">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" @click="userModalOpen = false" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <form @submit.prevent="submitCreateUser()" class="space-y-3 text-xs">
+            <form @submit.prevent="submitCreateUser()" class="space-y-3.5 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nombre Completo o Empresa:</label>
-                    <input type="text" x-model="newUserForm.name" required placeholder="Ej: Comercial Santa Cruz SRL"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                    <label class="block font-bold text-slate-800 mb-1">
+                        <span x-text="newUserForm.role === 'provider' ? 'Razón Social / Nombre Comercial:' : 'Nombre Completo o Titular:'"></span>
+                        <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" x-model="newUserForm.name" required
+                        :placeholder="newUserForm.role === 'provider' ? 'Ej: Importadora Oriental Mayorista S.R.L.' : 'Ej: Juan Carlos Pérez'"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-bold focus:bg-white focus:outline-none focus:border-indigo-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Correo Electrónico:</label>
-                        <input type="email" x-model="newUserForm.email" required placeholder="correo@ejemplo.bo"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                        <label class="block font-bold text-slate-700 mb-1">Correo Electrónico (Login): <span class="text-rose-500">*</span></label>
+                        <input type="email" x-model="newUserForm.email" required placeholder="correo@bolidrop.bo"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Contraseña Inicial:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Contraseña Inicial: <span class="text-rose-500">*</span></label>
                         <input type="password" x-model="newUserForm.password" required placeholder="Mínimo 8 caracteres"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Rol en la Plataforma:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Rol en la Plataforma: <span class="text-rose-500">*</span></label>
                         <select x-model="newUserForm.role" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
-                            <option value="dropshipper">Dropshipper (Vendedor COD)</option>
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-bold focus:bg-white focus:outline-none focus:border-indigo-500">
                             <option value="provider">Proveedor Mayorista (Megabodega)</option>
+                            <option value="dropshipper">Dropshipper (Vendedor COD)</option>
                             <option value="carrier_agent">Agente Logístico (DEX Bolivia)</option>
                             <option value="tenant_admin">Administrador Secundario</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">C.I. / NIT Bolivia:</label>
-                        <input type="text" x-model="newUserForm.document_id" required placeholder="Ej: 5432101 SC"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                        <label class="block font-bold text-slate-700 mb-1">NIT / Carnet de Identidad (CI): <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="newUserForm.document_id" required placeholder="Ej: 1029384019 o 5432101 SC"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono font-bold focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp (+591):</label>
+                        <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp (+591): <span class="text-rose-500">*</span></label>
                         <input type="text" x-model="newUserForm.phone" required placeholder="Ej: +591 71234567"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-mono focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Nombre Tienda / Marca (opcional):</label>
-                        <input type="text" x-model="newUserForm.company_or_store_name" placeholder="Ej: Tienda Digital Oriente"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                        <label class="block font-bold text-slate-700 mb-1">Nombre Comercial / Megabodega: (opcional)</label>
+                        <input type="text" x-model="newUserForm.company_or_store_name"
+                            :placeholder="newUserForm.role === 'provider' ? 'Ej: Megabodega Santa Cruz S.A.' : 'Ej: Mi Tienda Virtual'"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Departamento:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Departamento: <span class="text-rose-500">*</span></label>
                         <select x-model="newUserForm.department" required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 font-semibold focus:bg-white focus:outline-none focus:border-indigo-500">
                             <option value="Santa Cruz">Santa Cruz</option>
                             <option value="La Paz">La Paz</option>
                             <option value="Cochabamba">Cochabamba</option>
@@ -1408,22 +1415,28 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Ciudad / Municipio:</label>
+                        <label class="block font-bold text-slate-700 mb-1">Ciudad / Municipio: <span class="text-rose-500">*</span></label>
                         <input type="text" x-model="newUserForm.city" required placeholder="Ej: Santa Cruz de la Sierra"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500">
                     </div>
+                </div>
+
+                <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-snug flex items-start gap-2"
+                     x-show="newUserForm.role === 'provider'">
+                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0"></i>
+                    <span>Al registrar el proveedor mayorista, se creará automáticamente su megabodega y su <strong>Billetera en BOB</strong> para liquidaciones de ventas COD.</span>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                     <button type="button" @click="userModalOpen = false"
-                        class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+                        class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
                         Cancelar
                     </button>
                     <button type="submit" :disabled="creatingUser"
-                        class="btn-scarlet px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                        class="btn-scarlet px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md cursor-pointer">
                         <i class="fa-solid fa-check"></i>
-                        <span x-show="!creatingUser">Crear Usuario</span>
-                        <span x-show="creatingUser">Creando...</span>
+                        <span x-show="!creatingUser" x-text="newUserForm.role === 'provider' ? 'Registrar Proveedor' : 'Crear Usuario'"></span>
+                        <span x-show="creatingUser">Registrando...</span>
                     </button>
                 </div>
             </form>
@@ -1470,11 +1483,28 @@ function adminDashboard() {
 
         openCreateProviderModal() {
             this.newUserForm.role = 'provider';
+            this.newUserForm.name = '';
+            this.newUserForm.email = '';
+            this.newUserForm.password = '';
+            this.newUserForm.document_id = '';
+            this.newUserForm.phone = '+591 ';
+            this.newUserForm.company_or_store_name = '';
+            this.newUserForm.department = 'Santa Cruz';
+            this.newUserForm.city = 'Santa Cruz de la Sierra';
             this.userModalOpen = true;
-            this.$nextTick(() => {
-                const el = document.getElementById('seccion-usuarios');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-            });
+        },
+
+        openCreateUserModal(role = 'dropshipper') {
+            this.newUserForm.role = role;
+            this.newUserForm.name = '';
+            this.newUserForm.email = '';
+            this.newUserForm.password = '';
+            this.newUserForm.document_id = '';
+            this.newUserForm.phone = '+591 ';
+            this.newUserForm.company_or_store_name = '';
+            this.newUserForm.department = 'Santa Cruz';
+            this.newUserForm.city = 'Santa Cruz de la Sierra';
+            this.userModalOpen = true;
         },
 
         async submitCreateUser() {
