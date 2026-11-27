@@ -6,10 +6,10 @@
 <div class="space-y-8" x-data="dropshipperDashboard()">
 
     @if($isAdmin ?? false)
-    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL -->
-    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-500/40 rounded-2xl p-4 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL (FULL-WIDTH EDGE-TO-EDGE) -->
+    <div class="-mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 px-4 sm:px-8 py-3.5 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-b border-emerald-500/40 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-20">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-bold text-sm">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center justify-center font-bold text-sm shrink-0">
                 <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div>
@@ -46,6 +46,7 @@
     @endif
 
     <x-page-header
+        :hasTopBar="$isAdmin ?? false"
         title="Panel del Dropshipper"
         subtitle="Monitorea tus pedidos contra entrega en Bolivia, ganancias líquidas y estado de recaudación de DEX."
         icon="fa-solid fa-store"

@@ -6,10 +6,10 @@
 <div class="space-y-8" x-data="proveedorDashboard()" @warehouses-updated.window="handleWarehousesUpdated($event.detail.warehouses)">
 
     @if($isAdmin ?? false)
-    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL -->
-    <div class="bg-gradient-to-r from-amber-900 via-slate-900 to-amber-950 border border-amber-500/40 rounded-2xl p-4 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- BARRA DE AUDITORÍA & CONTROL ADMINISTRATIVO GLOBAL (FULL-WIDTH EDGE-TO-EDGE) -->
+    <div class="-mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 px-4 sm:px-8 py-3.5 bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b border-amber-500/40 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-20">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-bold text-sm">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center justify-center font-bold text-sm shrink-0">
                 <i class="fa-solid fa-shield-halved"></i>
             </div>
             <div>
@@ -51,6 +51,7 @@
     @endif
 
     <x-page-header
+        :hasTopBar="$isAdmin ?? false"
         :title="$provider?->company_or_store_name ?? $provider?->name ?? 'Mi Megabodega'"
         :subtitle="($provider?->city ?? 'Santa Cruz de la Sierra') . ', ' . ($provider?->department ?? 'Santa Cruz') . ' • NIT: ' . ($provider?->document_id ?? '1029384019')"
         icon="fa-solid fa-warehouse"

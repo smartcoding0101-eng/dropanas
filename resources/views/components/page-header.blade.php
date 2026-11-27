@@ -4,6 +4,7 @@
     'icon' => 'fa-solid fa-chart-pie',
     'badge' => null,
     'breadcrumb' => null,
+    'hasTopBar' => false,
 ])
 
 @php
@@ -38,7 +39,7 @@
 @endphp
 
 <!-- Stripe & Linear Executive Signature Page Header (#0F172A -> #1E1B4B -> #312E81 -> #4F46E5 + Overlap) -->
-<header class="page-header-sb text-white pt-5 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 !-mt-3 sm:!-mt-5 mb-0 relative overflow-hidden border-b border-indigo-500/20 shadow-xs">
+<header class="page-header-sb text-white pt-5 sm:pt-6 pb-16 sm:pb-20 px-4 sm:px-8 -mx-4 sm:-mx-8 {{ ($hasTopBar ?? false) ? '!mt-0' : '!-mt-3 sm:!-mt-5' }} mb-0 relative overflow-hidden border-b border-indigo-500/20 shadow-xs">
     <!-- Subtle geometric & mesh glow overlay -->
     <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 18% 50%, rgba(79,70,229,0.55) 0%, transparent 50%), radial-gradient(circle at 82% 20%, rgba(56,189,248,0.40) 0%, transparent 42%);"></div>
     <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#38BDF8]/10 blur-3xl pointer-events-none hero-floating-card"></div>
