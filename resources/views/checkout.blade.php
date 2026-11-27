@@ -345,27 +345,41 @@
                     <h2 class="font-bold text-[#212832] text-sm font-heading">Método de Cobro al Entregar (COD Bolivia)</h2>
                 </div>
                 <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- COD Efectivo -->
+                    <!-- COD Efectivo (Con recaudo = Contra entrega) -->
                     <label :class="form.payment_method === 'cash_on_delivery_bob' ? 'ring-2 ring-emerald-500 border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-white'"
-                        class="flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
-                        <input type="radio" x-model="form.payment_method" value="cash_on_delivery_bob" class="text-emerald-600 w-4 h-4" />
-                        <div>
-                            <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                                <i class="fa-solid fa-money-bill-wave text-emerald-500"></i> Efectivo contra entrega
+                        class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
+                        <input type="radio" x-model="form.payment_method" value="cash_on_delivery_bob" class="text-emerald-600 w-4 h-4 mt-0.5" />
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                                <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-money-bill-wave text-emerald-500"></i> Efectivo contra entrega
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    Con recaudo
+                                </span>
                             </div>
-                            <div class="text-xs text-slate-500">COD en bolivianos (BOB)</div>
+                            <div class="text-xs text-slate-500 mt-1">
+                                Contra entrega • Cobro en efectivo al entregar en destino (BOB)
+                            </div>
                         </div>
                     </label>
 
-                    <!-- QR Interoperable -->
+                    <!-- QR Interoperable (Sin recaudo = Pagado) -->
                     <label :class="form.payment_method === 'qr_interoperable' ? 'ring-2 ring-sky-500 border-sky-300 bg-sky-50' : 'border-slate-200 bg-white'"
-                        class="flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
-                        <input type="radio" x-model="form.payment_method" value="qr_interoperable" class="text-sky-600 w-4 h-4" />
-                        <div>
-                            <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                                <i class="fa-solid fa-qrcode text-sky-500"></i> QR Simple Interoperable
+                        class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition hover:border-slate-300">
+                        <input type="radio" x-model="form.payment_method" value="qr_interoperable" class="text-sky-600 w-4 h-4 mt-0.5" />
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-1.5 flex-wrap">
+                                <div class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-qrcode text-sky-500"></i> QR Simple Interoperable
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-sky-100 text-sky-800 border border-sky-200">
+                                    Sin recaudo (Pagado)
+                                </span>
                             </div>
-                            <div class="text-xs text-slate-500">Banco Unión, BCP, Bisa, Ganadero...</div>
+                            <div class="text-xs text-slate-500 mt-1">
+                                Pagado previamente • Sin cobro en destino vía QR ACH Simple
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -377,36 +391,36 @@
                          'bg-sky-50 border-sky-200 text-sky-900': form.payment_method === 'qr_interoperable'
                      }">
                     
-                    <!-- 1. DETALLE EFECTIVO -->
+                    <!-- 1. DETALLE EFECTIVO (CON RECAUDO) -->
                     <template x-if="form.payment_method === 'cash_on_delivery_bob'">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2 font-bold text-sm text-emerald-800">
                                     <i class="fa-solid fa-money-bill-wave text-emerald-600"></i>
-                                    <span>Recaudación en Efectivo al Entregar (COD)</span>
+                                    <span>Con recaudo • Recaudación en Efectivo al Entregar (Contra entrega)</span>
                                 </div>
                                 <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full font-mono"
                                       x-text="(totalAmount || 0).toFixed(2) + ' BOB'"></span>
                             </div>
                             <p class="text-xs text-emerald-700 leading-relaxed">
-                                El transportista de <strong>DEX Bolivia Express</strong> cobrará este importe exacto en billetes al momento de entregar el producto en destino.
+                                Modalidad <strong>Con recaudo (Contra entrega)</strong>: El transportista de <strong>DEX Bolivia Express</strong> cobrará este importe exacto en efectivo al momento de entregar el paquete en destino.
                             </p>
                         </div>
                     </template>
 
-                    <!-- 2. DETALLE QR SIMPLE -->
+                    <!-- 2. DETALLE QR SIMPLE (SIN RECAUDO / PAGADO) -->
                     <template x-if="form.payment_method === 'qr_interoperable'">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2 font-bold text-sm text-sky-800">
                                     <i class="fa-solid fa-qrcode text-sky-600"></i>
-                                    <span>QR Simple Interoperable Bolivia (ACH)</span>
+                                    <span>Sin recaudo • QR Simple Interoperable Bolivia (Pagado)</span>
                                 </div>
                                 <span class="text-xs bg-sky-100 text-sky-800 font-bold px-2.5 py-1 rounded-full font-mono"
                                       x-text="(totalAmount || 0).toFixed(2) + ' BOB'"></span>
                             </div>
                             <p class="text-xs text-sky-700 leading-relaxed">
-                                Se emitirá un código QR interoperable compatible con <strong>Banco Unión, BCP, BNB, Banco Bisa, Ganadero, Mercantil Santa Cruz y Tigo Money</strong>.
+                                Modalidad <strong>Sin recaudo (Pagado)</strong>: El pedido se cancela previamente vía QR ACH (compatible con <strong>Banco Unión, BCP, BNB, Bisa, Ganadero, Mercantil Santa Cruz y Tigo Money</strong>). El transportista entregará el paquete sin realizar cobro en destino.
                             </p>
                         </div>
                     </template>
@@ -520,8 +534,8 @@
                 <!-- Método seleccionado -->
                 <div x-show="form.payment_method" class="bg-sky-50 border border-sky-200 rounded-xl p-3 text-xs text-sky-800">
                     <i class="fa-solid fa-info-circle mr-1"></i>
-                    <span x-show="form.payment_method === 'cash_on_delivery_bob'">Cobro en efectivo al momento de la entrega (COD).</span>
-                    <span x-show="form.payment_method === 'qr_interoperable'">Se generará un QR bancario interoperable (Simple) para que el cliente escanee al recibir.</span>
+                    <span x-show="form.payment_method === 'cash_on_delivery_bob'"><strong>Con recaudo:</strong> Cobro en efectivo al momento de la entrega (Contra entrega).</span>
+                    <span x-show="form.payment_method === 'qr_interoperable'"><strong>Sin recaudo (Pagado):</strong> Pedido cancelado previamente vía QR Simple (Entrega sin cobro en puerta).</span>
                 </div>
             </div>
 
@@ -606,10 +620,10 @@
                     <div x-show="result?.order?.payment_method === 'cash_on_delivery_bob'" class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4 space-y-2">
                         <div class="flex items-center gap-2 font-bold text-sm text-emerald-950">
                             <i class="fa-solid fa-money-bill-wave text-emerald-600"></i>
-                            <span>Cobro en Efectivo contra Entrega Asignado</span>
+                            <span>Cobro en Efectivo contra Entrega Asignado (Con recaudo)</span>
                         </div>
                         <p class="text-xs text-emerald-800">
-                            El transportista de DEX Bolivia Express cobrará <strong class="font-mono text-emerald-900" x-text="(parseFloat(result?.order?.total_amount_bob || 0)).toFixed(2) + ' BOB'"></strong> en billetes al entregar en el domicilio.
+                            Modalidad <strong>Con recaudo (Contra entrega)</strong>: El transportista de DEX Bolivia Express cobrará <strong class="font-mono text-emerald-900" x-text="(parseFloat(result?.order?.total_amount_bob || 0)).toFixed(2) + ' BOB'"></strong> en billetes al entregar en el domicilio.
                         </p>
                     </div>
 
