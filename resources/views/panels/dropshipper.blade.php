@@ -453,37 +453,65 @@
                 </button>
             </div>
 
-            <!-- Instrucciones de Pago Bancario Oficial Dropana -->
-            <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2 text-xs">
-                <div class="font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-                    <span>Cuentas oficiales de acreditación Dropana Bolivia:</span>
+            <!-- Instrucciones de Pago Bancario Oficial Dropana con QR Oficial y Correo Admin -->
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 text-xs">
+                <div class="font-bold text-slate-900 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i>
+                        <span>Cuentas oficiales de acreditación Dropana Bolivia:</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase">
+                        QR Simple ACH
+                    </span>
                 </div>
-                <div class="text-[11px] text-slate-700 space-y-1">
-                    <div><strong>Banco:</strong> {{ $financialSettings->bank_name ?? 'Banco Unión S.A.' }}</div>
-                    <div><strong>Nro de Cuenta:</strong> <span class="font-mono font-bold">{{ $financialSettings->bank_account_number ?? '100000-4829104-BOB' }}</span></div>
-                    <div><strong>Titular:</strong> {{ $financialSettings->bank_account_holder ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}</div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4 bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
+                    <!-- Código QR Oficial -->
+                    <div class="relative group cursor-pointer text-center shrink-0">
+                        <img src="{{ $financialSettings?->getEffectiveQrImageUrl() }}" alt="QR Oficial Dropana"
+                            class="w-28 h-28 rounded-xl border border-slate-200 p-1 bg-white shadow-xs object-contain group-hover:scale-105 transition duration-200">
+                        <div class="text-[10px] font-bold text-indigo-600 mt-1 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-expand text-[9px]"></i> Clic para ampliar
+                        </div>
+                    </div>
+
+                    <!-- Datos Bancarios & Correo Admin -->
+                    <div class="text-[11px] text-slate-700 space-y-1.5 flex-1 min-w-0">
+                        <div><strong class="text-slate-800">Banco:</strong> {{ $financialSettings->bank_name ?? 'Banco Nacional de Bolivia / BCP' }}</div>
+                        <div><strong class="text-slate-800">Nro de Cuenta:</strong> <span class="font-mono font-bold text-slate-900">{{ $financialSettings->bank_account_number ?? '1000-482910-BOB' }}</span></div>
+                        <div><strong class="text-slate-800">Titular:</strong> {{ $financialSettings->bank_account_name ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}</div>
+                        <div class="pt-1 border-t border-slate-100 flex items-center gap-1.5 flex-wrap">
+                            <strong class="text-slate-800">Correo Admin:</strong>
+                            <span class="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 text-[10px]">
+                                {{ $financialSettings?->getEffectiveAdminEmail() ?? 'admin@dropana.bo' }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
-                    Paga desde tu app bancaria (QR o transferencia) y sube tu comprobante abajo. El administrador lo verificará y liberará tu saldo para prepago de pedidos.
+
+                <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-200 leading-relaxed">
+                    Escanea el código QR o transfiere desde tu app bancaria. Sube tu comprobante (imagen o PDF); el sistema notificará inmediatamente al correo del administrador para liberar tu saldo en tiempo real.
                 </p>
             </div>
 
-            <form action="{{ route('wallet.topup.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+            <form action="{{ route('wallet.topup.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs"
+                  x-data="{ selectedFileName: '', isPdf: false }">
                 @csrf
+                <input type="hidden" name="amount" :value="$el.closest('form').querySelector('input[name=amount_bob]')?.value">
+
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Monto a Recargar (BOB):</label>
                     <div class="relative">
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold font-mono">Bs</span>
                         <input type="number" step="0.01" min="1" name="amount_bob" required placeholder="500.00"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-emerald-500">
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-emerald-500 focus:bg-white">
                     </div>
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Método Utilizado:</label>
-                    <select name="payment_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-500">
-                        <option value="qr_bolivia">Pago QR Simple (Cualquier Banco)</option>
+                    <select name="payment_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-semibold focus:outline-none focus:border-emerald-500 focus:bg-white">
+                        <option value="qr_simple">Pago QR Simple (Cualquier Banco)</option>
                         <option value="bank_transfer">Transferencia Bancaria Nacional</option>
                     </select>
                 </div>
@@ -491,13 +519,32 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Nro de Referencia Bancaria / Comprobante:</label>
                     <input type="text" name="bank_reference" required placeholder="Ej: OP-984321 o Código de autorización"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-emerald-500">
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 text-xs font-mono focus:outline-none focus:border-emerald-500 focus:bg-white">
                 </div>
 
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Adjuntar Comprobante de Pago (Imagen o PDF):</label>
-                    <input type="file" name="receipt" accept="image/*,application/pdf" required
+                    <input type="file" name="receipt" accept="image/jpeg,image/png,image/jpg,image/webp,application/pdf" required
+                        @change="
+                            if ($event.target.files.length > 0) {
+                                selectedFileName = $event.target.files[0].name;
+                                isPdf = selectedFileName.toLowerCase().endsWith('.pdf');
+                            } else {
+                                selectedFileName = '';
+                            }
+                        "
                         class="w-full p-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-600 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                    
+                    <!-- Feedback reactivo de archivo adjunto -->
+                    <template x-if="selectedFileName">
+                        <div class="mt-1.5 p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 truncate">
+                                <i :class="isPdf ? 'fa-solid fa-file-pdf text-red-600' : 'fa-solid fa-file-image text-emerald-600'"></i>
+                                <span x-text="selectedFileName"></span>
+                            </span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-white text-emerald-700 border border-emerald-300 font-mono" x-text="isPdf ? 'DOCUMENTO PDF' : 'IMAGEN'"></span>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">

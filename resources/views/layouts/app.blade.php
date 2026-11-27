@@ -974,6 +974,18 @@
                         <div class="sidebar-heading px-6 pt-5 pb-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#a7aeb8]">
                             Finanzas & Conciliación
                         </div>
+                        <a href="{{ route('admin.recargas.index') }}" title="Solicitudes de Recarga" class="nav-item-transition flex items-center justify-between px-5 py-2.5 text-[13px] {{ request()->is('admin/recargas*') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-money-bill-transfer w-4 text-center {{ request()->is('admin/recargas*') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
+                                <span>Solicitudes de Recarga</span>
+                            </div>
+                            @php
+                                $sidebarPendingTopups = \App\Models\WalletTopup::where('status', 'pending')->count();
+                            @endphp
+                            @if($sidebarPendingTopups > 0)
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-amber-500 text-white font-mono shrink-0">{{ $sidebarPendingTopups }}</span>
+                            @endif
+                        </a>
                         <a href="{{ url('/reporte') }}" title="Reportes" class="nav-item-transition flex items-center gap-3 px-5 py-2.5 text-[13px] {{ request()->is('reporte') ? 'text-[#0061f2] bg-blue-50/70 font-bold border-r-4 border-[#0061f2]' : 'text-[#212832] hover:text-[#0061f2] hover:bg-slate-50 font-medium' }}">
                             <i class="fa-solid fa-file-invoice-dollar w-4 text-center {{ request()->is('reporte') ? 'text-[#0061f2]' : 'text-[#a7aeb8]' }}"></i>
                             <span>Reportes</span>

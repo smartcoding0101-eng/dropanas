@@ -180,6 +180,13 @@
                 </div>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ route('admin.recargas.index') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-money-bill-transfer text-emerald-300"></i> Recargas
+                    @php $pendingTopupsHeaderCount = \App\Models\WalletTopup::where('status', 'pending')->count(); @endphp
+                    @if($pendingTopupsHeaderCount > 0)
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-bold font-mono">{{ $pendingTopupsHeaderCount }}</span>
+                    @endif
+                </a>
                 <a href="{{ url('/panel/admin/kardex') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold text-white transition inline-flex items-center gap-1.5">
                     <i class="fa-solid fa-boxes-stacked text-amber-300"></i> Kardex Global
                 </a>
@@ -323,7 +330,16 @@
         </div>
 
         <!-- TAB 1: RECARGAS PENDIENTES -->
-        <div x-show="activeFinTab === 'topups'" class="overflow-x-auto">
+        <div x-show="activeFinTab === 'topups'">
+            <div class="px-5 py-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <span class="text-slate-600">Mostrando solicitudes pendientes de validación en la cola operativa.</span>
+                <a href="{{ route('admin.recargas.index') }}" class="font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <span>Abrir Historial Completo &amp; Menú Independiente de Recargas</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+            <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b border-slate-200">
                     <tr>
@@ -469,7 +485,7 @@
 
         <!-- TAB 3: CONFIGURACIÓN DE COMISIONES DROPANA (5 Bs) -->
         <div x-show="activeFinTab === 'settings'" class="p-6">
-            <form action="{{ route('admin.fintech.settings.update') }}" method="POST" class="max-w-3xl space-y-5">
+            <form action="{{ route('admin.fintech.settings.update') }}" method="POST" enctype="multipart/form-data" class="max-w-3xl space-y-5">
                 @csrf
                 <div class="p-4 bg-indigo-50/70 rounded-xl border border-indigo-200/80 text-xs text-indigo-950 space-y-1">
                     <div class="font-bold flex items-center gap-1.5 text-sm">
@@ -509,8 +525,16 @@
                     </div>
                 </div>
 
-                <div class="pt-2 border-t border-slate-100">
-                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Datos Bancarios para Recaudaciones y Recargas Dropana</h4>
+                <div class="pt-2 border-t border-slate-100 space-y-4">
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Datos Bancarios para Recaudaciones y Recargas Dropana</h4>
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Correo Electrónico para Recibir Solicitudes (Admin):</label>
+                        <input type="email" name="admin_notification_email" value="{{ $financialSettings->getEffectiveAdminEmail() }}"
+                            class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500">
+                        <p class="text-[10px] text-slate-500 mt-0.5">El sistema enviará el comprobante (imagen o PDF) a esta dirección para su validación.</p>
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-600 mb-1">Nombre del Banco:</label>
@@ -526,6 +550,18 @@
                             <label class="block text-[11px] font-bold text-slate-600 mb-1">Titular de la Cuenta:</label>
                             <input type="text" name="bank_account_holder" value="{{ $financialSettings->bank_account_holder ?? 'Dropana FinTech Logística Bolivia S.R.L.' }}"
                                 class="w-full p-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <!-- Código QR Oficial -->
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center gap-4">
+                        <img src="{{ $financialSettings->getEffectiveQrImageUrl() }}" alt="QR Simple Oficial"
+                            class="w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 object-contain shrink-0">
+                        <div class="flex-1 space-y-1">
+                            <label class="block text-[11px] font-bold text-slate-700">Subir / Cambiar Código QR Oficial:</label>
+                            <input type="file" name="qr_image" accept="image/*"
+                                class="w-full text-xs text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            <p class="text-[10px] text-slate-500">Imagen PNG o JPG del código QR que verán los vendedores al recargar su billetera.</p>
                         </div>
                     </div>
                 </div>

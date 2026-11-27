@@ -2,12 +2,17 @@
 
 namespace App\Services\Finance;
 
+use App\Mail\WalletTopupRequestedMail;
+use App\Models\FinancialSetting;
+use App\Models\NotificationLog;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTopup;
 use App\Models\WalletTransaction;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
 class WalletTopupService
@@ -38,7 +43,7 @@ class WalletTopupService
             $receiptPath = $receiptFile->store("topups/{$user->tenant_id}", 'public');
         }
 
-        return WalletTopup::create([
+        $topup = WalletTopup::create([
             'tenant_id'       => $user->tenant_id,
             'user_id'         => $user->id,
             'wallet_id'       => $wallet->id,
@@ -51,6 +56,48 @@ class WalletTopupService
             'status'          => WalletTopup::STATUS_PENDING,
             'admin_notes'     => $notes,
         ]);
+
+        // Notificar por correo al Administrador de la plataforma
+        $this->notifyAdminOfTopupRequest($topup, $user);
+
+        return $topup;
+    }
+
+    /**
+     * Envía notificación por correo al Administrador y registra auditoría en notification_logs.
+     */
+    protected function notifyAdminOfTopupRequest(WalletTopup $topup, User $user): void
+    {
+        try {
+            $settings = FinancialSetting::forTenant($user->tenant_id);
+            $adminEmail = $settings->getEffectiveAdminEmail();
+
+            if (!empty($adminEmail)) {
+                Mail::to($adminEmail)->send(new WalletTopupRequestedMail($topup, $adminEmail));
+
+                NotificationLog::create([
+                    'tenant_id'      => $user->tenant_id,
+                    'user_id'        => $user->id,
+                    'channel'        => 'email',
+                    'event_type'     => 'wallet_topup_requested',
+                    'recipient'      => $adminEmail,
+                    'subject'        => "Nueva Solicitud de Recarga #{$topup->topup_number} - Bs. " . number_format((float) $topup->amount_bob, 2),
+                    'body'           => "El vendedor {$user->name} solicitó recarga de Bs. {$topup->amount_bob} mediante {$topup->payment_method}. Ref: {$topup->bank_reference}",
+                    'status'         => 'sent',
+                    'reference_type' => 'wallet_topup',
+                    'reference_id'   => $topup->id,
+                    'metadata'       => [
+                        'topup_id'       => $topup->id,
+                        'topup_number'   => $topup->topup_number,
+                        'amount_bob'     => $topup->amount_bob,
+                        'payment_method' => $topup->payment_method,
+                        'receipt_path'   => $topup->receipt_path,
+                    ],
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning("No se pudo enviar el correo de solicitud de recarga #{$topup->topup_number} al admin: " . $e->getMessage());
+        }
     }
 
     /**

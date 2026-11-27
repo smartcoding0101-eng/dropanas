@@ -31,12 +31,20 @@ class FintechWalletController extends Controller
     {
         $user = Auth::user();
 
+        // Normalizar inputs del formulario web (amount_bob y qr_bolivia)
+        if (!$request->has('amount') && $request->has('amount_bob')) {
+            $request->merge(['amount' => $request->input('amount_bob')]);
+        }
+        if ($request->input('payment_method') === 'qr_bolivia') {
+            $request->merge(['payment_method' => 'qr_simple']);
+        }
+
         $validated = $request->validate([
             'amount'         => 'required|numeric|min:1',
-            'payment_method' => 'required|string|in:qr_simple,bank_transfer,binance_pay',
+            'payment_method' => 'required|string|in:qr_simple,qr_bolivia,bank_transfer,binance_pay',
             'bank_name'      => 'nullable|string|max:100',
             'bank_reference' => 'nullable|string|max:100',
-            'receipt'        => 'nullable|image|max:5120', // Hasta 5MB
+            'receipt'        => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240', // Imágenes o documentos PDF hasta 10MB
             'notes'          => 'nullable|string|max:255',
         ]);
 
@@ -44,7 +52,7 @@ class FintechWalletController extends Controller
             $topup = $this->topupService->requestTopup(
                 $user,
                 (float) $validated['amount'],
-                $validated['payment_method'],
+                $validated['payment_method'] === 'qr_bolivia' ? 'qr_simple' : $validated['payment_method'],
                 $validated['bank_name'] ?? 'Banco BCP / QR Simple',
                 $validated['bank_reference'] ?? null,
                 $request->file('receipt'),
@@ -236,11 +244,12 @@ class FintechWalletController extends Controller
         $admin = Auth::user();
 
         $validated = $request->validate([
-            'seller_commission_bob'   => 'required|numeric|min:0',
-            'provider_commission_bob' => 'required|numeric|min:0',
+            'seller_commission_bob'   => 'nullable|numeric|min:0',
+            'provider_commission_bob' => 'nullable|numeric|min:0',
             'bank_account_name'       => 'nullable|string|max:150',
             'bank_name'               => 'nullable|string|max:100',
             'bank_account_number'     => 'nullable|string|max:80',
+            'admin_notification_email'=> 'nullable|email|max:150',
             'recharge_instructions'   => 'nullable|string',
             'qr_image'                => 'nullable|image|max:5120',
         ]);
@@ -252,11 +261,12 @@ class FintechWalletController extends Controller
         }
 
         $settings->update([
-            'seller_commission_bob'   => $validated['seller_commission_bob'],
-            'provider_commission_bob' => $validated['provider_commission_bob'],
+            'seller_commission_bob'   => $validated['seller_commission_bob'] ?? $settings->seller_commission_bob,
+            'provider_commission_bob' => $validated['provider_commission_bob'] ?? $settings->provider_commission_bob,
             'bank_account_name'       => $validated['bank_account_name'] ?? $settings->bank_account_name,
             'bank_name'               => $validated['bank_name'] ?? $settings->bank_name,
             'bank_account_number'     => $validated['bank_account_number'] ?? $settings->bank_account_number,
+            'admin_notification_email'=> $validated['admin_notification_email'] ?? $settings->admin_notification_email,
             'recharge_instructions'   => $validated['recharge_instructions'] ?? $settings->recharge_instructions,
         ]);
 
