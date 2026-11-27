@@ -278,152 +278,182 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MODAL 1: NUEVA TRANSPORTADORA                                             -->
+    <!-- MODAL 1: NUEVA TRANSPORTADORA (VISTA HORIZONTAL EXPANDIDA)                 -->
     <!-- ========================================================================= -->
     <div x-show="createModalOpen" x-cloak
-        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-5 md:p-6 py-6 sm:py-8">
-        <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 space-y-4 my-auto relative max-h-[92vh] overflow-y-auto"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 md:p-6">
+        <div class="bg-white rounded-3xl max-w-5xl xl:max-w-6xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 my-auto relative max-h-[94vh] flex flex-col overflow-hidden"
              @click.away="createModalOpen = false">
             
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <!-- Encabezado del Modal -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
                         <i class="fa-solid fa-truck-fast"></i>
                     </div>
                     <div>
-                        <h3 class="font-extrabold text-slate-900 font-heading text-base">Registrar Nueva Transportadora</h3>
-                        <p class="text-xs text-slate-500">Aparecerá en el selector de pedidos COD para todos los dropshippers.</p>
+                        <h3 class="font-extrabold text-slate-900 font-heading text-base sm:text-lg">Registrar Nueva Transportadora</h3>
+                        <p class="text-xs text-slate-500">Aparecerá en el selector de pedidos COD y checkout para todos los dropshippers de Bolivia.</p>
                     </div>
                 </div>
-                <button type="button" @click="createModalOpen = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button type="button" @click="createModalOpen = false" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <form action="{{ route('admin.carriers.store') }}" method="POST" class="space-y-4 text-xs">
+            <form action="{{ route('admin.carriers.store') }}" method="POST" class="flex flex-col flex-1 overflow-hidden pt-3 text-xs">
                 @csrf
                 
-                <!-- Nombre y Código -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-800 mb-1">Nombre Comercial de la Empresa: <span class="text-rose-500">*</span></label>
-                        <input type="text" name="name" required placeholder="Ej: DEX Bolivia, Servicourier, TotalExpress..."
-                            class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800 font-bold focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Código Identificador (Opcional):</label>
-                        <input type="text" name="code" placeholder="Ej: dex_bolivia (Auto si queda vacío)"
-                            class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800 font-mono focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <!-- Contacto -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Persona / Responsable de Operaciones:</label>
-                        <input type="text" name="contact_name" placeholder="Ej: Lic. Carlos Mendizábal"
-                            class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800 focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp de Contacto:</label>
-                        <input type="text" name="contact_phone" placeholder="Ej: +591 71234567"
-                            class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800 font-mono focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">Correo Electrónico:</label>
-                    <input type="email" name="contact_email" placeholder="operaciones@courier.bo"
-                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-slate-800 focus:outline-none focus:border-indigo-500">
-                </div>
-
-                <div class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <input type="checkbox" name="has_cod_service" value="1" id="has_cod_create" checked
-                        class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                    <label for="has_cod_create" class="text-xs font-bold text-slate-800 cursor-pointer">
-                        Habilitar Cobro Contra Entrega (Cash on Delivery - COD Bolivia)
-                    </label>
-                </div>
-
-                <!-- Coberturas y Tarifas de Flete en los 9 Departamentos de Bolivia -->
-                <div class="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100/70 pb-2.5">
-                        <div>
-                            <div class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
-                                <i class="fa-solid fa-map-location-dot text-indigo-600"></i>
-                                <span>Tarifas de Flete en los 9 Departamentos de Bolivia</span>
+                <!-- Cuerpo del Formulario en 2 Columnas Horizontales -->
+                <div class="flex-1 overflow-y-auto pr-1 space-y-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                        
+                        <!-- COLUMNA IZQUIERDA: Datos del Operador Logístico (5 columnas) -->
+                        <div class="lg:col-span-5 space-y-3 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
+                            <div class="flex items-center gap-2 border-b border-slate-200/80 pb-2">
+                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center">1</span>
+                                <span class="font-extrabold text-slate-900 text-xs uppercase tracking-wide">Datos de la Empresa</span>
                             </div>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Marca los departamentos que cubre esta empresa e indica el costo de flete en Bolivianos (BOB).</p>
-                        </div>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <button type="button" @click="selectAllDepartments(true)"
-                                class="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-700 font-bold text-[10px] transition cursor-pointer">
-                                <i class="fa-solid fa-check-double mr-1"></i> Todos (9)
-                            </button>
-                            <button type="button" @click="selectTroncalOnly()"
-                                class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition cursor-pointer">
-                                Eje Troncal (3)
-                            </button>
-                            <button type="button" @click="selectAllDepartments(false)"
-                                class="px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 font-medium text-[10px] transition cursor-pointer">
-                                Desmarcar
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Grilla de los 9 Departamentos -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                        <template x-for="dep in departmentsList" :key="dep.name">
-                            <div class="p-2.5 rounded-xl border transition"
-                                 :class="dep.enabled ? 'bg-white border-indigo-200 shadow-2xs' : 'bg-slate-100/70 border-slate-200 opacity-60'">
-                                
-                                <div class="flex items-center justify-between mb-1.5">
-                                    <label class="flex items-center gap-2 cursor-pointer select-none">
-                                        <input type="checkbox" :name="'departments[' + dep.name + '][enabled]'" value="1"
-                                            x-model="dep.enabled"
-                                            class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                                        <span class="font-extrabold text-xs text-slate-900" x-text="dep.name"></span>
-                                    </label>
-                                    <span class="text-[10px] font-mono text-slate-400" x-text="dep.city"></span>
+                            <!-- Nombre Comercial -->
+                            <div>
+                                <label class="block font-bold text-slate-800 mb-1">Nombre Comercial de la Empresa: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="name" required placeholder="Ej: DEX Bolivia, Servicourier, TotalExpress..."
+                                    class="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 font-bold focus:outline-none focus:border-indigo-500 shadow-2xs">
+                            </div>
+
+                            <!-- Código Identificador -->
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Código Identificador (Opcional):</label>
+                                <input type="text" name="code" placeholder="Ej: dex_bolivia (Auto si queda vacío)"
+                                    class="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono text-xs focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <!-- Responsable y Teléfono -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Responsable Operativo:</label>
+                                    <input type="text" name="contact_name" placeholder="Ej: Lic. Carlos Mendizábal"
+                                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-xs focus:outline-none focus:border-indigo-500">
                                 </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp:</label>
+                                    <input type="text" name="contact_phone" placeholder="Ej: +591 71234567"
+                                        class="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 font-mono text-xs focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </div>
 
-                                <input type="hidden" :name="'departments[' + dep.name + '][city]'" :value="dep.city">
-                                <input type="hidden" :name="'departments[' + dep.name + '][zone_type]'" value="urban">
+                            <!-- Correo Electrónico -->
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Correo Electrónico:</label>
+                                <input type="email" name="contact_email" placeholder="operaciones@courier.bo"
+                                    class="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-xs focus:outline-none focus:border-indigo-500">
+                            </div>
 
-                                <div class="grid grid-cols-2 gap-1.5 pt-1" x-show="dep.enabled">
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Flete (BOB):</label>
-                                        <div class="relative">
-                                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold font-mono">Bs</span>
-                                            <input type="number" step="0.5" :name="'departments[' + dep.name + '][shipping_fee]'"
-                                                x-model.number="dep.fee" min="0" placeholder="20.00"
-                                                class="w-full pl-6 pr-2 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 font-mono font-extrabold text-xs text-center focus:bg-white focus:outline-none focus:border-indigo-500">
+                            <!-- Checkbox COD Bolivia -->
+                            <div class="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-indigo-100 shadow-2xs">
+                                <input type="checkbox" name="has_cod_service" value="1" id="has_cod_create" checked
+                                    class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                <label for="has_cod_create" class="text-xs font-bold text-slate-800 cursor-pointer">
+                                    Habilitar Cobro Contra Entrega (COD Bolivia)
+                                </label>
+                            </div>
+
+                            <div class="p-2.5 bg-indigo-50/60 rounded-xl border border-indigo-100 text-[11px] text-indigo-900 leading-snug flex items-start gap-2">
+                                <i class="fa-solid fa-circle-info text-indigo-500 mt-0.5 shrink-0"></i>
+                                <span>Al registrarse, la transportadora aparecerá automáticamente en el selector de pedidos y checkout de la tienda.</span>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA DERECHA: Cobertura en los 9 Departamentos (7 columnas) -->
+                        <div class="lg:col-span-7 space-y-3 bg-indigo-50/40 p-4 rounded-2xl border border-indigo-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100 pb-2.5">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-5 h-5 rounded-full bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center">2</span>
+                                        <span class="font-extrabold text-slate-900 text-xs uppercase tracking-wide">Tarifas en los 9 Departamentos</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Indica el costo de envío (BOB) y días estimados para cada departamento cubierto.</p>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="button" @click="selectAllDepartments(true)"
+                                        class="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-700 font-bold text-[10px] transition cursor-pointer shadow-2xs">
+                                        <i class="fa-solid fa-check-double mr-1"></i> Todos (9)
+                                    </button>
+                                    <button type="button" @click="selectTroncalOnly()"
+                                        class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] transition cursor-pointer shadow-2xs">
+                                        Eje Troncal (3)
+                                    </button>
+                                    <button type="button" @click="selectAllDepartments(false)"
+                                        class="px-2 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-500 font-medium text-[10px] transition cursor-pointer">
+                                        Desmarcar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Grilla 3x3 de los 9 Departamentos (Ultra Compacta) -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                <template x-for="dep in departmentsList" :key="dep.name">
+                                    <div class="p-2 rounded-xl border transition flex flex-col justify-between"
+                                         :class="dep.enabled ? 'bg-white border-indigo-200 shadow-2xs' : 'bg-slate-100/60 border-slate-200 opacity-55'">
+                                        
+                                        <div class="flex items-center justify-between gap-1 mb-1">
+                                            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                                                <input type="checkbox" :name="'departments[' + dep.name + '][enabled]'" value="1"
+                                                    x-model="dep.enabled"
+                                                    class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                                <span class="font-extrabold text-[11px] text-slate-900 leading-tight" x-text="dep.name"></span>
+                                            </label>
+                                            <span class="text-[9px] font-mono text-slate-400 truncate max-w-[65px]" :title="dep.city" x-text="dep.city"></span>
+                                        </div>
+
+                                        <input type="hidden" :name="'departments[' + dep.name + '][city]'" :value="dep.city">
+                                        <input type="hidden" :name="'departments[' + dep.name + '][zone_type]'" value="urban">
+
+                                        <div class="grid grid-cols-2 gap-1 pt-0.5" x-show="dep.enabled">
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Flete (BOB):</label>
+                                                <div class="relative">
+                                                    <span class="absolute left-1.5 top-1/2 -translate-y-1/2 text-slate-400 text-[9px] font-bold font-mono">Bs</span>
+                                                    <input type="number" step="0.5" :name="'departments[' + dep.name + '][shipping_fee]'"
+                                                        x-model.number="dep.fee" min="0" placeholder="20.00"
+                                                        class="w-full pl-5 pr-1 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-900 font-mono font-extrabold text-[11px] text-center focus:bg-white focus:outline-none focus:border-indigo-500">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-slate-500 mb-0.5">Entrega:</label>
+                                                <select :name="'departments[' + dep.name + '][delivery_days]'" x-model.number="dep.days"
+                                                    class="w-full p-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 text-[10px] font-semibold focus:bg-white focus:outline-none focus:border-indigo-500">
+                                                    <option value="1">1 día</option>
+                                                    <option value="2">2 días</option>
+                                                    <option value="3">3 días</option>
+                                                    <option value="4">4 días</option>
+                                                    <option value="5">5 días</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Entrega:</label>
-                                        <select :name="'departments[' + dep.name + '][delivery_days]'" x-model.number="dep.days"
-                                            class="w-full p-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 text-[11px] font-semibold focus:bg-white focus:outline-none focus:border-indigo-500">
-                                            <option value="1">1 día</option>
-                                            <option value="2">2 días</option>
-                                            <option value="3">3 días</option>
-                                            <option value="4">4 días</option>
-                                            <option value="5">5 días</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                </template>
                             </div>
-                        </template>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                    <button type="button" @click="createModalOpen = false" class="px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-100 cursor-pointer">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold shadow-md cursor-pointer flex items-center gap-1.5">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar Transportadora
-                    </button>
+                <!-- Pie Fijo del Modal (Siempre visible) -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100 mt-2 bg-white shrink-0">
+                    <div class="text-[11px] text-slate-500 hidden sm:flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        <span>Las tarifas se calculan automáticamente en el checkout al elegir departamento.</span>
+                    </div>
+                    <div class="flex items-center gap-2 ml-auto">
+                        <button type="button" @click="createModalOpen = false" class="px-4 py-2 rounded-xl text-slate-600 font-bold hover:bg-slate-100 cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-scarlet px-5 py-2.5 rounded-xl font-bold shadow-md cursor-pointer flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Transportadora
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
