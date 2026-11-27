@@ -3,26 +3,41 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    /** Verifica si el usuario tiene privilegios de administración */
+    private function checkAdminAccess(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $user->isTenantAdmin() 
+            || $user->isSuperAdmin() 
+            || in_array($user->role, ['tenant_admin', 'superadmin', 'admin'], true);
+    }
+
     /** Listado de usuarios del tenant con filtros por rol y búsqueda */
     public function index(Request $request): JsonResponse
     {
         $admin = $request->user();
 
-        if (!$admin->isTenantAdmin()) {
+        if (!$this->checkAdminAccess($admin)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'No autorizado. Solo los administradores pueden gestionar usuarios.',
             ], 403);
         }
 
-        $query = User::where('tenant_id', $admin->tenant_id);
+        $tenantId = $admin->tenant_id ?? Tenant::first()?->id;
+        $query = $tenantId ? User::where('tenant_id', $tenantId) : User::query();
 
         if ($request->has('role') && !empty($request->role)) {
             $query->where('role', $request->role);
@@ -51,7 +66,7 @@ class UserController extends Controller
     {
         $admin = $request->user();
 
-        if (!$admin->isTenantAdmin()) {
+        if (!$this->checkAdminAccess($admin)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'No autorizado. Solo los administradores pueden crear usuarios.',
@@ -70,8 +85,10 @@ class UserController extends Controller
             'department'            => 'required|string|max:50',
         ]);
 
+        $tenantId = $admin->tenant_id ?? Tenant::first()?->id ?? '01a1f5b7-11c2-7350-89ce-f96f436c8ceb';
+
         $user = User::create([
-            'tenant_id'             => $admin->tenant_id,
+            'tenant_id'             => $tenantId,
             'name'                  => $validated['name'],
             'email'                 => $validated['email'],
             'password'              => Hash::make($validated['password']),
@@ -83,6 +100,19 @@ class UserController extends Controller
             'department'            => $validated['department'],
             'is_active'             => true,
         ]);
+
+        // Crear billetera en BOB si es dropshipper o proveedor
+        if (in_array($user->role, ['dropshipper', 'provider'], true)) {
+            Wallet::firstOrCreate(
+                ['user_id' => $user->id, 'currency' => 'BOB'],
+                [
+                    'tenant_id'           => $tenantId,
+                    'balance_bob'         => 0.00,
+                    'retained_balance_bob'=> 0.00,
+                    'is_active'           => true,
+                ]
+            );
+        }
 
         return response()->json([
             'status'  => 'success',
@@ -96,14 +126,16 @@ class UserController extends Controller
     {
         $admin = $request->user();
 
-        if (!$admin->isTenantAdmin()) {
+        if (!$this->checkAdminAccess($admin)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'No autorizado.',
             ], 403);
         }
 
-        $user = User::where('tenant_id', $admin->tenant_id)->findOrFail($id);
+        $tenantId = $admin->tenant_id ?? Tenant::first()?->id;
+        $userQuery = $tenantId ? User::where('tenant_id', $tenantId) : User::query();
+        $user = $userQuery->findOrFail($id);
 
         if ($user->id === $admin->id) {
             return response()->json([

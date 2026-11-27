@@ -217,12 +217,18 @@
                 <p class="text-[11px] text-slate-300 leading-snug">
                     Supervisa catálogos de fábrica, stock en almacenes y liquidaciones de costo mayorista.
                 </p>
-                <div class="pt-1">
+                <div class="pt-1 flex items-center gap-2">
                     <a href="{{ url('/panel/proveedor') }}"
-                        class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
-                        <span>Gestionar Proveedores</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        class="flex-1 py-2 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center justify-center gap-1.5 shadow-sm">
+                        <span>Supervisar Bodega</span>
+                        <i class="fa-solid fa-warehouse text-[10px]"></i>
                     </a>
+                    <button type="button" @click="openCreateProviderModal()"
+                        class="py-2 px-3 rounded-lg text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white transition flex items-center justify-center gap-1 cursor-pointer"
+                        title="Crear Nuevo Proveedor Mayorista">
+                        <i class="fa-solid fa-plus text-amber-300"></i>
+                        <span>Nuevo</span>
+                    </button>
                 </div>
             </div>
 
@@ -1191,7 +1197,7 @@
     </div>
 
     <!-- SECCIÓN: GESTIÓN DE USUARIOS DE LA PLATAFORMA (PROVEEDORES, VENDEDORES, AGENTES) -->
-    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+    <div id="seccion-usuarios" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-950 border border-emerald-200/80 flex items-center justify-center text-sm">
@@ -1453,6 +1459,22 @@ function adminDashboard() {
             company_or_store_name: '',
             department: 'Santa Cruz',
             city: 'Santa Cruz de la Sierra'
+        },
+
+        init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('open_modal') === 'provider' || window.location.hash === '#crear-proveedor') {
+                this.openCreateProviderModal();
+            }
+        },
+
+        openCreateProviderModal() {
+            this.newUserForm.role = 'provider';
+            this.userModalOpen = true;
+            this.$nextTick(() => {
+                const el = document.getElementById('seccion-usuarios');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            });
         },
 
         async submitCreateUser() {

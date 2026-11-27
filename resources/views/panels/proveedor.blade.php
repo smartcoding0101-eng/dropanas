@@ -38,6 +38,11 @@
             </div>
             @endif
 
+            <a href="{{ url('/panel/admin?open_modal=provider#seccion-usuarios') }}"
+                class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-user-plus"></i> Registrar Nuevo Proveedor
+            </a>
+
             <a href="{{ url('/panel/admin') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition inline-flex items-center gap-1.5">
                 <i class="fa-solid fa-arrow-left"></i> Volver a Panel Admin
             </a>
