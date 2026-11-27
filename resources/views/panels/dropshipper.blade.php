@@ -147,7 +147,7 @@
 
     <!-- Billetera Digital & Saldo Retirable (#FFFFFF) -->
     @if($wallet)
-    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6">
+    <div id="billetera" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-24">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
             <div>
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-900 bg-red-50 border border-red-200 px-2.5 py-1 rounded-full">
@@ -202,6 +202,100 @@
                 </div>
                 <div class="text-[11px] text-slate-400">Transferencias exitosas realizadas</div>
             </div>
+        </div>
+
+        <!-- Libro Mayor de Movimientos de Caja y Efectivo (Ledger FinTech) -->
+        <div class="border-t border-slate-200/80 pt-6 space-y-3.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900 font-heading">
+                            Libro Diario de Movimientos de Efectivo (Ledger)
+                        </h4>
+                        <p class="text-[11px] text-slate-500">
+                            Registro de débitos y abonos en tiempo real: asignación inicial, prepagos retenidos de pedidos y liquidaciones.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">
+                        {{ $walletTransactions->count() }} Movimientos Registrados
+                    </span>
+                </div>
+            </div>
+
+            @if($walletTransactions->isNotEmpty())
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px] border-b border-slate-200">
+                        <tr>
+                            <th class="py-3 px-4">Fecha / Hora</th>
+                            <th class="py-3 px-4">Tipo Movimiento</th>
+                            <th class="py-3 px-4">Concepto / Detalle</th>
+                            <th class="py-3 px-4 text-right">Monto</th>
+                            <th class="py-3 px-4 text-right">Saldo Resultante</th>
+                            <th class="py-3 px-4">Estado / Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @foreach($walletTransactions as $tx)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-3 px-4 font-mono text-slate-600 text-[11px] whitespace-nowrap">
+                                <i class="fa-regular fa-clock text-slate-400 mr-1"></i>
+                                {{ $tx->created_at->format('d/m/Y H:i:s') }}
+                            </td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                @if($tx->transaction_type === 'initial_deposit' || $tx->transaction_type === 'topup')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fa-solid fa-arrow-down-left text-[9px]"></i> Abono / Saldo Inicial
+                                    </span>
+                                @elseif($tx->transaction_type === 'order_prepayment')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <i class="fa-solid fa-arrow-up-right text-[9px]"></i> Prepago Obligatorio
+                                    </span>
+                                @elseif($tx->transaction_type === 'cod_settlement' || $tx->transaction_type === 'order_profit')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                                        <i class="fa-solid fa-coins text-[9px]"></i> Liquidación COD
+                                    </span>
+                                @elseif($tx->transaction_type === 'withdrawal')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <i class="fa-solid fa-arrow-up-from-bracket text-[9px]"></i> Retiro Bancario
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                        {{ ucfirst(str_replace('_', ' ', $tx->transaction_type)) }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="font-medium text-slate-900 leading-snug">{{ $tx->description }}</div>
+                                @if($tx->reference_type === 'order' && $tx->reference_id)
+                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">Ref ID: {{ Str::limit($tx->reference_id, 18) }}</div>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-right font-mono font-bold whitespace-nowrap {{ (float)$tx->amount >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                {{ (float)$tx->amount >= 0 ? '+' : '' }}Bs. {{ number_format($tx->amount, 2) }}
+                            </td>
+                            <td class="py-3 px-4 text-right font-mono font-bold text-slate-900 whitespace-nowrap bg-slate-50/50">
+                                Bs. {{ number_format($tx->balance_after, 2) }}
+                            </td>
+                            <td class="py-3 px-4 text-slate-500 text-[11px]">
+                                {{ $tx->notes ?? 'Confirmado en sistema' }}
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <div class="p-6 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-xs">
+                <i class="fa-solid fa-receipt text-2xl mb-1.5 block text-slate-300"></i>
+                No se registran movimientos en el libro mayor de esta billetera aún.
+            </div>
+            @endif
         </div>
 
         <!-- Historial de Recargas Solicitadas -->

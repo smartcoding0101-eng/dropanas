@@ -63,6 +63,11 @@ class PanelController extends Controller
                 ->get();
 
             $wallet = Wallet::where('user_id', $dropshipper->id)->first();
+            $walletTransactions = $wallet
+                ? \App\Models\WalletTransaction::where('wallet_id', $wallet->id)->latest()->limit(50)->get()
+                : collect();
+        } else {
+            $walletTransactions = collect();
         }
 
         $storeIntegrations = $dropshipper
@@ -78,7 +83,7 @@ class PanelController extends Controller
         $apiToken = $dropshipper ? $dropshipper->createToken('dropshipper-web-session')->plainTextToken : '';
 
         return view('panels.dropshipper', compact(
-            'dropshipper', 'stats', 'recentOrders', 'wallet', 'storeIntegrations',
+            'dropshipper', 'stats', 'recentOrders', 'wallet', 'walletTransactions', 'storeIntegrations',
             'walletTopups', 'financialSettings', 'apiToken', 'allDropshippers', 'isAdmin'
         ));
     }
