@@ -164,6 +164,8 @@
                        class="w-full border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 focus:bg-white outline-none">
             </div>
 
+            <input type="hidden" name="per_page" value="{{ $perPage ?? 30 }}">
+
             <!-- Botones -->
             <div class="flex items-end gap-2">
                 <button type="submit" class="btn-scarlet px-4 py-2 rounded-xl text-white font-bold flex-1 shadow-xs">
@@ -178,13 +180,31 @@
 
     <!-- 3. Tabla Principal del Kardex Global -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="font-bold text-[#212832] text-sm flex items-center gap-2">
-                <i class="fa-solid fa-list-check"></i>
-                <span>Movimientos Históricos Inmutables ({{ $records->total() }} registros)</span>
-            </h2>
-            <div class="text-xs text-slate-400 font-mono">
-                Ordenado cronológicamente
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <h2 class="font-bold text-[#212832] text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-indigo-600"></i>
+                    <span>Movimientos Históricos Inmutables ({{ number_format($records->total()) }} registros)</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Trazabilidad física y financiera en tiempo real para todas las megabodegas.</p>
+            </div>
+            <div class="flex items-center gap-3 self-end sm:self-auto">
+                <!-- Selector de Registros por Página -->
+                <div class="flex items-center gap-2 text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shadow-2xs">
+                    <i class="fa-solid fa-table-list text-slate-400"></i>
+                    <label for="per_page_select" class="text-slate-600 font-bold text-[11px] whitespace-nowrap">Mostrar:</label>
+                    <select id="per_page_select"
+                            onchange="const u = new URL(window.location.href); u.searchParams.set('per_page', this.value); u.searchParams.delete('page'); window.location.href = u.toString();"
+                            class="bg-transparent font-extrabold text-indigo-700 text-xs outline-none cursor-pointer">
+                        <option value="15" {{ ($perPage ?? 30) == 15 ? 'selected' : '' }}>15 por pág.</option>
+                        <option value="30" {{ ($perPage ?? 30) == 30 ? 'selected' : '' }}>30 por pág. (Predeterminado)</option>
+                        <option value="50" {{ ($perPage ?? 30) == 50 ? 'selected' : '' }}>50 por pág.</option>
+                        <option value="100" {{ ($perPage ?? 30) == 100 ? 'selected' : '' }}>100 por pág.</option>
+                    </select>
+                </div>
+                <div class="text-xs text-slate-400 font-mono hidden md:block">
+                    Orden cronológico
+                </div>
             </div>
         </div>
 
@@ -331,11 +351,137 @@
             </table>
         </div>
 
-        @if($records->hasPages())
-        <div class="p-4 border-t border-slate-100">
-            {{ $records->links() }}
+        <!-- Paginador Estilo Carrusel con Botones « Inicio y Final » -->
+        <div class="p-4 sm:px-6 border-t border-slate-100 bg-slate-50/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            
+            <!-- Resumen de registros -->
+            <div class="text-xs text-slate-500 font-medium flex items-center gap-2">
+                <i class="fa-solid fa-database text-slate-400 text-xs"></i>
+                <span>
+                    Mostrando <strong class="text-slate-800 font-mono font-bold">{{ $records->firstItem() ?? 0 }}</strong>
+                    a <strong class="text-slate-800 font-mono font-bold">{{ $records->lastItem() ?? 0 }}</strong>
+                    de <strong class="text-slate-900 font-mono font-bold">{{ number_format($records->total()) }}</strong> movimientos
+                </span>
+                <span class="text-slate-300 hidden sm:inline">|</span>
+                <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                    Página <strong>{{ $records->currentPage() }}</strong> de <strong>{{ $records->lastPage() }}</strong>
+                </span>
+            </div>
+
+            <!-- Controles del Carrusel de Paginación -->
+            <nav aria-label="Navegación de Kardex" class="flex items-center justify-center sm:justify-end gap-1 flex-wrap">
+                
+                <!-- Botón: INICIO (Primera Página) -->
+                @if($records->onFirstPage())
+                    <span class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold cursor-not-allowed flex items-center gap-1.5 select-none opacity-60"
+                          title="Ya estás en la primera página">
+                        <i class="fa-solid fa-angles-left text-[10px]"></i>
+                        <span>Inicio</span>
+                    </span>
+                @else
+                    <a href="{{ $records->url(1) }}"
+                       class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                       title="Ir a la primera página">
+                        <i class="fa-solid fa-angles-left text-[10px]"></i>
+                        <span>Inicio</span>
+                    </a>
+                @endif
+
+                <!-- Botón: ANTERIOR -->
+                @if($records->onFirstPage())
+                    <span class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold cursor-not-allowed flex items-center gap-1 select-none opacity-60">
+                        <i class="fa-solid fa-angle-left text-xs"></i>
+                        <span class="hidden sm:inline">Anterior</span>
+                    </span>
+                @else
+                    <a href="{{ $records->previousPageUrl() }}"
+                       class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1 shadow-2xs">
+                        <i class="fa-solid fa-angle-left text-xs"></i>
+                        <span class="hidden sm:inline">Anterior</span>
+                    </a>
+                @endif
+
+                <!-- Carrusel de Números de Página (Ventana Dinámica Deslizante) -->
+                @php
+                    $cur = $records->currentPage();
+                    $last = max(1, $records->lastPage());
+                    $start = max(1, $cur - 2);
+                    $end = min($last, $cur + 2);
+
+                    if ($end - $start < 4) {
+                        if ($start === 1) {
+                            $end = min($last, $start + 4);
+                        } elseif ($end === $last) {
+                            $start = max(1, $end - 4);
+                        }
+                    }
+                @endphp
+
+                @if($start > 1)
+                    <a href="{{ $records->url(1) }}"
+                       class="w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold text-xs flex items-center justify-center transition shadow-2xs">
+                        1
+                    </a>
+                    @if($start > 2)
+                        <span class="px-1 text-slate-400 font-bold">...</span>
+                    @endif
+                @endif
+
+                @for($p = $start; $p <= $end; $p++)
+                    @if($p == $cur)
+                        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 text-white font-extrabold text-xs flex items-center justify-center shadow-xs border border-indigo-700">
+                            {{ $p }}
+                        </span>
+                    @else
+                        <a href="{{ $records->url($p) }}"
+                           class="w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold text-xs flex items-center justify-center transition shadow-2xs">
+                            {{ $p }}
+                        </a>
+                    @endif
+                @endfor
+
+                @if($end < $last)
+                    @if($end < $last - 1)
+                        <span class="px-1 text-slate-400 font-bold">...</span>
+                    @endif
+                    <a href="{{ $records->url($last) }}"
+                       class="w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 font-bold text-xs flex items-center justify-center transition shadow-2xs">
+                        {{ $last }}
+                    </a>
+                @endif
+
+                <!-- Botón: SIGUIENTE -->
+                @if($records->hasMorePages())
+                    <a href="{{ $records->nextPageUrl() }}"
+                       class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1 shadow-2xs">
+                        <span class="hidden sm:inline">Siguiente</span>
+                        <i class="fa-solid fa-angle-right text-xs"></i>
+                    </a>
+                @else
+                    <span class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold cursor-not-allowed flex items-center gap-1 select-none opacity-60">
+                        <span class="hidden sm:inline">Siguiente</span>
+                        <i class="fa-solid fa-angle-right text-xs"></i>
+                    </span>
+                @endif
+
+                <!-- Botón: FINAL (Última Página) -->
+                @if($cur >= $last)
+                    <span class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold cursor-not-allowed flex items-center gap-1.5 select-none opacity-60"
+                          title="Ya estás en la última página">
+                        <span>Final</span>
+                        <i class="fa-solid fa-angles-right text-[10px]"></i>
+                    </span>
+                @else
+                    <a href="{{ $records->url($last) }}"
+                       class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                       title="Ir a la última página">
+                        <span>Final</span>
+                        <i class="fa-solid fa-angles-right text-[10px]"></i>
+                    </a>
+                @endif
+
+            </nav>
         </div>
-        @endif
     </div>
 
     <!-- 4. Modal para Ajuste Manual de Auditoría (Exclusivo Admin) -->

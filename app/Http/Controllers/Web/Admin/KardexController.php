@@ -65,7 +65,12 @@ class KardexController extends Controller
             });
         }
 
-        $records = $query->paginate(25)->withQueryString();
+        $perPage = (int) $request->input('per_page', 30);
+        if (!in_array($perPage, [15, 30, 50, 100])) {
+            $perPage = 30;
+        }
+
+        $records = $query->paginate($perPage)->withQueryString();
 
         // Métricas de Inventario Consolidado
         $warehouses = Warehouse::where('tenant_id', $tenantId)->get();
@@ -114,7 +119,7 @@ class KardexController extends Controller
             'total_transactions' => InventoryKardex::withoutGlobalScopes()->where('tenant_id', $tenantId)->count(),
         ];
 
-        return view('admin.kardex.index', compact('records', 'warehouses', 'products', 'metrics'));
+        return view('admin.kardex.index', compact('records', 'warehouses', 'products', 'metrics', 'perPage'));
     }
 
     /**
