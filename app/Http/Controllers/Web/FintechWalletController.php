@@ -28,6 +28,16 @@ class FintechWalletController extends Controller
     ) {}
 
     /**
+     * Valida la frontera de autorización administrativa (Defense in Depth).
+     */
+    protected function ensureAdmin(?\App\Models\User $user): void
+    {
+        if (!$user || (!$user->isTenantAdmin() && !$user->isSuperAdmin() && !in_array($user->role, ['tenant_admin', 'superadmin', 'admin']))) {
+            abort(403, 'Acceso denegado. Exclusivo para administradores del sistema.');
+        }
+    }
+
+    /**
      * Vendedor o Proveedor envía una solicitud de recarga de saldo con comprobante.
      */
     public function submitTopup(Request $request): JsonResponse|RedirectResponse
@@ -85,6 +95,7 @@ class FintechWalletController extends Controller
     public function approveTopup(Request $request, string $id): JsonResponse|RedirectResponse
     {
         $admin = Auth::user();
+        $this->ensureAdmin($admin);
         $topup = WalletTopup::where('tenant_id', $admin->tenant_id)->findOrFail($id);
 
         try {
@@ -112,6 +123,7 @@ class FintechWalletController extends Controller
     public function rejectTopup(Request $request, string $id): JsonResponse|RedirectResponse
     {
         $admin = Auth::user();
+        $this->ensureAdmin($admin);
         $topup = WalletTopup::where('tenant_id', $admin->tenant_id)->findOrFail($id);
 
         $reason = $request->input('reason', 'Comprobante no válido o depósito no verificado en cuenta bancaria.');
@@ -190,6 +202,7 @@ class FintechWalletController extends Controller
     public function approveCarrierSettlement(Request $request, string $id): JsonResponse|RedirectResponse
     {
         $admin = Auth::user();
+        $this->ensureAdmin($admin);
         $settlement = CarrierCashSettlement::where('tenant_id', $admin->tenant_id)->findOrFail($id);
 
         try {
@@ -217,6 +230,7 @@ class FintechWalletController extends Controller
     public function rejectCarrierSettlement(Request $request, string $id): JsonResponse|RedirectResponse
     {
         $admin = Auth::user();
+        $this->ensureAdmin($admin);
         $settlement = CarrierCashSettlement::where('tenant_id', $admin->tenant_id)->findOrFail($id);
         $reason = $request->input('reason', 'Monto depositado no coincide con el recaudo auditado.');
 
@@ -245,6 +259,7 @@ class FintechWalletController extends Controller
     public function updateFinancialSettings(Request $request): JsonResponse|RedirectResponse
     {
         $admin = Auth::user();
+        $this->ensureAdmin($admin);
 
         $validated = $request->validate([
             'seller_commission_bob'   => 'nullable|numeric|min:0',

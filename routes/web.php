@@ -190,8 +190,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/wallet/withdrawals',         [\App\Http\Controllers\Web\FintechWalletController::class, 'submitWithdrawal'])         ->name('wallet.withdraw.store');
     Route::post('/carrier/settlements',        [\App\Http\Controllers\Web\FintechWalletController::class, 'submitCarrierSettlement']) ->name('carrier.settlements.store');
 
-    // Operaciones de Administración Central (Aprobaciones & Comisiones Dropana 5 Bs)
-    Route::prefix('admin/fintech')->name('admin.fintech.')->group(function () {
+    // Operaciones de Administración Central (Aprobaciones & Comisiones Dropana 5 Bs) - Exclusivo Admin
+    Route::middleware(['admin'])->prefix('admin/fintech')->name('admin.fintech.')->group(function () {
         Route::post('/topups/{id}/approve',              [\App\Http\Controllers\Web\FintechWalletController::class, 'approveTopup'])             ->name('topups.approve');
         Route::post('/topups/{id}/reject',               [\App\Http\Controllers\Web\FintechWalletController::class, 'rejectTopup'])              ->name('topups.reject');
         Route::post('/carrier-settlements/{id}/approve', [\App\Http\Controllers\Web\FintechWalletController::class, 'approveCarrierSettlement']) ->name('carrier_settlements.approve');

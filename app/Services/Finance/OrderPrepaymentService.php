@@ -106,4 +106,63 @@ class OrderPrepaymentService
             'total_prepayment_bob'=> $total,
         ];
     }
+
+    /**
+     * Reembolsa el prepago al vendedor dropshipper en caso de cancelación, anulación o devolución.
+     * Si $retainShippingFee es true (devolución donde el courier ya realizó el viaje),
+     * sólo se reembolsa el Costo de Producto + Fee de plataforma, reteniendo el flete ya consumido.
+     */
+    public function refundPrepayment(Order $order, string $reason, bool $retainShippingFee = false): void
+    {
+        DB::transaction(function () use ($order, $reason, $retainShippingFee) {
+            $freshOrder = Order::where('id', $order->id)->lockForUpdate()->firstOrFail();
+            if (!$freshOrder->prepaid_at || $freshOrder->prepayment_refunded_at) {
+                return; // No fue prepagado o ya fue reembolsado
+            }
+
+            $productCost = (float) $freshOrder->cost_amount_bob;
+            $shippingFee = (float) $freshOrder->shipping_fee_bob;
+            $sellerFee = (float) ($freshOrder->platform_fee_seller_bob ?? 5.00);
+
+            // Si se retiene el flete, sólo se devuelve costo + fee plataforma
+            $refundTotal = $retainShippingFee 
+                ? round($productCost + $sellerFee, 2)
+                : round($productCost + $shippingFee + $sellerFee, 2);
+
+            if ($refundTotal <= 0) {
+                return;
+            }
+
+            $wallet = Wallet::where('user_id', $freshOrder->dropshipper_id)
+                ->where('tenant_id', $freshOrder->tenant_id)
+                ->where('currency', 'BOB')
+                ->lockForUpdate()
+                ->first() ?? Wallet::create([
+                    'tenant_id' => $freshOrder->tenant_id,
+                    'user_id' => $freshOrder->dropshipper_id,
+                    'currency' => 'BOB',
+                    'balance_available' => 0.00,
+                    'balance_pending' => 0.00,
+                    'balance_withdrawn' => 0.00,
+                ]);
+
+            $wallet->balance_available += $refundTotal;
+            $wallet->save();
+
+            WalletTransaction::create([
+                'tenant_id'        => $freshOrder->tenant_id,
+                'wallet_id'        => $wallet->id,
+                'transaction_type' => 'order_prepayment_refund',
+                'amount'           => $refundTotal,
+                'balance_after'    => $wallet->balance_available,
+                'reference_type'   => 'order',
+                'reference_id'     => $freshOrder->id,
+                'description'      => "Reembolso prepago pedido #{$freshOrder->order_number} (" . ($retainShippingFee ? "Costo: Bs. {$productCost} + Fee: Bs. {$sellerFee}, Flete retenido" : "Íntegro Bs. {$refundTotal}") . ")",
+                'notes'            => $reason,
+            ]);
+
+            $freshOrder->prepayment_refunded_at = now();
+            $freshOrder->save();
+        });
+    }
 }

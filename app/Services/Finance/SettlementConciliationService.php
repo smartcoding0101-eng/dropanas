@@ -30,22 +30,43 @@ class SettlementConciliationService
                 ->lockForUpdate()
                 ->first() ?? $this->getOrCreateWallet($freshOrder->dropshipper_id, $freshOrder->tenant_id);
 
-            // 1. Acreditar ganancia al Dropshipper
-            $profit = (float) $freshOrder->dropshipper_profit_bob;
-            if ($profit > 0) {
-                $dropshipperWallet->balance_available += $profit;
-                $dropshipperWallet->save();
+            // 1. Acreditar retorno de prepago + ganancia o ganancia pura al Dropshipper
+            if ($freshOrder->prepaid_at) {
+                // Modelo FinTech con prepago: dropshipper recupera su prepago + su ganancia (monto total cobrado al cliente)
+                $orderGross = (float) $freshOrder->total_amount_bob;
+                if ($orderGross > 0) {
+                    $dropshipperWallet->balance_available += $orderGross;
+                    $dropshipperWallet->save();
 
-                WalletTransaction::create([
-                    'tenant_id' => $freshOrder->tenant_id,
-                    'wallet_id' => $dropshipperWallet->id,
-                    'transaction_type' => 'order_profit',
-                    'amount' => $profit,
-                    'balance_after' => $dropshipperWallet->balance_available,
-                    'reference_type' => 'order',
-                    'reference_id' => $freshOrder->id,
-                    'description' => "Ganancia de dropshipping por pedido #{$freshOrder->order_number}",
-                ]);
+                    WalletTransaction::create([
+                        'tenant_id' => $freshOrder->tenant_id,
+                        'wallet_id' => $dropshipperWallet->id,
+                        'transaction_type' => 'order_cod_reimbursement',
+                        'amount' => $orderGross,
+                        'balance_after' => $dropshipperWallet->balance_available,
+                        'reference_type' => 'order',
+                        'reference_id' => $freshOrder->id,
+                        'description' => "Liquidación COD y retorno de prepago por pedido #{$freshOrder->order_number}",
+                    ]);
+                }
+            } else {
+                // Modelo sin prepago
+                $profit = (float) $freshOrder->dropshipper_profit_bob;
+                if ($profit > 0) {
+                    $dropshipperWallet->balance_available += $profit;
+                    $dropshipperWallet->save();
+
+                    WalletTransaction::create([
+                        'tenant_id' => $freshOrder->tenant_id,
+                        'wallet_id' => $dropshipperWallet->id,
+                        'transaction_type' => 'order_profit',
+                        'amount' => $profit,
+                        'balance_after' => $dropshipperWallet->balance_available,
+                        'reference_type' => 'order',
+                        'reference_id' => $freshOrder->id,
+                        'description' => "Ganancia de dropshipping por pedido #{$freshOrder->order_number}",
+                    ]);
+                }
             }
 
             // 2. Acreditar a cada proveedor de los items
@@ -82,10 +103,18 @@ class SettlementConciliationService
 
     protected function getOrCreateWallet(string $userId, string $tenantId): Wallet
     {
-        return Wallet::firstOrCreate(
-            ['tenant_id' => $tenantId, 'user_id' => $userId, 'currency' => 'BOB'],
-            ['balance_available' => 0.00, 'balance_pending' => 0.00, 'balance_withdrawn' => 0.00]
-        );
+        return Wallet::where('tenant_id', $tenantId)
+            ->where('user_id', $userId)
+            ->where('currency', 'BOB')
+            ->lockForUpdate()
+            ->first() ?? Wallet::create([
+                'tenant_id' => $tenantId,
+                'user_id' => $userId,
+                'currency' => 'BOB',
+                'balance_available' => 0.00,
+                'balance_pending' => 0.00,
+                'balance_withdrawn' => 0.00,
+            ]);
     }
 }
 

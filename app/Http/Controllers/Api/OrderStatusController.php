@@ -164,6 +164,15 @@ class OrderStatusController extends Controller
                         }
                     }
                 }
+
+                // Reembolso atómico de prepago si el pedido fue cancelado
+                if ($order->prepaid_at) {
+                    app(\App\Services\Finance\OrderPrepaymentService::class)->refundPrepayment(
+                        $order,
+                        "Reembolso automático por cancelación de pedido: " . ($validated['notes'] ?? 'Cancelado'),
+                        false
+                    );
+                }
             }
 
             if ($newStatus === 'annulled') {
@@ -193,6 +202,15 @@ class OrderStatusController extends Controller
                             }
                         }
                     }
+                }
+
+                // Reembolso atómico de prepago si el pedido fue anulado
+                if ($order->prepaid_at) {
+                    app(\App\Services\Finance\OrderPrepaymentService::class)->refundPrepayment(
+                        $order,
+                        "Reembolso automático por anulación de pedido: " . ($validated['notes'] ?? 'Anulado'),
+                        false
+                    );
                 }
             }
 

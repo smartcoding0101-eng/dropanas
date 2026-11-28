@@ -100,10 +100,18 @@ class CarrierSettlementService
                 // ==============================================================
                 // 1. REEMBOLSO + GANANCIA AL VENDEDOR (DROPSHIPPER)
                 // ==============================================================
-                $sellerWallet = Wallet::firstOrCreate(
-                    ['tenant_id' => $tenantId, 'user_id' => $order->dropshipper_id, 'currency' => 'BOB'],
-                    ['balance_available' => 0.00, 'balance_pending' => 0.00, 'balance_withdrawn' => 0.00]
-                );
+                $sellerWallet = Wallet::where('tenant_id', $tenantId)
+                    ->where('user_id', $order->dropshipper_id)
+                    ->where('currency', 'BOB')
+                    ->lockForUpdate()
+                    ->first() ?? Wallet::create([
+                        'tenant_id' => $tenantId,
+                        'user_id' => $order->dropshipper_id,
+                        'currency' => 'BOB',
+                        'balance_available' => 0.00,
+                        'balance_pending' => 0.00,
+                        'balance_withdrawn' => 0.00,
+                    ]);
 
                 // El vendedor recibe el monto total recaudado del cliente (Recupera su prepago + su ganancia)
                 $orderGross = (float) $order->total_amount_bob;
@@ -126,10 +134,18 @@ class CarrierSettlementService
                 // 2. LIQUIDACIÓN AL PROVEEDOR MAYORISTA
                 // ==============================================================
                 foreach ($order->items as $item) {
-                    $providerWallet = Wallet::firstOrCreate(
-                        ['tenant_id' => $tenantId, 'user_id' => $item->provider_id, 'currency' => 'BOB'],
-                        ['balance_available' => 0.00, 'balance_pending' => 0.00, 'balance_withdrawn' => 0.00]
-                    );
+                    $providerWallet = Wallet::where('tenant_id', $tenantId)
+                        ->where('user_id', $item->provider_id)
+                        ->where('currency', 'BOB')
+                        ->lockForUpdate()
+                        ->first() ?? Wallet::create([
+                            'tenant_id' => $tenantId,
+                            'user_id' => $item->provider_id,
+                            'currency' => 'BOB',
+                            'balance_available' => 0.00,
+                            'balance_pending' => 0.00,
+                            'balance_withdrawn' => 0.00,
+                        ]);
 
                     $costPayout = (float) $item->unit_cost_bob * $item->quantity;
                     $providerFee = (float) ($order->platform_fee_provider_bob ?? 5.00);
@@ -154,10 +170,18 @@ class CarrierSettlementService
                 // ==============================================================
                 // 3. LIQUIDACIÓN AL COURIER MOTORIZADO
                 // ==============================================================
-                $carrierWallet = Wallet::firstOrCreate(
-                    ['tenant_id' => $tenantId, 'user_id' => $freshSettlement->carrier_id, 'currency' => 'BOB'],
-                    ['balance_available' => 0.00, 'balance_pending' => 0.00, 'balance_withdrawn' => 0.00]
-                );
+                $carrierWallet = Wallet::where('tenant_id', $tenantId)
+                    ->where('user_id', $freshSettlement->carrier_id)
+                    ->where('currency', 'BOB')
+                    ->lockForUpdate()
+                    ->first() ?? Wallet::create([
+                        'tenant_id' => $tenantId,
+                        'user_id' => $freshSettlement->carrier_id,
+                        'currency' => 'BOB',
+                        'balance_available' => 0.00,
+                        'balance_pending' => 0.00,
+                        'balance_withdrawn' => 0.00,
+                    ]);
 
                 $shippingFee = (float) $order->shipping_fee_bob;
 

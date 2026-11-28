@@ -90,8 +90,16 @@ class ReverseLogisticsService
             // 1. Reintegrar stock a la bodega con trazabilidad en Kardex
             $this->restockItemsToWarehouse($order, $condition, $reason);
 
-            // 2. Cobrar flete logístico al dropshipper si está configurado
-            if ($deductShippingFeeFromDropshipper && (float)$order->shipping_fee_bob > 0) {
+            // 2. Liquidación financiera de devolución:
+            if ($order->prepaid_at) {
+                // Reembolsar costo de producto + fee de plataforma reteniendo el flete ya consumido
+                app(\App\Services\Finance\OrderPrepaymentService::class)->refundPrepayment(
+                    $order,
+                    "Reembolso por devolución logística inversa: " . ($reason ?? 'Devolución a bodega'),
+                    true // retiene flete de courier ya ejecutado
+                );
+            } elseif ($deductShippingFeeFromDropshipper && (float)$order->shipping_fee_bob > 0) {
+                // Sólo si no hubo prepago adelantado se aplica el débito por flete
                 $this->chargeReturnFreightToDropshipper($order, (float)$order->shipping_fee_bob, $reason);
             }
 
@@ -140,10 +148,18 @@ class ReverseLogisticsService
      */
     protected function chargeReturnFreightToDropshipper(Order $order, float $fee, ?string $reason): void
     {
-        $wallet = Wallet::firstOrCreate(
-            ['tenant_id' => $order->tenant_id, 'user_id' => $order->dropshipper_id, 'currency' => 'BOB'],
-            ['balance_available' => 0.00, 'balance_pending' => 0.00, 'balance_withdrawn' => 0.00]
-        );
+        $wallet = Wallet::where('tenant_id', $order->tenant_id)
+            ->where('user_id', $order->dropshipper_id)
+            ->where('currency', 'BOB')
+            ->lockForUpdate()
+            ->first() ?? Wallet::create([
+                'tenant_id' => $order->tenant_id,
+                'user_id' => $order->dropshipper_id,
+                'currency' => 'BOB',
+                'balance_available' => 0.00,
+                'balance_pending' => 0.00,
+                'balance_withdrawn' => 0.00,
+            ]);
 
         $wallet->balance_available -= $fee;
         $wallet->save();

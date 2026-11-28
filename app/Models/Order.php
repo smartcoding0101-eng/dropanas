@@ -46,6 +46,7 @@ class Order extends Model
         'dispatched_at',
         'delivered_at',
         'prepaid_at',
+        'prepayment_refunded_at',
         'settled_at',
         'cod_reimbursed_at',
         'carrier_cash_settlement_id',
@@ -64,6 +65,7 @@ class Order extends Model
         'dispatched_at' => 'datetime',
         'delivered_at' => 'datetime',
         'prepaid_at' => 'datetime',
+        'prepayment_refunded_at' => 'datetime',
         'settled_at' => 'datetime',
         'cod_reimbursed_at' => 'datetime',
     ];
